@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<!--
+ MolPaintJS
+ Copyright 2017-2019 Leibniz-Institut f. Pflanzenbiochemie
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Playground</title>
+    <link type="text/css" rel="stylesheet" href="css/styles.css"/>
+    <script type="text/javascript" src="js/molpaint.js"></script>
+    <script type="text/javascript">
+      var molpaintjs = new MolPaintJS();
+    </script>
+</head>
+<body>
+
+<h1>HTML5 Mol-Editor</h1>
+
+<div id="debug"></div>
+<table>
+<tr><th>Editor</th><th></th><th>Viewer</th></tr>
+<tr><td><div id="mol"></div></td><td><div style="padding:40px">&nbsp;</div></td><td><div id="viewer" style="padding-top:40px"></div></td></tr>
+</table>
+<script type="text/javascript">
+    molpaintjs.newContext("mol", {iconSize: 32, debugId: "debug"}).setMolecule(
+        "n.n.\n  MolPaintJS\n\n 13 14  0  0  0  0  0  0  0  0999 V2000\n   -1.3492   -0.6188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.3492   -1.4438    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348   -1.8563    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797   -1.4438    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797   -0.6188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348   -0.2062    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8643   -1.6987    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3492   -1.0313    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8643   -0.3638    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348    0.6188    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7942    0.6188    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797    1.0313    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797    1.8563    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n 12 13  1  0      \n 11 12  2  0      \n 10 12  1  0      \n  6 10  1  0      \n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9  5  1  0      \nM  END\n").init();
+
+    molpaintjs.newContext("viewer", {iconSize: 32, sizeX:250, sizeY:250, viewer: 1}).setMolecule(
+        "n.n.\n  MolPaintJS\n\n 12 13  0  0  0  0            999\n   -1.4605    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4605    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    2.4717    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1118   -0.0033    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  3  1  0\n  3  4  1  0\n  4  5  1  0\n  6  7  1  0\n  7  8  1  0\n  8  9  1  0\n  9 10  1  0\n  5 10  1  0\n  3  8  1  0\n  4 11  1  1\n 10 12  1  6\n  1  6  2  0\nM  END\n").init();
+
+</script>
+<p>(c) 2017 - 2019 Leibniz-Institut f. Pflanzenbiochemie</p>
+<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output"); return false;'/>
+<div id="output"></div>
+
+</body>
+</html>
+

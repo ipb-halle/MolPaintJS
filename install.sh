@@ -17,38 +17,27 @@
 #
 #===========================================================================
 #
-#  Creates a binary distribution of the plugin 
+#  Rebuilds the distribution directory of the plugin 
 #  * concatenates all JavaScript files (in alphabetical order)
-#  * copies all images, css files and templates
+#  * optionally compresses ('minifies') the output script (default)
 #  * copies documentation and licensing information etc.
-#  * creates a compressed tar archive 
 #
+
 SRC=`dirname $0`
-DEST=target
 pushd $SRC
 
-if [ x$1 = "xclean" ] ; then 
-    echo "cleaning `pwd`/$DEST"
-    rm -r $DEST
-    exit 0
+echo "Building software package ..."
+
+if [ x$1 = "xnocompress" ] ; then 
+    find $SRC/js -type f -name "*.js" | sort | xargs -l1 cat > docs/js/molpaint.js
+else
+    command -v terser >/dev/null 2>&1 || { echo >&2 "Standard installation requires 'terser'. Either install 'terser' or use option 'nocompress'. Aborting."; exit 1; }
+    find $SRC/js -type f -name "*.js" | sort | xargs -l1 cat | \
+      terser --compress -m -o docs/js/molpaint.js 
 fi
 
-echo "building software package ..."
-mkdir -p $DEST/js
-
-find $SRC/js -type f -name "*.js" | sort | xargs -l1 cat > $DEST/js/molpaint.js
-
-mkdir -p $DEST/img
-cp -r $SRC/img/*.png $DEST/img/
-
-mkdir -p $DEST/css
-cp $SRC/css/styles.css $DEST/css/styles.css
-
-mkdir -p $DEST/templates
-cp $SRC/templates/*.mol $DEST/templates/
-
-for i in index.html LICENSE NOTICE README.md ; do
-    cp $SRC/$i $DEST/$i 
+# synchronize LICENSE, NOTICE  and README.md
+for i in LICENSE NOTICE README.md ; do
+    cp $SRC/$i docs/$i 
 done
 
-tar -C $DEST -czf $DEST/molpaintjs.tar.gz templates/ css/ img/ js/ index.html LICENSE NOTICE README.md

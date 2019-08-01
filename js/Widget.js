@@ -511,8 +511,7 @@ function Widget(contextId, prop, mp) {
     this.renderRadicalMenu = function () {
         return "<tr><td>"
             + "<div class='rightDropdown'>"
-            + "  <a href='javascript:void(0);' class='dropbtn' "
-            + "onclick=\"Widget.prototype.setRadical('" + this.widgetId + "');\" >"
+            + "  <a href='javascript:void(0);' class='dropbtn' >"
             + this.item("radical", "radical", "Radicals menu", "inactiveTool")
             + "</a><div class='rightDropdown-content'>"
             + "<table><tr>"

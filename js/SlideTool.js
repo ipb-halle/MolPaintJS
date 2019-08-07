@@ -16,14 +16,13 @@
  *
  */
 
-function MoveTool(ctx) {
+/**
+ * The SlideTool does not provide history as it does not affect 
+ * the coordinates of the molecule. Only the View is manipulated.
+ */
+function SlideTool(ctx) {
 
-
-    /*
-     * ToDo:
-     * - History
-     */
-    this.id = "move";
+    this.id = "slide";
 
     this.context = ctx;
     this.origin = null;
@@ -38,16 +37,15 @@ function MoveTool(ctx) {
     }
 
     this.onMouseDown = function (x, y, evt) {
-        this.origin = this.context.view.getCoordReverse(x, y);
+        this.origin = { 'x' : x, 'y' : y };
     }
 
     this.onMouseMove = function (x, y, evt) {
         if (this.origin != null) {
-            var coord = this.context.view.getCoordReverse(x, y);
-            var dx = coord.x - this.origin.x;
-            var dy = coord.y - this.origin.y;
-            this.origin = coord;
-            this.context.molecule.transform([[1, 0, dx], [0, 1, dy]], 2)
+            var dx = x - this.origin.x;
+            var dy = y - this.origin.y;
+            this.origin = { 'x' : x, 'y' : y };
+            this.context.view.slide(dx, dy);
             this.context.draw();
         }
     }

@@ -38,6 +38,18 @@ function Widget(contextId, prop, mp) {
         ctx.setCurrentTool(ctx.tools.carbonAtomTool);
     }
 
+    this.actionCenter = function (evt) {
+        var ctx = contextRegistry[evt.target.id];
+
+    //
+    // do not affect (atomic) coordinates -> no need for history
+    //
+    //  ctx.molecule.center();
+
+        ctx.view.center();
+        ctx.draw();
+    }
+
     this.actionChain = function (evt) {
         var ctx = contextRegistry[evt.target.id];
         ctx.setCurrentTool(ctx.tools.chainTool);
@@ -139,11 +151,6 @@ function Widget(contextId, prop, mp) {
         ctx.setCurrentTool(tool);
     }
 
-    this.actionMove = function (evt) {
-        var ctx = contextRegistry[evt.target.id];
-        ctx.setCurrentTool(ctx.tools.moveTool);
-    }
-
     this.actionNitrogen = function (evt) {
         var ctx = contextRegistry[evt.target.id];
         ctx.currentElement = Elements.instance.getElement("N");
@@ -227,6 +234,12 @@ function Widget(contextId, prop, mp) {
         ctx.setCurrentTool(ctx.tools.singleBondTool);
     }
 
+
+    this.actionSlide = function (evt) {
+        var ctx = contextRegistry[evt.target.id];
+        ctx.setCurrentTool(ctx.tools.slideTool);
+    }
+
     this.actionSolidWedge = function (evt) {
         var ctx = contextRegistry[evt.target.id];
         ctx.setCurrentTool(ctx.tools.solidWedgeTool);
@@ -298,6 +311,7 @@ function Widget(contextId, prop, mp) {
      * Event initialization
      */
     this.initEvents = function (ctx) {
+        ctx.widget.registerEvent(ctx, "click", "_center", this.actionCenter);
         ctx.widget.registerEvent(ctx, "click", "_chain", this.actionChain);
         ctx.widget.registerEvent(ctx, "click", "_minus", this.actionChargeDec);
         ctx.widget.registerEvent(ctx, "click", "_plus", this.actionChargeInc);
@@ -310,7 +324,6 @@ function Widget(contextId, prop, mp) {
         ctx.widget.registerEvent(ctx, "click", "_isotope", this.actionIsotope);
         ctx.widget.registerEvent(ctx, "click", "_isotope_down", this.actionIsotope);
         ctx.widget.registerEvent(ctx, "click", "_isotope_up", this.actionIsotope);
-        ctx.widget.registerEvent(ctx, "click", "_move", this.actionMove);
         ctx.widget.registerEvent(ctx, "click", "_paste", this.actionPasteButton);
         ctx.widget.registerEvent(ctx, "click", "_pointer", this.actionPointer);
         ctx.widget.registerEvent(ctx, "click", "_redo", this.actionRedo);
@@ -320,6 +333,7 @@ function Widget(contextId, prop, mp) {
         ctx.widget.registerEvent(ctx, "click", "_singlet", this.actionRadical);
         ctx.widget.registerEvent(ctx, "click", "_triplet", this.actionRadical);
         ctx.widget.registerEvent(ctx, "click", "_single_bond", this.actionSingleBond);
+        ctx.widget.registerEvent(ctx, "click", "_slide", this.actionSlide);
         ctx.widget.registerEvent(ctx, "click", "_solid_wedge", this.actionSolidWedge);
         ctx.widget.registerEvent(ctx, "click", "_triple_bond", this.actionTripleBond);
         ctx.widget.registerEvent(ctx, "click", "_template", this.actionTemplate);
@@ -451,7 +465,7 @@ function Widget(contextId, prop, mp) {
     }
 
     this.renderLeftMenu = function () {
-        return this.vItem("pointer", "", "activeTool")
+        return this.vItem("pointer", "Select, Translate, Rotate", "activeTool")
             + this.vItem("eraser", "Eraser", "inactiveTool")
             + this.renderBondMenu()
             + this.vItem("chain", "Chain", "inactiveTool")
@@ -581,7 +595,8 @@ function Widget(contextId, prop, mp) {
         return this.hItem("clear", "Clear", "defaultTool")
             + this.hItem("undo", "Undo", "defaultTool")
             + this.hItem("redo", "Redo", "defaultTool")
-            + this.hItem("move", "Move", "inactiveTool")
+            + this.hItem("center", "Center", "inactiveTool")
+            + this.hItem("slide", "Slide", "inactiveTool")
             + this.hItem("copy", "Copy", "defaultTool")
             + this.hItem("paste", "Paste", "defaultTool")
             + this.hItem("zoom_in", "Zoom in", "defaultTool")

@@ -165,8 +165,8 @@ function Context(cid, prop, mp) {
         reader.read();
         this.molecule = reader.getMolecule();
 
-        var bbox = this.molecule.center();
-        this.view.computeCoord(bbox);
+        this.molecule.center();
+        this.view.center();
 
         this.initRaster();
         this.view.setMolScale(this.properties.molScaleDefault / this.medianBondLength);
@@ -179,8 +179,8 @@ function Context(cid, prop, mp) {
      */
     this.setupTools = function () {
         if(this.properties.viewer != "1") {
-            this.tools = { pointerTool: new PointerTool(this),
-              moveTool: new MoveTool(this),
+            this.tools = { pointerTool: new PointerTool(this, this.properties),
+              slideTool: new SlideTool(this),
               eraserTool: new EraserTool(this, this.properties),
               singleBondTool: new BondTool(this, this.properties, "1", "0", "single_bond"),
               doubleBondTool: new BondTool(this, this.properties, "2", "0", "double_bond"),

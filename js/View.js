@@ -33,10 +33,14 @@ function View(cid, prop) {
     this.context = null;
     this.element = null;
 
-    this.computeCoord = function (bbox) {
-        this.centerX = (this.sizeX / 2) + (bbox.centerX * this.molScale * this.displayScale);
-        this.centerY = (this.sizeY / 2) + (bbox.centerY * this.molScale * this.displayScale);
+    /**
+     * center the View. Changes centerX and centerY.
+     */
+    this.center = function () {
+        this.centerX = this.sizeX / 2;
+        this.centerY = this.sizeY / 2;
     }
+
 
     /**
      * forward transform coordinates (i.e. from atom 
@@ -178,6 +182,14 @@ function View(cid, prop) {
     this.setSubscript = function () {
         var fs = this.fontSize * this.subscriptFactor;
         this.context.font = fs + "px " + this.fontFamily;
+    }
+
+    /**
+     * slide the view (i.e. move the center)
+     */
+    this.slide = function (x, y) {
+        this.centerX += x;
+        this.centerY += y;
     }
 
 }

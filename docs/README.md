@@ -6,6 +6,8 @@ This software is far from feature complete, cultivates a free interpretation of 
 
 MolPaintJS was originally started within the [Leibniz Bioactives Cloud](https://www.leibniz-wirkstoffe.de/projects/lbac_project/) project.
 
+Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
+
 ## Installation / Use
 * Copy the content of the `docs/` directory to an empty directory (hereafter referenced as PLUGIN_DIR) on your web server
 * All pages using the plugin must include the following code snippet (preferably in the page header section): 
@@ -26,7 +28,7 @@ MolPaintJS was originally started within the [Leibniz Bioactives Cloud](https://
 -->
 <div id="mol"></div>
 <script type="text/javascript">
-  molpaintjs.newContext("mol", {iconSize: 32, ..., debugId: "molDebug"})
+  molpaintjs.newContext("mol", {installPath: "PLUGIN_DIR", ..., debugId: "molDebug"})
    .setMolecule(... MDL MOL v2000 string ...).init();
 </script>
 ```
@@ -50,11 +52,19 @@ To provide a different set of template molecules, you need to place the MOL file
   var molpaintjs = new MolPaintJS();
   molpaintjs.setTemplates({"glucose", "fructose", "galactose", "ribose"});
 ```
-### Options
-* **iconSize** the size of the icons
-* **sizeX** the width of the display area 
-* **sizeY** the height of the display area
+### Context Options
+* **bondLength** standard bond length (default 1.5)
+* **distMax** selection radius for atom or bond selection (default 0.1)
+* **debugId** id of a DOM element (preferably `<div>`) to receive debug messages
+* **fontFamily** font family for atom labels etc. (default "SansSerif")
+* **fontSize** font size (default 16)
+* **iconSize** the size of the icons (default 32)
+* **installPath** the absolute or relative path where the plugin resides (above referenced as PLUGIN_DIR, default "")
+* **molScaleDefault** scaling factor (default 33); unit is pixels per Angstrom
+* **sizeX** the width of the display area (default 400)
+* **sizeY** the height of the display area (default 400)
 * **viewer** just render a viewer without possibility to interact
+
 
 ## Licensing
     Copyright 2017-2019 Leibniz-Institut f. Pflanzenbiochemie 

@@ -37,21 +37,28 @@ function RadicalTool(ctx, prop) {
         var atomId = this.context.molecule.selectAtom(coord, this.distMax);
         if (atomId != null) {
 
+            var actionList = new ActionList();
+            var atom = this.context.molecule.getAtom(atomId);
+            var oldAtom = atom.copy();
+            var dir = (this.type == "isotope_up") ? 1 : -1;
+
             switch (this.type) {
                 case "singlet" :
-                    this.context.molecule.atoms[atomId].setRadical(1);
+                    atom.setRadical(1);
                     break;
                 case "doublet" :
-                    this.context.molecule.atoms[atomId].setRadical(2);
+                    atom.setRadical(2);
                     break;
                 case "triplet" :
-                    this.context.molecule.atoms[atomId].setRadical(3);
+                    atom.setRadical(3);
                     break;
                 case "no_radical" :
-                    this.context.molecule.atoms[atomId].setRadical(0);
+                    atom.setRadical(0);
                     break;
             }
-            // TODO: history
+            this.context.molecule.replaceAtom(atom);
+            actionList.addAction(new Action("UPD", "ATOM", atom, oldAtom));
+            this.context.history.appendAction(actionList);
 
         }
         this.context.draw();

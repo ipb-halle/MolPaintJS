@@ -32,11 +32,15 @@ function IsotopeTool(ctx, prop) {
         var coord = this.context.view.getCoordReverse(x, y);
         var atomId = this.context.molecule.selectAtom(coord, this.distMax);
         if (atomId != null) {
-
+            var actionList = new ActionList();
+            var atom = this.context.molecule.getAtom(atomId);
+            var oldAtom = atom.copy();
             var dir = (this.type == "isotope_up") ? 1 : -1;
-            this.context.molecule.atoms[atomId].changeIsotope(dir);
-            // TODO: history
 
+            atom.changeIsotope(dir);
+            this.context.molecule.replaceAtom(atom);
+            actionList.addAction(new Action("UPD", "ATOM", atom, oldAtom));
+            this.context.history.appendAction(actionList);
         }
         this.context.draw();
     }

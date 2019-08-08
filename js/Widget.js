@@ -137,8 +137,11 @@ function Widget(contextId, prop, mp) {
     }
 
     this.actionInfo = function (evt) {
-        alert("MolPaintJS\nCopyright 2017 - 2019 Leibniz Institute of Plant Biochemistry (IPB)\nhttps://www.ipb-halle.de\n\n\nsprintf function provided by\nCopyright (c) 2007-2016, Alexandru Marasteanu <hello [at) alexei (dot] ro>\n\n\nSee documentation for licensing details.");
-
+/* 
+        Alterinatively could also dynamically add iframe to DOM (see actionCopy method):
+        <iframe src="help/index.html" class="helpIframe">Iframe not supported</iframe>
+*/
+        window.open("help/index.html");
     }
 
     this.actionIsotope = function (evt) {
@@ -453,7 +456,7 @@ function Widget(contextId, prop, mp) {
         return "<tr><td>"
             + "<div class='rightDropdown'>"
             + "  <a href='javascript:void(0);' class='dropbtn'>"
-            + this.item("isotope", "isotope_up", "Heavier isotope", "inactiveTool")
+            + this.item("isotope", "isotope_up", "Isotope menu", "inactiveTool")
             + "</a><div class='rightDropdown-content'>"
             + "<table>"
             + this.vItem("isotope_up", "Heavier isotope", "inactiveTool")

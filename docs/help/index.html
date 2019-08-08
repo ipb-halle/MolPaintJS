@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+ MolPaintJS
+ Copyright 2017-2019 Leibniz-Institut f. Pflanzenbiochemie
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MolPaintJS Help</title>
+    <link type="text/css" rel="stylesheet" href="../css/styles.css"/>
+</head>
+<body>
+<h1>MolPaintJS</h1>
+<ol>
+<li><a href="#Help">Help</a></li>
+<li><a href="#Authors">Authors</a></li>
+<li><a href="#Licensing">Licensing</a></li>
+<li><a href="#GetMolPaintJS">Get MolPaintJS</a></li>
+</ol>
+<h2 id="Help">Help</h2>
+<h3><img src="../img/clear.png" height="32"/> Clear</h3>
+<p>The clear button completely wipes all atoms and bonds from the editor.</p>
+<h3><img src="../img/pointer.png" height="32"/> Pointer Tool</h3>
+<p>The pointer tool has three different modes of operation: <i>Select mode</i>, <i>Translate mode</i> (move) and <i>Rotate mode</i>:</p>
+<p>The pointer tool operates in <i>Select mode</i>, when no already selected atom is under the mouse cursor when pressing the left mouse button. Within <i>Select mode</i>, there are 3 different submodes depending on the state of the Shift and Ctrl keys. If neither Shift nor Ctrl are pressed, prior selections are cleared and the user can make a new rectangular selection by dragging the mouse. Atoms and bonds which will be selected will be marked by red color. Upon release of the mouse button the color of selected atoms changes to green. If the Shift key is pressed while the left mouse button is pressed, no selection will be cleared. By dragging the mouse while holding the button pressed, it is possible to add additional atoms and bonds to the selection. When using the Ctrl key instead of the Shift key, it's possible to remove atoms and bonds from the selection. </p>
+<p><i>Translate mode</i> will be entered when an already selected atom is clicked. All selected atoms can be dragged around as long as the mouse button is pressed.</p>
+<p><i>Rotate mode</i> is selected, when clicking on an already selected atom while the Shift key is pressed. All selected atoms will be rotated around the z-axis when the mouse is moved along the x-axis.</p>
+
+<h2 id="Authors">Authors</h2>
+MolPaintJS has been mainly written by Frank Broda (fbroda@ipb-halle.de) with valuable input from my colleagues.
+
+<h2 id="Licensing">Licensing</h2>
+Copyright (c) 2017 - 2019 <a href="https://www.ipb-halle.de">Leibniz Institute of Plant Biochemistry</a></br>
+<pre>
+MolPaintJS is licensed under the Apache License, Version 2.0 (the "License").
+You may obtain a copy of the License at
+
+     <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+</pre>
+
+<h3>sprintf License</h3>
+<pre>
+Copyright (c) 2007-2016, Alexandru Mărășteanu &lt;hello@alexei.ro&gt;
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+* Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
+* Neither the name of this software nor the names of its contributors may be
+  used to endorse or promote products derived from this software without
+  specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+<a href="https://github.com/alexei/sprintf.js/blob/master/src/sprintf.js">https://github.com/alexei/sprintf.js</a>
+</pre>
+
+<h2 id="GetMolPaintJS">Get MolPaintJS</h2>
+Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</a> to obtain your copy.</p>
+</body>
+</html>
+

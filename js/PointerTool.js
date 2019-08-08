@@ -20,11 +20,13 @@ function PointerTool(ctx, prop) {
 
     this.id = "pointer";
 
-    this.mode = 0;              // 0 = select, 1 = move / rotate
 
     this.context = ctx;
     this.distMax = prop.distMax;
     this.origin = null;
+
+    this.mode = 0;              // 0 = select, 1 = move / rotate
+    this.actionList = null;
 
     this.abort = function () {
         Tools.abort(this);
@@ -39,7 +41,13 @@ function PointerTool(ctx, prop) {
                 this.context.molecule.adjustSelection(1, 1, 2);
             }
         } else {
-            // TODO: save history
+            // save history
+            for (var action of this.actionList.getActions()) {
+                var atomId = action.oldObject.getId();
+                action.newObject = this.context.molecule.getAtom(atomId).copy();
+            }
+            this.context.history.appendAction(this.actionList);
+            this.actionList = null;
         }
         this.context.draw();
     }
@@ -50,7 +58,6 @@ function PointerTool(ctx, prop) {
 
         if ((atomId == null) ||
            ((this.context.molecule.getAtom(atomId).getSelected() & 2) == 0)) {
-            this.context.debug("SELECT " + atomId);
             // select mode
             this.mode = 0;
             if(evt.shiftKey || evt.ctrlKey) {
@@ -59,14 +66,19 @@ function PointerTool(ctx, prop) {
                 this.context.molecule.clearSelection(3);
             }
         } else {
-            // transform mode
+            // transform mode; prepare history
+            this.actionList = new ActionList();
+            var sel = this.context.molecule.getSelected(2); // return the selection
+            for (var a1 of sel.atoms) {
+                var atom = this.context.molecule.getAtom(a1);
+                this.actionList.addAction(new Action("UPD", "ATOM", null, atom.copy()));
+            }
+
             if (evt.shiftKey) {
                 // rotate
-                this.context.debug('ROTATE');
                 this.mode = 2;
             } else {
                 // translate
-                this.context.debug('TRANSLATE');
                 this.mode = 1;
             }
         }

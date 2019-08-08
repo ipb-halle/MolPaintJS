@@ -68,7 +68,7 @@ function BondTool(ctx, prop, bt, st, i) {
                     b.setStereo(this.stereoType);
                     changed = true;
                 } else {
-                    if (this.stereoType != 0) {
+                    if ((this.stereoType != "0") || (b.getType() == "2")) {
                         b.swap();
                         changed = true;
                     }

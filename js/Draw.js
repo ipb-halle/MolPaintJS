@@ -286,10 +286,6 @@ function Draw(v, mol) {
             case "1": // up - solid wedge
                 var coord3 = {x: (coord2.x - (dy / 12)), y: (coord2.y + (dx / 12))};
                 var coord4 = {x: (coord2.x + (dy / 12)), y: (coord2.y - (dx / 12))};
-                if (atomB.bbox != null) {
-                    coord3 = atomB.bbox.clip(coord3, -dx, -dy);
-                    coord4 = atomB.bbox.clip(coord4, -dx, -dy);
-                }
                 ctx.lineTo(coord3.x, coord3.y);
                 ctx.lineTo(coord4.x, coord4.y);
                 ctx.lineTo(coord1.x, coord1.y);

@@ -141,7 +141,8 @@ function Widget(contextId, prop, mp) {
         Alterinatively could also dynamically add iframe to DOM (see actionCopy method):
         <iframe src="help/index.html" class="helpIframe">Iframe not supported</iframe>
 */
-        window.open("help/index.html");
+        var ctx = contextRegistry[evt.target.id];
+        window.open(ctx.properties.installPath + "help/index.html");
     }
 
     this.actionIsotope = function (evt) {

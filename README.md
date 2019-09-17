@@ -52,14 +52,16 @@ To provide a different set of template molecules, you need to place the MOL file
   var molpaintjs = new MolPaintJS();
   molpaintjs.setTemplates({"glucose", "fructose", "galactose", "ribose"});
 ```
-### Context Options
+### Options
+All options can be specified either on the global level (`new MolPaintJS({...options...})`) or on the instance level (`newContext(...)`). Instance level options override global options. However, some options make little sense on the instance level (e.g. **installPath**).
+
 * **bondLength** standard bond length (default 1.5)
 * **distMax** selection radius for atom or bond selection (default 0.1)
 * **debugId** id of a DOM element (preferably `<div>`) to receive debug messages
 * **fontFamily** font family for atom labels etc. (default "SansSerif")
 * **fontSize** font size (default 16)
 * **iconSize** the size of the icons (default 32)
-* **installPath** the absolute or relative path where the plugin resides (above referenced as PLUGIN_DIR, default "")
+* **installPath** the absolute or relative path where the plugin resides (above referenced as PLUGIN_DIR, default "") *NOTE: if* **installPath** *is not empty, it must end with a slash '/'.*
 * **molScaleDefault** scaling factor (default 33); unit is pixels per Angstrom
 * **sizeX** the width of the display area (default 400)
 * **sizeY** the height of the display area (default 400)

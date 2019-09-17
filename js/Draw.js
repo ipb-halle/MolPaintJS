@@ -238,8 +238,10 @@ function Draw(v, mol) {
         var dx = coord1.x - coord2.x;
         var dy = coord1.y - coord2.y;
 
-        var coord3 = {x: (coord1.x - ((dy + dx) / 8)), y: (coord1.y + ((dx - dy) / 8))};
-        var coord4 = {x: (coord2.x - ((dy - dx) / 8)), y: (coord2.y + ((dx + dy) / 8))};
+        var scale = this.view.molScale / (8 * Math.sqrt(dx*dx + dy*dy));
+
+        var coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
+        var coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
 
         if (atomA.bbox != null) {
             coord1 = atomA.bbox.clip(coord1, dx, dy);
@@ -268,6 +270,8 @@ function Draw(v, mol) {
         var dx = coord1.x - coord2.x;
         var dy = coord1.y - coord2.y;
 
+        var  scale = this.view.molScale / (12 * Math.sqrt(dx*dx + dy*dy));
+
         if (atomA.bbox != null) {
             //atomA.bbox.draw(ctx);
             coord1 = atomA.bbox.clip(coord1, dx, dy);
@@ -284,8 +288,8 @@ function Draw(v, mol) {
                 ctx.stroke();
                 break;
             case "1": // up - solid wedge
-                var coord3 = {x: (coord2.x - (dy / 12)), y: (coord2.y + (dx / 12))};
-                var coord4 = {x: (coord2.x + (dy / 12)), y: (coord2.y - (dx / 12))};
+                var coord3 = {x: (coord2.x - (scale * dy)), y: (coord2.y + (scale * dx))};
+                var coord4 = {x: (coord2.x + (scale * dy)), y: (coord2.y - (scale * dx))};
                 ctx.lineTo(coord3.x, coord3.y);
                 ctx.lineTo(coord4.x, coord4.y);
                 ctx.lineTo(coord1.x, coord1.y);
@@ -318,10 +322,12 @@ function Draw(v, mol) {
         var dx = coord1.x - coord2.x;
         var dy = coord1.y - coord2.y;
 
-        var coord3 = {x: (coord1.x - ((dy + dx) / 8)), y: (coord1.y + ((dx - dy) / 8))};
-        var coord4 = {x: (coord2.x - ((dy - dx) / 8)), y: (coord2.y + ((dx + dy) / 8))};
-        var coord5 = {x: (coord1.x + ((dy - dx) / 8)), y: (coord1.y - ((dx + dy) / 8))};
-        var coord6 = {x: (coord2.x + ((dy + dx) / 8)), y: (coord2.y - ((dx - dy) / 8))};
+        var scale = this.view.molScale / (8 * Math.sqrt(dx*dx + dy*dy));
+
+        var coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
+        var coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
+        var coord5 = {x: (coord1.x + (scale * (dy - dx))), y: (coord1.y - (scale * (dx + dy)))};
+        var coord6 = {x: (coord2.x + (scale * (dy + dx))), y: (coord2.y - (scale * (dx - dy)))};
 
         if (atomA.bbox != null) {
             coord1 = atomA.bbox.clip(coord1, dx, dy);

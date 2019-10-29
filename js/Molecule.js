@@ -26,10 +26,13 @@ function Molecule() {
 
     this.atoms = {};
     this.bonds = {};
+    this.sgroups = {};
     this.atomCount = 0;
     this.bondCount = 0;
     this.atomObjCount = 0;	// unique counter for atoms
     this.bondObjCount = 0;	// unique counter for bonds
+    this.sgroupObjCount = 0;    // unique counter for sgroups
+
 
     this.addAtom = function (a, id) {
         this.atomObjCount++;
@@ -50,6 +53,16 @@ function Molecule() {
         this.bonds[id] = b;
         b.atomA.addBond(id);
         b.atomB.addBond(id);
+        return id;
+    }
+
+    this.addSGroup = function (sg, id) {
+        this.sgroupObjCount++;
+        if (id == null) {
+            id = "SGroup" + this.sgroupObjCount;
+            sg.setId(id);
+        }
+        this.sgroups[id] = sg;
         return id;
     }
 
@@ -223,6 +236,17 @@ function Molecule() {
         b.atomA.delBond(idx);
         b.atomB.delBond(idx);
         delete this.bonds[idx];
+    }
+
+    /**
+     * delete a SGroup
+     */
+    this.delSGroup = function (sg) {
+        var idx = sg.id;
+        /*
+         * ToDo: remove sgroup from atoms and bonds
+         */
+        delete this.sgroups[idx];
     }
 
     /**

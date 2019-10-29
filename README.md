@@ -1,3 +1,5 @@
+![Logo](docs/img/molpaintjs.png?raw=true)
+
 # MolPaintJS
 **Simple HTML5 molecule editor and viewer plugin**
 

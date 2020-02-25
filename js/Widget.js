@@ -482,7 +482,8 @@ function Widget(contextId, prop, mp) {
         var header = "<tr><td>"
             + "<div class='rightDropdown'>"
             + "<a href='javascript:void(0);' class='dropbtn'><img id='"
-            + this.widgetId + "_pse' src='img/pse.png' title='Periodic table' "
+            + this.widgetId + "_pse' src='"
+            + this.installPath + "img/pse.png' title='Periodic table' "
             + "width='" + this.iconSize + "' class='inactiveTool' /></a>"
             + "  <div class='rightDropdown-content'>"
             + "  <table class='elementTable'>";

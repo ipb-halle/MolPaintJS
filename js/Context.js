@@ -26,7 +26,7 @@ function Context(cid, prop, mp) {
     this.molpaint = mp;
     this.properties = new DefaultProperties(prop);
     this.currentElement = Elements.instance.getElement("C");
-    this.currentTemplate = "benzene"; 
+    this.currentTemplate = Object.keys(mp.getTemplates())[0]; 
 
     this.medianBondLength = 1.5;
     this.rasterX = [];
@@ -201,7 +201,9 @@ function Context(cid, prop, mp) {
 
             this.currentTool = this.tools.pointerTool;
             this.currentBondTool = this.tools.singleBondTool;
-            this.tools.templateTool.setTemplate("benzene", this.molpaint.getTemplate("benzene"));
+            this.tools.templateTool.setTemplate(
+                this.currentTemplate, 
+                this.molpaint.getTemplate(this.currentTemplate));
         } else {
             this.tools = { nullTool : new NullTool(this) };
             this.currentTool = this.tools.nullTool;

@@ -22,9 +22,9 @@
 #  * optionally compresses ('minifies') the output script (default)
 #  * copies documentation and licensing information etc.
 #
-
-SRC=`dirname $0`
-pushd $SRC
+p=`realpath $0`
+SRC=`dirname $p`
+pushd $SRC >/dev/null
 
 echo "Building software package ..."
 

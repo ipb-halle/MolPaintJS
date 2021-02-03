@@ -25,6 +25,7 @@ function Context(cid, prop, mp) {
     this.contextId = cid;
     this.molpaint = mp;
     this.properties = new DefaultProperties(prop);
+    this.changeListener = null;
     this.currentElement = Elements.instance.getElement("C");
     this.currentTemplate = Object.keys(mp.getTemplates())[0]; 
 
@@ -58,6 +59,9 @@ function Context(cid, prop, mp) {
     this.draw = function () {
         var d = new Draw(this.view, this.molecule);
         d.draw();
+        if (this.changeListener != null) {
+            changeListener();
+        }
     }
 
     this.getHistory = function () {
@@ -142,6 +146,16 @@ function Context(cid, prop, mp) {
         this.initRaster();
         this.draw();
         return actionList;
+    }
+
+    /**
+     * set a changeListener which is called each time 
+     * the molecule is changed
+     * @param listener the function to be executed on each change
+     */
+    this.setChangeListener = function (listener) {
+        this.changeListener = listener;
+        return this;
     }
 
     /**

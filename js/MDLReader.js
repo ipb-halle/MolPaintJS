@@ -16,8 +16,14 @@
  *
  */
 
-function MDLv2000Reader(st) {
+function MDLReader(st) {
 
+    /*
+     *
+     * This reader is currently limited to parse a subset of
+     * the MDL v2000 format!
+     *
+     */
     this.molString = st;
     this.currentIndex = 0;
     this.molecule = new Molecule();
@@ -210,11 +216,12 @@ function MDLv2000Reader(st) {
                 break;
             case "M  RAD" : this.parseRadical(st);
                 break;
+            case "M  V30" : this.parseV3000(st);
         }
     }
 
     /**
-     * parse a radical ("M RAD") line
+     * parse a radical ("M  RAD") line
      * @param st String containing radical data
      */
     this.parseRadical = function (st) {
@@ -230,6 +237,14 @@ function MDLv2000Reader(st) {
             i += 8;
             l--;
         }
+    }
+
+    /**
+     * parse a V3000 ("M  V30") line
+     * @param st String containing data
+     */
+    this.parseV3000 = function (st) {
+        alert("V3000 not supported yet");
     }
 
     /**
@@ -266,6 +281,7 @@ function MDLv2000Reader(st) {
                     phase++;
                     break;
                 case 4 :
+                    // v2000 atom block
                     if (cnt == atomcnt) {
                         cnt = 0;
                         phase++;
@@ -275,6 +291,7 @@ function MDLv2000Reader(st) {
                         break;
                     }
                 case 5 :
+                    // v2000 bond block
                     if (cnt == bondcnt) {
                         cnt = 0;
                         phase++;
@@ -284,6 +301,7 @@ function MDLv2000Reader(st) {
                         break;
                     }
                 case 6:
+                    // v2000 atom list block
                     if (atomlistcnt > 0) {
                         if (cnt == atomlistcnt) {
                             cnt = 0;
@@ -297,6 +315,7 @@ function MDLv2000Reader(st) {
                         phase++;
                     }
                 case 7:
+                    // v2000 stext block
                     if (stextcnt > 0) {
                         if (cnt == stextcnt) {
                             cnt = 0;
@@ -310,6 +329,7 @@ function MDLv2000Reader(st) {
                         phase++;
                     }
                 default :
+                    // v2000 properties _and_ any v3000 data
                     this.parseProperty(st);
                     cnt++;
             }

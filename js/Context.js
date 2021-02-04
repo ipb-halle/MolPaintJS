@@ -118,7 +118,7 @@ function Context(cid, prop, mp) {
      * @return the already appended (!) actionList 
      */
     this.pasteMolecule = function (st, sel) {
-        var reader = new MDLv2000Reader(st);
+        var reader = new MDLReader(st);
         reader.read();
 
         var mol = reader.getMolecule();
@@ -175,7 +175,7 @@ function Context(cid, prop, mp) {
      * @return this Context instance (useful for method chaining)
      */
     this.setMolecule = function (st) {
-        var reader = new MDLv2000Reader(st);
+        var reader = new MDLReader(st);
         reader.read();
         this.molecule = reader.getMolecule();
 

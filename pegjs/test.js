@@ -1,0 +1,25 @@
+
+
+var parser = require("./ctab");
+
+molecule = `
+M  V30 BEGIN ATOM
+M  V30 1 C -0.714471 -0.206250 0.000000 0-
+M  V30 CHG=1 RAD=2
+M  V30 2 C -1.428942 -0.618750 0.000000 0
+M  V30 3 O -0.714471 0.618750 0.000000 0-
+M  V30 RAD=0
+M  V30 4 O 0.000000 -0.618750 0.000000 0
+M  V30 5 C 0.714471 -0.206250 0.000000 0
+M  V30 6 C 1.428942 -0.618750 0.000000 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 2 1 3
+M  V30 3 1 1 4
+M  V30 4 1 5 6
+M  V30 5 1 4 5
+M  V30 END BOND`;
+
+// console.log(molecule);
+parser.parse(molecule);

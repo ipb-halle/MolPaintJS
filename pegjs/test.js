@@ -3,6 +3,11 @@
 var parser = require("./ctab");
 
 molecule = `
+  ChemDraw02032110452D
+
+  0  0  0     0  0              0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 6 5 0 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C -0.714471 -0.206250 0.000000 0-
 M  V30 CHG=1 RAD=2
@@ -19,7 +24,10 @@ M  V30 2 2 1 3
 M  V30 3 1 1 4
 M  V30 4 1 5 6
 M  V30 5 1 4 5
-M  V30 END BOND`;
+M  V30 END BOND
+M  V30 END CTAB
+M  END
+`;
 
-// console.log(molecule);
+//console.log(molecule);
 parser.parse(molecule);

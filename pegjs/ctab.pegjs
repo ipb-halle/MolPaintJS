@@ -24,7 +24,7 @@
     const util = require('util');
 
     function makeNumberString (sign, integral, fraction) {
-        var numberString = ((sign != null) ? sign : "");
+        var numberString = ((sign != null) ? sign : '');
         numberString += integral[0];
         if (integral[1] != null) {
             numberString += integral[1].join('');
@@ -47,8 +47,68 @@
     }
 }
 
-ctab
-    = atomBlock bondBlock { console.log('parsed CTAB'); }
+mdlFile
+    = header v2Counts endOfFile { console.log('parsed V2000 CTAB'); }
+    / header v3Counts v3ctab endOfFile { console.log('parsed V3000 CTAB'); }
+
+header
+    = header1 header2 header3 { console.log('parsed Header'); }
+
+endOfFile
+    = newline 'M  END' [ \n]*
+
+header1
+    = line:([^\n]*) { console.log('HEADER 1: '  + line); return line.join(''); }
+
+header2
+    = newline line:([^\n]*) { console.log('HEADER 2: ' + line); return line.join(''); }
+
+header3
+    = newline line:([^\n]*) { console.log('HEADER 3: ' + line); return line.join(''); }
+
+/*
+ * Global Counts Line
+ */
+v2Counts
+    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V2000' { 
+            console.log('matched v2Counts');  return {'nAtoms': 0, 'nBonds': 0};
+        }
+
+v3Counts
+    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' {
+            console.log('matched v3Counts'); return {'nAtoms': 0, 'nBonds': 0};
+        }
+
+/*
+ * V2000 ATOM BLOCK
+ * xxxxx.xxxxyyyyy.yyyyzzzzz.zzzzaaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
+ *
+ * V2000 BOND BLOCK
+ * 111222tttsssxxxrrrccc
+ *
+ * . . .
+ *
+ */
+
+
+/*
+ * V3000 Connection Table
+ */
+v3ctab
+    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock newline 'M  V30 END CTAB' { console.log('parsed CTAB'); }
+
+/*
+ *
+ * V3000 COUNTS LINE
+ *
+ *
+ * M  V30 COUNTS na nb nsg n3d chiral [REGNO=regno] 
+ */
+v3countsLine
+    = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? { return {'nAtoms':nAtoms, 'nBonds':nBonds}; }
+
+countRegNo
+    = ' '* 'REGNO=' regno:uint { }
 
 /*
  *
@@ -70,7 +130,7 @@ ctab
  *  M  V30 END ATOM
  */
 
-atomBlock
+v3atomBlock
     = newline 'M  V30 BEGIN ATOM' newline atomEntry* 'M  V30 END ATOM' { console.log('parsed ATOM BLOCK'); }
 
 atomEntry
@@ -119,7 +179,7 @@ atomTypeList
  * M  V30 END BOND
  */
 
-bondBlock
+v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bondEntry* 'M  V30 END BOND' { console.log('parsed BOND BLOCK'); }
 
 bondEntry
@@ -145,12 +205,18 @@ newline
 float
     = ' '* number:numberString { return parseFloat(number); }
 
+float10
+    = num:([ \-0-9][ 0-9][ 0-9][ 0-9][0-9]'.'[0-9][0-9][0-9][0-9]) { return parseFloat(num.join('')); }
+
 numberString
     = sign:'-'? integral:('0' / [1-9][0-9]*) fraction:('.' [0-9]+)? { return makeNumberString(sign, integral, fraction); }
 
 integer
     = ' '* sign:sign uint:uint { return sign*uint; }
     / uint 
+
+uint3
+    = digits:([ 0-9][ 0-9][ 0-9]) { return parseInt(digits.join(''), 10); }
 
 uint
     = ' '* uintString:uintString { return parseInt(uintString, 10); }
@@ -162,3 +228,5 @@ sign
     = '-' { return -1; }
     / '+' { return 1; }
 
+string3
+    = characters:([^\n][^\n][^\n]) { return characters.join(''); }

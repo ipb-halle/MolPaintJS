@@ -16,12 +16,14 @@
  *
  *============================================================================
  *
- * Parser Generator for MDL V3000 MOL Files
+ * Parser Generator for MDL MOL Files (V2000 / V3000)
  *  
  */
 
 {
     const util = require('util');
+
+    var mdlParserData = { 'atomCount':0, 'currentAtom':0, 'bondCount':0, 'currentBond':0 };
 
     function makeNumberString (sign, integral, fraction) {
         var numberString = ((sign != null) ? sign : '');
@@ -48,8 +50,8 @@
 }
 
 mdlFile
-    = header v2Counts endOfFile { console.log('parsed V2000 CTAB'); }
-    / header v3Counts v3ctab endOfFile { console.log('parsed V3000 CTAB'); }
+    = header v2Counts v2ctab endOfFile { console.log('parsed V2000 File'); }
+    / header v3Counts v3ctab endOfFile { console.log('parsed V3000 File'); }
 
 header
     = header1 header2 header3 { console.log('parsed Header'); }
@@ -58,44 +60,122 @@ endOfFile
     = newline 'M  END' [ \n]*
 
 header1
-    = line:([^\n]*) { console.log('HEADER 1: '  + line); return line.join(''); }
+    = line:([^\n]*) { mdlParserData.header1 = line.join(''); } 
 
 header2
-    = newline line:([^\n]*) { console.log('HEADER 2: ' + line); return line.join(''); }
+    = newline line:([^\n]*) { mdlParserData.header2 = line.join(''); }
 
 header3
-    = newline line:([^\n]*) { console.log('HEADER 3: ' + line); return line.join(''); }
+    = newline line:([^\n]*) { mdlParserData.header3 = line.join(''); }
 
 /*
  * Global Counts Line
  */
 v2Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V2000' { 
-            console.log('matched v2Counts');  return {'nAtoms': 0, 'nBonds': 0};
+            console.log('parsed v2Counts');  
+            mdlParserData.atomCount = nAtoms;
+            mdlParserData.bondCount = nBonds;
+        }
+    / newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 {
+            console.log('parsed v2Counts');  
+            mdlParserData.atomCount = nAtoms;
+            mdlParserData.bondCount = nBonds;
         }
 
 v3Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' {
-            console.log('matched v3Counts'); return {'nAtoms': 0, 'nBonds': 0};
+            console.log('parsed v3Counts'); 
+            // nAtoms & nBonds ignored
         }
 
 /*
+/*
+ *======================================================================
+ *
+ * V2000 Connection Table
+ *
+ *======================================================================
+ *
  * V2000 ATOM BLOCK
- * xxxxx.xxxxyyyyy.yyyyzzzzz.zzzzaaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
+ * xxxxx.xxxxyyyyy.yyyyzzzzz.zzzz aaaddcccssshhhbbbvvvHHHrrriiimmmnnneee
+ *    -0.4125   -0.6348    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
  *
- * V2000 BOND BLOCK
- * 111222tttsssxxxrrrccc
- *
- * . . .
- *
+ * x,y,z    coordinates
+ * aaa      atom type
+ * dd       mass difference (-3 - 4)
+ * ccc      charge (0 - 7)
+ * sss      atom stereo parity (0 - 3)
+ * hhh      hydrogen count + 1 (1 - 5)
+ * bbb      stereo care box (0,1)
+ * vvv      valence (0 - 14)
+ * HHH      H0 designator (0,1)
+ * rrr      unused
+ * iii      unused
+ * mmm      atom-atom mapping
+ * nnn      inversion / retention (0,1,2)
+ * eee      exact change flag (0,1)
  */
 
+v2ctab
+    = v2atom* v2bond* { console.log('parsed V2000 CTAB'); } 
+
+v2atom
+    = newline atom:v2atomLine { console.log('parsed v2Atom'); }
+
+v2atomLine
+    = atomX:float10 atomY:float10 atomZ:float10 ' ' atomType:string3 massDiff:int2
+        charge:uint3 sss:uint3 hhh:uint3 bbb:uint3 vvv:uint3 HHH:uint3 
+        rrr:string3 iii:string3 mmm:uint3 nnn:uint3 eee:uint3 &{
+            if (mdlParserData.atomCount > mdlParserData.currentAtom) {
+                mdlParserData.currentAtom++;
+                return true;
+            }
+            return false;
+        } {
+            console.log('ATOM: x=' + atomX + ', y=' + atomY + ', z=' + atomZ);
+            return 'atom';
+        }
 
 /*
+ * V2000 BOND BLOCK
+ * 111222tttsssxxxrrrccc
+ *   1  2  1  0
+ *
+ * 111  first atom
+ * 222  second atom
+ * ttt  bond type (1 - 8)
+ * sss  bond stereo (0 - 6)
+ * xxx  unused
+ * rrr  bond topology (0 - 2)
+ * ccc  reacting center status (-1 - 13?)
+ */
+
+v2bond
+    = newline bond:v2bondLine { console.log('parsed v2Bond'); }
+
+v2bondLine
+    = bond1:uint3 bond2:uint3 bondType:uint3 (sss:uint3 (xxx:string3 (rrr:uint3 (ccc:int3)?)?)?)? &{
+            if ((mdlParserData.atomCount == mdlParserData.currentAtom)
+              && (mdlParserData.bondCount > mdlParserData.currentBond)) {
+                mdlParserData.currentBond++;
+                return true;
+            }
+            return false;
+        } { 
+            console.log('BOND: a=' + bond1 + ', b=' + bond2);
+            return 'bond';
+        }
+
+/*
+ *======================================================================
+ *
  * V3000 Connection Table
+ *
+ *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock newline 'M  V30 END CTAB' { console.log('parsed CTAB'); }
+    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock newline 'M  V30 END CTAB' { console.log('parsed V3000 CTAB'); }
 
 /*
  *
@@ -195,9 +275,11 @@ bondContinuation
     / ' '* '\n' { }
 
 /*
+ *======================================================================
  *
- * Global rules
+ * Global Rules
  *
+ *======================================================================
  */
 newline
     = '\n'
@@ -206,7 +288,7 @@ float
     = ' '* number:numberString { return parseFloat(number); }
 
 float10
-    = num:([ \-0-9][ 0-9][ 0-9][ 0-9][0-9]'.'[0-9][0-9][0-9][0-9]) { return parseFloat(num.join('')); }
+    = num:([ \-0-9][ \-0-9][ \-0-9][ \-0-9][0-9]'.'[0-9][0-9][0-9][0-9]) { return parseFloat(num.join('')); }
 
 numberString
     = sign:'-'? integral:('0' / [1-9][0-9]*) fraction:('.' [0-9]+)? { return makeNumberString(sign, integral, fraction); }
@@ -214,6 +296,12 @@ numberString
 integer
     = ' '* sign:sign uint:uint { return sign*uint; }
     / uint 
+
+int2
+    = digits:([ \-0-9][ 0-9]) { return parseInt(digits.join(''), 10); }
+
+int3
+    = digits:([ \-0-9][ \-0-9][ 0-9]) { return parseInt(digits.join(''), 10); }
 
 uint3
     = digits:([ 0-9][ 0-9][ 0-9]) { return parseInt(digits.join(''), 10); }

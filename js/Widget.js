@@ -623,6 +623,8 @@ Widget.prototype.setElement = function (id, el) {
 
 Widget.prototype.setCurrentBond = function (id) {
     var ctx = contextRegistry[id];
-    ctx.setCurrentTool(ctx.currentBondTool);
+    if (ctx != undefined) {
+        ctx.setCurrentTool(ctx.currentBondTool);
+    }
 }
 

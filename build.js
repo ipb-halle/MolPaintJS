@@ -14,10 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *  
+ *
+ * This build script requires the following non-standard packages:
+ *  - yargs
+ *  - pegjs
+ *  - terser
  */
 
 "use strict"; 
 
+const yargs = require('yargs');
 var fs = require('fs');
 var pathInfo = require('path');
 var util = require('util');
@@ -43,6 +49,7 @@ function readCode(path) {
                 entryCode = fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
             } else {
                 if (dirent.name.match(/\.pegjs$/)) {
+                    code += ';\n';  // dirty fix for missing semicolon
                     code += peg.generate(
                         fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}), 
                         {'output':'source', 'format':'globals', 'exportVar':'MDLParser'});
@@ -73,7 +80,16 @@ async function build(src, dest, compress) {
     });
 }
 
+const argv = yargs
+    .option('nocompress', {
+        alias: 'n',
+        description: 'Do not minify / compress the output',
+        type: 'boolean', })
+    .help().alias('help', 'h')
+    .argv;
+
 build(pathInfo.join(__dirname , 'js'), 
         pathInfo.join(__dirname, 'docs', 'js', 'molpaint.js'),
-        true);
+        ! argv.nocompress);
+
 

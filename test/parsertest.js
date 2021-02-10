@@ -15,7 +15,10 @@
  * limitations under the License.
  *
  */
-var parser = require("./ctab");
+var molpaint = require('../docs/js/molpaint');
+var util = require('util');
+
+//console.log(util.inspect(parser, {showHidden: false, depth: null}));
 
 v2molecule = `Cyclopentane
 
@@ -62,5 +65,5 @@ M  END
 `;
 
 //console.log(molecule);
-parser.parse(v2molecule);
-parser.parse(v3molecule);
+molpaint.MDLParser.parse(v2molecule);
+molpaint.MDLParser.parse(v3molecule);

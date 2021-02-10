@@ -30,6 +30,7 @@ var util = require('util');
 var peg = require("pegjs");
 var { minify } = require("terser");
 
+const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/repository/releases/latest/download';
 var entryPoint = "zMolPaintJS.js";
 
 /*
@@ -68,8 +69,7 @@ async function minifyCode(code) {
     return code;
 }
 
-
-async function build(src, dest, compress) {
+async function compile(src, dest, compress) {
     var code = readCode(src);
     if (compress == true) {
         code = (await minifyCode(code)).code;
@@ -80,16 +80,78 @@ async function build(src, dest, compress) {
     });
 }
 
+function copyTemplate(src, dest, replacements) {
+    fs.mkdirSync(dest, {'recursive':true, });
+    fs.readdirSync(src, {'withFileTypes': true})
+            .forEach(dirent => {
+        if (dirent.isDirectory()) {
+            var newDest = pathInfo.join(dest, dirent.name);
+            fs.mkdirSync(newDest, {'recursive':true, });
+            copyTemplate(pathInfo.join(src, dirent.name), newDest, replacements);
+        } else {
+            if (replacements[dirent.name] != null) {
+                var content = fs.readFileSync(pathInfo.join(src, dirent.name), {'encoding':'UTF-8'});
+                replacements[dirent.name].forEach(entry => {
+                    content = content.replace(entry.key, entry.replacement);
+                });
+                fs.writeFileSync(pathInfo.join(dest, dirent.name), content, err => {
+                    if (err) throw err;
+                });
+            } else {
+                fs.copyFileSync(pathInfo.join(src, dirent.name),
+                    pathInfo.join(dest, dirent.name));
+            }
+        }
+    });
+}
+
+function copyToplevelFiles(dest) {
+    for(var name of ['NOTICE', 'LICENSE', 'README.md']) {
+        fs.copyFileSync(
+                pathInfo.join(__dirname, name),
+                pathInfo.join(dest, name));
+    }
+}
+
+function build(release, compress) {
+
+    var replacements = { 'index.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ], };
+
+    copyTemplate(pathInfo.join(__dirname , 'template'),
+        pathInfo.join(__dirname, 'dist'),
+        replacements);
+
+    copyToplevelFiles(pathInfo.join(__dirname , 'template'));
+
+    if (release) {
+        replacements['index.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];
+        copyTemplate(pathInfo.join(__dirname , 'template'),
+            pathInfo.join(__dirname, 'docs'),
+            replacements);
+
+        copyToplevelFiles(pathInfo.join(__dirname , 'docs'));
+    }
+        
+    fs.mkdirSync(pathInfo.join(__dirname, 'dist', 'js'), {'recursive':true, });
+    // always compress on release
+    compile(pathInfo.join(__dirname , 'src'),
+        pathInfo.join(__dirname, 'dist', 'js', 'molpaint.js'),
+        release | compress);
+}
+
 const argv = yargs
     .option('nocompress', {
         alias: 'n',
         description: 'Do not minify / compress the output',
         type: 'boolean', })
+    .option('release', {
+        alias: 'r',
+        description: 'Build for release on GitHub / GitHub Pages',
+        type: 'boolean', })
     .help().alias('help', 'h')
     .argv;
 
-build(pathInfo.join(__dirname , 'js'), 
-        pathInfo.join(__dirname, 'docs', 'js', 'molpaint.js'),
-        ! argv.nocompress);
+
+build(argv.release, ! argv.nocompress);
 
 

@@ -118,10 +118,7 @@ function Context(cid, prop, mp) {
      * @return the already appended (!) actionList 
      */
     this.pasteMolecule = function (st, sel) {
-        var reader = new MDLReader(st);
-        reader.read();
-
-        var mol = reader.getMolecule();
+        var mol = MDLParser.parse(st);
         var actionList = new ActionList();
 
         // add atoms
@@ -175,9 +172,7 @@ function Context(cid, prop, mp) {
      * @return this Context instance (useful for method chaining)
      */
     this.setMolecule = function (st) {
-        var reader = new MDLReader(st);
-        reader.read();
-        this.molecule = reader.getMolecule();
+        this.molecule = MDLParser.parse(st);
 
         this.molecule.center();
         this.view.center();
@@ -196,11 +191,11 @@ function Context(cid, prop, mp) {
             this.tools = { pointerTool: new PointerTool(this, this.properties),
               slideTool: new SlideTool(this),
               eraserTool: new EraserTool(this, this.properties),
-              singleBondTool: new BondTool(this, this.properties, "1", "0", "single_bond"),
-              doubleBondTool: new BondTool(this, this.properties, "2", "0", "double_bond"),
-              tripleBondTool: new BondTool(this, this.properties, "3", "0", "triple_bond"),
-              solidWedgeTool: new BondTool(this, this.properties, "1", "1", "solid_wedge"),
-              hashedWedgeTool: new BondTool(this, this.properties, "1", "6", "hashed_wedge"),
+              singleBondTool: new BondTool(this, this.properties, 1, "0", "single_bond"),
+              doubleBondTool: new BondTool(this, this.properties, 2, "0", "double_bond"),
+              tripleBondTool: new BondTool(this, this.properties, 3, "0", "triple_bond"),
+              solidWedgeTool: new BondTool(this, this.properties, 1, "1", "solid_wedge"),
+              hashedWedgeTool: new BondTool(this, this.properties, 1, "6", "hashed_wedge"),
               isotopeTool: new IsotopeTool(this, this.properties),
               radicalTool: new RadicalTool(this, this.properties), 
               chainTool: new ChainTool(this, this.properties),

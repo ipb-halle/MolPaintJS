@@ -129,11 +129,11 @@ function Atom() {
         // evaluate bond order
         for(var id in this.bonds) {
             switch(molecule.getBond(id).getType()) {
-                case "1" : cnt -= 1;
+                case 1 : cnt -= 1;
                         break;
-                case "2" : cnt -= 2; 
+                case 2 : cnt -= 2; 
                         break;
-                case "3" : cnt -= 3;
+                case 3 : cnt -= 3;
             }
         }
         switch(this.type.isotope.symbol) {

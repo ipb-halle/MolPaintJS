@@ -130,7 +130,7 @@ function ChainTool(ctx, prop) {
             var bond = new Bond();
             bond.setAtomA(atomB);
             bond.setAtomB(atom);
-            bond.setType("1");
+            bond.setType(1);
             bond.setTemp(1);
             this.context.molecule.addBond(bond, null);
             atomB = atom;

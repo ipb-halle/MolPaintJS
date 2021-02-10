@@ -92,13 +92,13 @@ function Draw(v, mol) {
                 this.drawBondSelection(b);
             }
             switch (b.getType()) {
-                case "1" :
+                case 1 :
                     this.drawSingleBond(b);
                     break;
-                case "2" :
+                case 2 :
                     this.drawDoubleBond(b);
                     break;
-                case "3" :
+                case 3 :
                     this.drawTripleBond(b);
                     break;
                 default :

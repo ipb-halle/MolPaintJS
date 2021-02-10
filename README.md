@@ -12,7 +12,8 @@ MolPaintJS was originally started within the [Leibniz Bioactives Cloud](https://
 Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 
 ## Installation / Use
-* Copy the content of the `docs/` directory to an empty directory (hereafter referenced as PLUGIN_DIR) on your web server
+* Build the code using `node build.js`
+* Copy the content of the `dist/` directory to an empty directory (hereafter referenced as PLUGIN_DIR) on your web server
 * All pages using the plugin must include the following code snippet (preferably in the page header section): 
 
 ```html
@@ -36,17 +37,16 @@ Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 </script>
 ```
  
-* Please see `docs/index.html` for a complete example
-* For development, check out the sources, make your modifications and call the `install.sh` script to rebuild the `docs` directory
+To build your own copy, check out the sources, and call the build script (`node build.js`) to get an executable copy in the `dist` directory. Please also see the `docs` directory, which contains the static content for the MolPaintJS Playground on Github Pages.
 
 
 ## Features
 * Pure HTML5 / JavaScript
-* Import and export of chemical structures in MDL MOL v2000 format, either via JavaScript method calls or copy / paste. The copy / paste feature is especially useful in conjunction with newer releases of ChemDraw.
+* Import and export of chemical structures in MDL MOL format (V2000 and V3000), either via JavaScript method calls or copy / paste. The copy / paste feature is especially useful in conjunction with newer releases of ChemDraw.
 * Configurable set of template molecules
 * Possibility to define electronic state (singlet, doublet, triplet) and the isotopic composition of a compound
 
-Currently the software concentrates on small molecules. Many other features (e.g. Query flags, Rgroup, Sgroup, polymers, reactions, etc. pp.) are missing. Some convenience features and usability improvements (e.g. rotation of molecules) are planned.
+Currently the software concentrates on small molecules. Many other features (e.g. Query flags, Rgroup, Sgroup, polymers, reactions, etc. pp.) are missing. Some convenience features and usability improvements are planned.
 
 ## Configuration
 ### Changing the set of templates
@@ -72,7 +72,7 @@ All options can be specified either on the global level (`new MolPaintJS({...opt
 
 
 ## Licensing
-    Copyright 2017-2019 Leibniz-Institut f. Pflanzenbiochemie 
+    Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie 
      
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

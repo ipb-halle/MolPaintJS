@@ -18,7 +18,7 @@
 var molpaint = require('../docs/js/molpaint');
 var util = require('util');
 
-//console.log(util.inspect(parser, {showHidden: false, depth: null}));
+//console.log(util.inspect(molpaint, {showHidden: false, depth: null}));
 
 v2molecule = `Cyclopentane
 
@@ -29,11 +29,13 @@ MolPaintJS Template
     0.6674    0.1498    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    0.6348    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
    -0.6674    0.1498    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  2  3  1  0
-  3  4  1  0
+  1  2  1  0  9
+  2  3  1  0  8  9
+  3  4  1  0  7  8  9
   4  5  1  0
   5  1  1  0
+M  CHG  2   1   1   4   3
+M  ISO  1   2  14
 M  END
 `;
 
@@ -45,10 +47,10 @@ M  V30 BEGIN CTAB
 M  V30 COUNTS 6 5 0 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C -0.714471 -0.206250 0.000000 0-
-M  V30 CHG=1 RAD=2
+M  V30 CHG=1 RAD=1
 M  V30 2 C -1.428942 -0.618750 0.000000 0
 M  V30 3 O -0.714471 0.618750 0.000000 0-
-M  V30 RAD=0
+M  V30 RAD=1
 M  V30 4 O 0.000000 -0.618750 0.000000 0
 M  V30 5 C 0.714471 -0.206250 0.000000 0
 M  V30 6 C 1.428942 -0.618750 0.000000 0

@@ -37,17 +37,17 @@ function readCode(path) {
     fs.readdirSync(path, {'withFileTypes': true})
             .forEach(dirent => {
         if (dirent.isDirectory()) {
-            code += readCode(path + pathInfo.sep + dirent.name);
+            code += readCode(pathInfo.join(path, dirent.name));
         } else {
             if (dirent.name == entryPoint) {
-                entryCode = fs.readFileSync(path + pathInfo.sep + dirent.name, {'encoding':'UTF-8'});
+                entryCode = fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
             } else {
                 if (dirent.name.match(/\.pegjs$/)) {
                     code += peg.generate(
-                        fs.readFileSync(path + pathInfo.sep + dirent.name, {'encoding':'UTF-8'}), 
+                        fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}), 
                         {'output':'source', 'format':'globals', 'exportVar':'MDLParser'});
                 } else if (dirent.name.match(/\.js$/)) {
-                    code += fs.readFileSync(path + pathInfo.sep + dirent.name, {'encoding':'UTF-8'});
+                    code += fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
                 }
             }
         }
@@ -73,5 +73,7 @@ async function build(src, dest, compress) {
     });
 }
 
-build('./js', 'docs/js/molpaint.js', true);
+build(pathInfo.join(__dirname , 'js'), 
+        pathInfo.join(__dirname, 'docs', 'js', 'molpaint.js'),
+        true);
 

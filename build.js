@@ -121,7 +121,7 @@ function build(release, compress) {
         pathInfo.join(__dirname, 'dist'),
         replacements);
 
-    copyToplevelFiles(pathInfo.join(__dirname , 'template'));
+    copyToplevelFiles(pathInfo.join(__dirname , 'dist'));
 
     if (release) {
         replacements['index.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];

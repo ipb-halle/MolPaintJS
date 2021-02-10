@@ -30,7 +30,7 @@ var util = require('util');
 var peg = require("pegjs");
 var { minify } = require("terser");
 
-const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/repository/releases/latest/download';
+const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/releases/latest/download';
 var entryPoint = "zMolPaintJS.js";
 
 /*

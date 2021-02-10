@@ -72,7 +72,7 @@ All options can be specified either on the global level (`new MolPaintJS({...opt
 
 
 ## Licensing
-    Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie 
+    Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
      
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

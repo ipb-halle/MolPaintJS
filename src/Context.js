@@ -60,7 +60,7 @@ function Context(cid, prop, mp) {
         var d = new Draw(this.view, this.molecule);
         d.draw();
         if (this.changeListener != null) {
-            changeListener();
+            this.changeListener.call(this);
         }
     }
 

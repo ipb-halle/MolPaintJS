@@ -1,0 +1,23 @@
+{
+  "name": "molpaintjs",
+  "version": "v0.1.1-alpha",
+  "description": "Toolkit for drawing chemical structures",
+  "browser": "dist/js/molpaint.js",
+  "scripts": {
+    "postinstall": "node build.js",
+    "test": "npx mocha"
+  },
+  "keywords": [
+    "MolPaintJS"
+  ],
+  "author": "Frank Broda (IPB Halle)",
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^8.2.1",
+    "pegjs": "^0.10.0",
+    "should": "^13.2.3",
+    "terser": "^5.6.0-beta",
+    "yargs": "^13.3.2"
+  }
+}

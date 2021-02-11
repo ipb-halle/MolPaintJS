@@ -38,6 +38,12 @@
         'stextCount':0,
     };
 
+    function logMessage(level, message) {
+        if ((options.logLevel != null) && (options.logLevel > level)) {
+            console.log(message);
+        }
+    }
+
     /**
      * obtain an atomType from a given elemental symbol and optionally
      * a mass difference (V2000) or an absolute mass (V2000 'M  ISO' or V3000)
@@ -64,7 +70,7 @@
             }
         }
 
-        console.log("Isotope not found: " + targetMass + sym);
+        logMessage(1, "Isotope not found: " + targetMass + sym);
         return getAtomTypeFromIsotope(stdIsotope);
     }
 
@@ -169,37 +175,37 @@
                 atom.setCharge(-3);
                 break;
             default :
-                console.log('Invalid charge value: ' + charge);
+                logMessage(1, 'Invalid charge value: ' + charge);
         }
     }
 
 }
 
 mdlFile
-    = header v2Counts v2ctab endOfFile { console.log('parsed V2000 File'); return mdlParserData.molecule; }
-    / header v3Counts v3ctab endOfFile { console.log('parsed V3000 File'); return mdlParserData.molecule; }
+    = header v2Counts v2ctab endOfFile { logMessage(1, 'parsed V2000 File'); return mdlParserData.molecule; }
+    / header v3Counts v3ctab endOfFile { logMessage(1, 'parsed V3000 File'); return mdlParserData.molecule; }
 
 header
-    = header1 header2 header3 { console.log('parsed Header'); }
+    = header1 header2 header3 { logMessage(1, 'parsed Header'); }
 
 endOfFile
-    = newline 'M  END' [ \n]*
+    = newline 'M  END' whitespaceNL*
 
 header1
-    = line:([^\n]*) { mdlParserData.header1 = line.join(''); }
+    = line:(noNL*) { mdlParserData.header1 = line.join(''); }
 
 header2
-    = newline line:([^\n]*) { mdlParserData.header2 = line.join(''); }
+    = newline line:(noNL*) { mdlParserData.header2 = line.join(''); }
 
 header3
-    = newline line:([^\n]*) { mdlParserData.header3 = line.join(''); }
+    = newline line:(noNL*) { mdlParserData.header3 = line.join(''); }
 
 /*
  * Global Counts Line
  */
 v2Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V2000'? {
-            console.log('parsed v2Counts');
+            logMessage(1, 'parsed v2Counts');
             mdlParserData.atomCount = nAtoms;
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
@@ -212,7 +218,7 @@ v2Counts
 
 v3Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' {
-            console.log('parsed v3Counts');
+            logMessage(1, 'parsed v3Counts');
             // nAtoms & nBonds ignored
         }
 
@@ -245,7 +251,7 @@ v3Counts
  */
 
 v2ctab
-    = v2atom* v2bond* v2atomlist* v2stext* v2props* { console.log('parsed V2000 CTAB'); }
+    = v2atom* v2bond* v2atomlist* v2stext* v2props* { logMessage(1, 'parsed V2000 CTAB'); }
 
 v2atom
     = newline atom:v2atomLine {
@@ -335,7 +341,7 @@ v2atomlist
  * TTTT...
  */
 v2stext
-    = newline float10 float10 newline [^\n]* &{
+    = newline float10 float10 newline noNL* &{
             if (mdlParserData.stextCount > mdlParserData.currentStext) {
                 mdlParserData.currentStext++;
                 return true;
@@ -356,9 +362,9 @@ v2props
     / v2propOTHER
 
 v2propIsis
-    = newline 'A  ' uint3 newline [^\n]*
-    / newline 'V  ' uint3 ' ' [^\n]*
-    / newline 'G  ' uint3 uint3 newline [^\n]*
+    = newline 'A  ' uint3 newline noNL*
+    / newline 'V  ' uint3 ' ' noNL*
+    / newline 'G  ' uint3 uint3 newline noNL*
 
 /*
  * properties: atom number value pairs
@@ -378,10 +384,10 @@ v2propAtomValuePairs
                     case 'RAD' :
                         atom.setRadical(prop.value);
                     default :
-                        console.log('Ignoring property ' + propType);
+                        logMessage(1, 'Ignoring property ' + propType);
                 }
             }
-//          console.log(util.inspect(props, {showHidden: false, depth: null}));
+//          logMessage(1, util.inspect(props, {showHidden: false, depth: null}));
         }
 
 v2propAtomValuePairsHeader
@@ -473,38 +479,38 @@ v2propAtomListEntry
         }
 
 v2propRGROUP
-    = newline 'M  AAL ' [^\n]*
-    / newline 'M  LOG ' [^\n]*
+    = newline 'M  AAL ' noNL*
+    / newline 'M  LOG ' noNL*
 
 v2propSGROUP
-    = newline 'M  STY ' [^\n]*
-    / newline 'M  SST ' [^\n]*
-    / newline 'M  SLB' [^\n]*
-    / newline 'M  SCN' [^\n]*
-    / newline 'M  SDS' [^\n]*
-    / newline 'M  SAL' [^\n]*
-    / newline 'M  SBL' [^\n]*
-    / newline 'M  SPA ' [^\n]*
-    / newline 'M  SMT ' [^\n]*
-    / newline 'M  CRS '[^\n]*
-    / newline 'M  SDI ' [^\n]*
-    / newline 'M  SBV ' [^\n]*
-    / newline 'M  SDT ' [^\n]*
-    / newline 'M  SDD ' [^\n]*
-    / newline 'M  SCD ' [^\n]*
-    / newline 'M  SED ' [^\n]*
-    / newline 'M  SPL' [^\n]*
-    / newline 'M  SNC' [^\n]*
-    / newline 'M  SAP ' [^\n]*
-    / newline 'M  SCL ' [^\n]*
-    / newline 'M  SBT' [^\n]*
+    = newline 'M  STY ' noNL*
+    / newline 'M  SST ' noNL*
+    / newline 'M  SLB' noNL*
+    / newline 'M  SCN' noNL*
+    / newline 'M  SDS' noNL*
+    / newline 'M  SAL' noNL*
+    / newline 'M  SBL' noNL*
+    / newline 'M  SPA ' noNL*
+    / newline 'M  SMT ' noNL*
+    / newline 'M  CRS ' noNL*
+    / newline 'M  SDI ' noNL*
+    / newline 'M  SBV ' noNL*
+    / newline 'M  SDT ' noNL*
+    / newline 'M  SDD ' noNL*
+    / newline 'M  SCD ' noNL*
+    / newline 'M  SED ' noNL*
+    / newline 'M  SPL' noNL*
+    / newline 'M  SNC' noNL*
+    / newline 'M  SAP ' noNL*
+    / newline 'M  SCL ' noNL*
+    / newline 'M  SBT' noNL*
 
 
 
 v2propOTHER
-    = newline 'M  PXA ' [^\n]*
-    / newline 'M  REG ' [^\n]*
-    / newline 'M  $3D' [^\n]*
+    = newline 'M  PXA ' noNL*
+    / newline 'M  REG ' noNL*
+    / newline 'M  $3D' noNL*
 
 
 
@@ -517,7 +523,7 @@ v2propOTHER
  *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+  { console.log('parsed V3000 CTAB'); }
+    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+  { logMessage(1, 'parsed V3000 CTAB'); }
 
 /*
  *
@@ -560,7 +566,7 @@ countRegNo
 v3atomBlock
     = newline 'M  V30 BEGIN ATOM' newline atoms:atomEntry* 'M  V30 END ATOM' {
             atoms.forEach(atom => { mdlParserData.molecule.addAtom(atom, null); });
-            console.log('parsed ATOM BLOCK');
+            logMessage(1, 'parsed ATOM BLOCK');
         }
 
 atomEntry
@@ -590,8 +596,8 @@ atomEntry
         }
 
 atomContinuation
-    = ' '* '-\nM  V30' cont:atomContinuation { return cont; }
-    / ' '* charge:atomCharge cont:atomContinuation* { return flatten(cont, charge); }
+    = v3LineContinuation cont:atomContinuation { return cont; }
+    / whitespace* charge:atomCharge cont:atomContinuation* { return flatten(cont, charge); }
     / ' '* radical:atomRadical cont:atomContinuation* { return flatten(cont, radical); }
     / ' '* cfg:atomConfiguration cont:atomContinuation* { return flatten(cont, cfg); }
     / ' '* mass:atomMass cont:atomContinuation* { return flatten(cont, mass); }
@@ -607,7 +613,7 @@ atomContinuation
     / ' '* attchord:atomAttachmentOrder cont:atomContinuation* { return flatten(cont, attchord); }
     / ' '* tplclass:atomTemplateClass cont:atomContinuation* { return flatten(cont, tplclass); }
     / ' '* seqid:atomSequenceId cont:atomContinuation* { return flatten(cont, seqid); }
-    / ' '* '\n' { }
+    / ' '* newline { }
 
 atomCharge
     = 'CHG=' chg:integer { return {'charge': chg, }; }
@@ -650,7 +656,7 @@ atomAttachPoints
 
 atomAttachmentOrder
     = 'ATTCHORD=(' [^)]* ')' { 
-            console.log('ATTCHORD currently not supported');
+            logMessage(1, 'ATTCHORD currently not supported');
             return { 'attchord':'present', }; 
         }
 
@@ -685,7 +691,7 @@ atomTypeList
 v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bonds:bondEntry* 'M  V30 END BOND' {
             bonds.forEach(bond => { mdlParserData.molecule.addBond(bond, null); });
-            console.log('parsed BOND BLOCK');
+            logMessage(1, 'parsed BOND BLOCK');
         }
 
 bondEntry
@@ -707,13 +713,13 @@ bondEntry
         }
 
 bondContinuation
-    = ' '* '-\nM  V30' cont:bondContinuation { return cont; }
+    = v3LineContinuation cont:bondContinuation { return cont; }
     / ' '* cfg:bondConfiguration cont:bondContinuation { return flatten(cont, cfg); }
     / ' '* topo:bondTopology cont:bondContinuation { return flatten(cont, topo); }
     / ' '* rxctr:bondRxCenter cont:bondContinuation { return flatten(cont, rxctr); }
     / ' '* stbox:bondStereoBox cont:bondContinuation { return flatten(cont, stbox); }
     / ' '* endpts:bondEndPoints cont:bondContinuation { return flatten(cont, endpts); }
-    / ' '* '\n' { }
+    / ' '* newline { }
 
 bondConfiguration
     = 'CFG=' cfg:[0-3] { return {'configuration':cfg, }; }
@@ -743,13 +749,13 @@ v3propertyBlocks
     / newline 'M  V30 END CTAB' 
 
 v3SGROUP
-    = newline 'M  V30 BEGIN SGROUP' (newline !'M  V30 END SGROUP' [^\n]+)+ newline 'M  V30 END SGROUP'
+    = newline 'M  V30 BEGIN SGROUP' (newline !'M  V30 END SGROUP' noNL+)+ newline 'M  V30 END SGROUP'
 
 v3obj3dBlock
-    = newline 'M  V30 BEGIN OBJ3D' (newline !'M  V30 END OBJ3D'[^\n]+)+ newline 'M V30 END OBJ3D'
+    = newline 'M  V30 BEGIN OBJ3D' (newline !'M  V30 END OBJ3D' noNL+)+ newline 'M V30 END OBJ3D'
 
 v3LinkAtomLine
-    = newline 'M  V30 LINKNODE ' [^\n]*
+    = newline 'M  V30 LINKNODE ' noNL*
 
 /*
  * V3000 Collection Block
@@ -768,14 +774,14 @@ v3LinkAtomLine
 
 /* ToDo collection block parsing */
 v3collectionBlock
-    = newline 'M  V30 BEGIN COLLECTION' collectionEntry* 'M  V30 END COLLECTION' { console.log('ignoring collection block'); }
+    = newline 'M  V30 BEGIN COLLECTION' collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); }
 
 collectionEntry
     = newline 'M  V30 DEFAULT' collectionContinuation* 
     / newline 'M  V30 ' string collectionContinuation*
 
 collectionContinuation
-    = ' '* '-\nM  V30' cont:collectionContinuation
+    = v3LineContinuation cont:collectionContinuation
     / ' '* 'ATOMS=(' [^)]* ')' collectionContinuation
     / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
     / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
@@ -791,8 +797,8 @@ collectionContinuation
  *
  *======================================================================
  */
-newline
-    = '\n'
+v3LineContinuation
+    = whitespace* '-' newline 'M  V30'
 
 float
     = ' '* number:numberString { return parseFloat(number); }
@@ -828,10 +834,26 @@ sign
 
 /* ToDo: quoted strings */
 string
-    = characters:[^ "'\n]+ { return characters.join(''); }
+    = characters:[^ "'\t\n\r]+ { return characters.join(''); }
 
 string4
-    = characters:([^\n][^\n][^\n][^\n]) { return characters.join(''); }
+    = characters:([^\n\r][^\n\r][^\n\r][^\n\r]) { return characters.join(''); }
 
 string3
-    = characters:([^\n][^\n][^\n]) { return characters.join(''); }
+    = characters:([^\n\r][^\n\r][^\n\r]) { return characters.join(''); }
+
+whitespaceNL
+    = whitespace
+    / newline 
+
+whitespace
+    = [ \t] 
+
+newline
+    = '\n'
+    / '\r\n'
+    / '\r'
+
+noNL
+    = [^\n\r]
+

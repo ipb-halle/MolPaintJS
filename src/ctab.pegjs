@@ -366,7 +366,7 @@ v2atomprops
  *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock newline 'M  V30 END CTAB' { console.log('parsed V3000 CTAB'); }
+    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock v3collectionBlock? newline 'M  V30 END CTAB' { console.log('parsed V3000 CTAB'); }
 
 /*
  *
@@ -440,9 +440,22 @@ atomEntry
 
 atomContinuation
     = ' '* '-\nM  V30' cont:atomContinuation { return cont; }
-    / ' '* charge:atomCharge ccont:atomContinuation* { return flatten(ccont, charge); }
-    / ' '* radical:atomRadical rcont:atomContinuation* { return flatten(rcont, radical); }
-    / ' '* mass:atomMass mcont:atomContinuation* { return flatten(mcont, mass); }
+    / ' '* charge:atomCharge cont:atomContinuation* { return flatten(cont, charge); }
+    / ' '* radical:atomRadical cont:atomContinuation* { return flatten(cont, radical); }
+    / ' '* cfg:atomConfiguration cont:atomContinuation* { return flatten(cont, cfg); }
+    / ' '* mass:atomMass cont:atomContinuation* { return flatten(cont, mass); }
+    / ' '* val:atomValence cont:atomContinuation* { return flatten(cont, val); }
+    / ' '* hcount:atomHcount cont:atomContinuation* { return flatten(cont, hcount); }
+    / ' '* stbox:atomStereoBox cont:atomContinuation* { return flatten(cont, stbox); }
+    / ' '* invret:atomInversionRetention cont:atomContinuation* { return flatten(cont, invret); }
+    / ' '* exachg:atomExactChange cont:atomContinuation* { return flatten(cont, exachg); }
+    / ' '* subst:atomSubstCnt cont:atomContinuation* { return flatten(cont, subst); }
+    / ' '* unsat:atomUnsaturation cont:atomContinuation* { return flatten(cont, unsat); }
+    / ' '* rbcnt:atomRingBondCount cont:atomContinuation* { return flatten(cont, rbcnt); }
+    / ' '* attchpt:atomAttachPoints cont:atomContinuation* { return flatten(cont, attchpt); }
+    / ' '* attchord:atomAttachmentOrder cont:atomContinuation* { return flatten(cont, attchord); }
+    / ' '* tplclass:atomTemplateClass cont:atomContinuation* { return flatten(cont, tplclass); }
+    / ' '* seqid:atomSequenceId cont:atomContinuation* { return flatten(cont, seqid); }
     / ' '* '\n' { }
 
 atomCharge
@@ -451,8 +464,50 @@ atomCharge
 atomRadical
     = 'RAD=' rad:[0-3] { return {'radical': parseInt(rad, 10), }; }
 
+atomConfiguration
+    = 'CFG=' cfg:[0-3] { return {'configuration':cfg, }; }
+
 atomMass
     = 'MASS=' mass:uint { return {'mass': mass, }; }
+
+atomValence
+    = 'VAL=' val:integer { return {'valence': val, }; }
+
+atomHcount
+    = 'HCOUNT=' hcount:integer { return {'Hcount':hcount, }; }
+
+atomStereoBox
+    = 'STBOX=' stbox:[01] { return {'stbox':stbox, }; }
+
+atomInversionRetention
+    = 'INVRET=' invret:[0-2] { return {'invret':invret, }; }
+
+atomExactChange
+    = 'EXACHG=' exachg:[01] { return {'exachg':exachg, }; }
+
+atomSubstCnt
+    = 'SUBST=' subst:integer { return {'subst':subst, }; }
+
+atomUnsaturation
+    = 'UNSAT=' unsat:[01] { return {'unsat':unsat, }; }
+
+atomRingBondCount
+    = 'RBCNT=' rbcnt:integer { return {'rbcnt':rbcnt, }; }
+
+atomAttachPoints
+    = 'ATTCHPT=' attchpt:integer { return {'attchpt':attchpt, }; }
+
+atomAttachmentOrder
+    = 'ATTCHORD=(' [^)]* ')' { 
+            console.log('ATTCHORD currently not supported');
+            return { 'attchord':'present', }; 
+        }
+
+atomTemplateClass
+    = 'CLASS=' tplclass:string { return {'class':tplclass, }; }
+
+atomSequenceId
+    = 'SEQID=' seqid:uint { return {'seqid':seqid, }; }
 
 /* ToDo: add atomTypeList parser */
 atomTypeList
@@ -489,15 +544,75 @@ bondEntry
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);
-//          b.setStereo(sss);
+
+            if (bondCont == null) {
+                bondCont = { };
+            }
+            if (bondCont.configuration != null) {
+                b.setStereo(bondCont.configuration);
+            }
 
             return b;
         }
 
 bondContinuation
     = ' '* '-\nM  V30' cont:bondContinuation { return cont; }
+    / ' '* cfg:bondConfiguration cont:bondContinuation { return flatten(cont, cfg); }
+    / ' '* topo:bondTopology cont:bondContinuation { return flatten(cont, topo); }
+    / ' '* rxctr:bondRxCenter cont:bondContinuation { return flatten(cont, rxctr); }
+    / ' '* stbox:bondStereoBox cont:bondContinuation { return flatten(cont, stbox); }
+    / ' '* endpts:bondEndPoints cont:bondContinuation { return flatten(cont, endpts); }
     / ' '* '\n' { }
 
+bondConfiguration
+    = 'CFG=' cfg:[0-3] { return {'configuration':cfg, }; }
+
+bondTopology
+    = 'TOPO=' topo:[0-2] { return {'topology':topo, }; }
+
+bondRxCenter
+    = 'RXCTR=' rxctr:integer { return {'rxctr':rxctr, }; }
+
+bondStereoBox
+    = 'STBOX=' stbox:[01] { return {'stbox':stbox, }; }
+
+bondEndPoints
+    = 'ENDPTS=ALL' { return {'endpts':'ALL', }; }
+    / 'ENDPTS=ANY' { return {'endpts':'ANY', }; }
+
+/*
+ * V3000 Collection Block
+ *
+ * M  V30 BEGIN COLLECTION
+ * [M V30 DEFAULT -]M V30 name/subname -
+ * M  V30 [ATOMS=(natoms atom [atom ...])] -
+ * M  V30 [BONDS=(nbonds bond [bond ...])] -
+ * M  V30 [SGROUPS=(nsgroups sgrp [sgrp ...])] -
+ * M  V30 [OBJ3DS=(nobj3ds obj3d [obj3d ...])] -
+ * M  V30 [MEMBERS=(nmembers member [member ...])] -
+ * M  V30 [RGROUPS=(nrgroups rgroup [rgroup ...])] -
+ * . . .
+ * M  V30 END COLLECTION
+ */
+
+/* ToDo collection block parsing */
+v3collectionBlock
+    = newline 'M  V30 BEGIN COLLECTION' collectionEntry* 'M  V30 END COLLECTION' { console.log('ignoring collection block'); }
+
+collectionEntry
+    = newline 'M  V30 DEFAULT' collectionContinuation* 
+    / newline 'M  V30 ' string collectionContinuation*
+
+collectionContinuation
+    = ' '* '-\nM  V30' cont:collectionContinuation
+    / ' '* 'ATOMS=(' [^)]* ')' collectionContinuation
+    / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
+    / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
+    / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
+    / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
+    / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
+    / ' '* 'RGROUPS=(' [^)]* ')' collectionContinuation
+    / ' '* newline
 /*
  *======================================================================
  *
@@ -539,6 +654,10 @@ uintString
 sign
     = '-' { return -1; }
     / '+' { return 1; }
+
+/* ToDo: quoted strings */
+string
+    = characters:[^ "'\n]+ { return characters.join(''); }
 
 string3
     = characters:([^\n][^\n][^\n]) { return characters.join(''); }

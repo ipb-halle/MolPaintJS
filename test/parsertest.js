@@ -15,7 +15,7 @@
  * limitations under the License.
  *
  */
-var molpaint = require('../docs/js/molpaint');
+var molpaint = require('../dist/js/molpaint');
 var util = require('util');
 
 //console.log(util.inspect(molpaint, {showHidden: false, depth: null}));

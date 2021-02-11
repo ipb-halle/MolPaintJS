@@ -118,7 +118,14 @@ function Context(cid, prop, mp) {
      * @return the already appended (!) actionList 
      */
     this.pasteMolecule = function (st, sel) {
-        var mol = MDLParser.parse(st);
+        var mol;
+        try {
+            mol = MDLParser.parse(st);
+        } catch(e) {
+            console.log("Parse error:");
+            console.log(st);
+            throw(e);
+        }
         var actionList = new ActionList();
 
         // add atoms
@@ -172,7 +179,13 @@ function Context(cid, prop, mp) {
      * @return this Context instance (useful for method chaining)
      */
     this.setMolecule = function (st) {
-        this.molecule = MDLParser.parse(st);
+        try {
+            this.molecule = MDLParser.parse(st);
+        } catch(e) {
+            console.log("Parse error:");
+            console.log(st);
+            throw(e);
+        }
 
         this.molecule.center();
         this.view.center();

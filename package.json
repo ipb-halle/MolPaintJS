@@ -4,7 +4,9 @@
   "description": "Toolkit for drawing chemical structures",
   "browser": "dist/js/molpaint.js",
   "scripts": {
+    "preinstall": "rimraf dist",
     "postinstall": "node build.js",
+    "release": "node build.js --release",
     "test": "npx mocha"
   },
   "keywords": [

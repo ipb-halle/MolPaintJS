@@ -13,7 +13,7 @@ MolPaintJS was originally started within the [Leibniz Bioactives Cloud](https://
 Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 
 ## Installation / Use
-* Build the code using `node build.js`
+* Build the code using `npm clean-install-test`
 * Copy the content of the `dist/` directory to an empty directory (hereafter referenced as PLUGIN_DIR) on your web server
 * All pages using the plugin must include the following code snippet (preferably in the page header section): 
 
@@ -38,7 +38,7 @@ Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 </script>
 ```
  
-To build your own copy, check out the sources, and call the build script (`node build.js`) to get an executable copy in the `dist` directory. Please also see the `docs` directory, which contains the static content for the MolPaintJS Playground on Github Pages.
+To build your own copy, check out the sources, and call (`npm clean-install-test`) to get an executable copy in the `dist` directory. Please also see the `docs` directory, which contains the static content for the MolPaintJS Playground on Github Pages.
 
 
 ## Features

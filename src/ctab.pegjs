@@ -25,13 +25,17 @@
 
     var mdlParserData = {
         'atomCount':0,
+        'atomListCount':0,
         'bondCount':0,
         'currentAtom':0,
+        'currentAtomList':0,
         'currentBond':0,
         'currentProperty':0,
+        'currentStext':0,
         'propertyCount':0,
         'resetCharges':true,
         'resetIsotopes':true,
+        'stextCount':0,
     };
 
     /**
@@ -198,6 +202,8 @@ v2Counts
             console.log('parsed v2Counts');
             mdlParserData.atomCount = nAtoms;
             mdlParserData.bondCount = nBonds;
+            mdlParserData.atomListCount = nAtomList;
+            mdlParserData.stextCount = nSTEXT;
             mdlParserData.molecule = new Molecule();
             mdlParserData.molecule.setProperty('NAME', mdlParserData.header1);
             mdlParserData.molecule.setProperty('HEADER2', mdlParserData.header2);
@@ -239,7 +245,7 @@ v3Counts
  */
 
 v2ctab
-    = v2atom* v2bond* v2props* { console.log('parsed V2000 CTAB'); }
+    = v2atom* v2bond* v2atomlist* v2stext* v2props* { console.log('parsed V2000 CTAB'); }
 
 v2atom
     = newline atom:v2atomLine {
@@ -306,6 +312,35 @@ v2bondLine
             // optprop
 
             return b;
+        }
+
+/*
+ * V2000 ATOMLIST BLOCK
+ *
+ * aaa kSSSSn 111 222 333 444 555
+ */
+v2atomlist
+    = newline aaa:uint3 ' ' flag:[TF] '    ' cnt:[1-5] ' ' entries:(uint3 (' ' uint3 (' ' uint3 (' ' uint3 (' ' uint3)?)?)?)?) & {
+            if (mdlParserData.atomListCount > mdlParserData.currentAtomList) {
+                mdlParserData.currentAtomList++;
+                return true;
+            }
+            return false;
+        }
+
+/*
+ * V2000 STEXT BLOCK
+ *
+ * xxxxx.xxxxyyyyy.yyyy
+ * TTTT...
+ */
+v2stext
+    = newline float10 float10 newline [^\n]* &{
+            if (mdlParserData.stextCount > mdlParserData.currentStext) {
+                mdlParserData.currentStext++;
+                return true;
+            }
+            return false;
         }
 
 /*

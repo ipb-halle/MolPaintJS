@@ -344,11 +344,28 @@ v2stext
         }
 
 /*
- * V2000 PROPERTY BLOCK
- * M  [RAD|CHG|ISO]nn8 aaa vvv ...
+ * V2000 PROPERTY BLOCK (incomplete!)
  */
 v2props
-    = propType:v2propHeader props:v2atomprops+ {
+    = v2propIsis
+    / v2propAtomValuePairs
+    / v2propLinkAtom
+    / v2propAtomList
+    / v2propRGROUP
+    / v2propSGROUP
+    / v2propOTHER
+
+v2propIsis
+    = newline 'A  ' uint3 newline [^\n]*
+    / newline 'V  ' uint3 ' ' [^\n]*
+    / newline 'G  ' uint3 uint3 newline [^\n]*
+
+/*
+ * properties: atom number value pairs
+ * M  [RAD|CHG|ISO|...]nn8 aaa vvv ...
+ */
+v2propAtomValuePairs
+    = propType:v2propAtomValuePairsHeader props:v2propAtomValuePair+ {
             for(var prop of props) {
                 var atom = mdlParserData.molecule.getAtom("Atom" + prop.atom);
                 switch(propType) {
@@ -360,12 +377,14 @@ v2props
                         break;
                     case 'RAD' :
                         atom.setRadical(prop.value);
+                    default :
+                        console.log('Ignoring property ' + propType);
                 }
             }
 //          console.log(util.inspect(props, {showHidden: false, depth: null}));
         }
 
-v2propHeader
+v2propAtomValuePairsHeader
     = newline 'M  CHG' propcnt:uint3 {
             resetCharges();
             mdlParserData.propertyCount = propcnt;
@@ -381,9 +400,29 @@ v2propHeader
             mdlParserData.propertyCount = propcnt;
             mdlParserData.currentProperty = 0;
             return 'ISO'; }
+    / newline 'M  RBC' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+            return 'RBC'; }
+    / newline 'M  SUB' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+            return 'SUB'; }
+    / newline 'M  UNS' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+            return 'UNS'; }
+    / newline 'M  APO' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+            return 'APO'; }
+    / newline 'M  RGP' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+            return 'RGP'; }
 
-v2atomprops
-    = atom:uint value:uint &{
+v2propAtomValuePair
+    = atom:uint value:integer &{
             if (mdlParserData.propertyCount > mdlParserData.currentProperty) {
                 mdlParserData.currentProperty++;
                 return true;
@@ -392,6 +431,83 @@ v2atomprops
         } {
             return {'atom':atom, 'value':value, };
         }
+
+v2propLinkAtom
+    = v2propLinkAtomHeader v2propLinkAtomEntry+
+
+v2propLinkAtomHeader
+    = newline 'M  LIN' propcnt:uint3 {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0;
+        }
+
+v2propLinkAtomEntry
+    = atom:uint value:uint sub1:uint sub2:uint &{
+            if (mdlParserData.propertyCount > mdlParserData.currentProperty) {
+                mdlParserData.currentProperty++;
+                return true;
+            }
+            return false;
+        } {
+            return {'atom':atom, 'value':value, 'sub1':sub1, 'sub2':sub2, }; 
+        }
+
+v2propAtomList
+    = v2propAtomListHeader v2propAtomListEntry+
+
+v2propAtomListHeader
+    = newline 'M  ALS ' uint3 propcnt:uint3 ' ' [TF] ' ' {
+            mdlParserData.propertyCount = propcnt;
+            mdlParserData.currentProperty = 0; 
+        }
+
+v2propAtomListEntry
+    = entry:string4 &{
+            if (mdlParserData.propertyCount > mdlParserData.currentProperty) {
+                mdlParserData.currentProperty++;
+                return true;
+            }
+            return false;
+        } {
+            return entry;
+        }
+
+v2propRGROUP
+    = newline 'M  AAL ' [^\n]*
+    / newline 'M  LOG ' [^\n]*
+
+v2propSGROUP
+    = newline 'M  STY ' [^\n]*
+    / newline 'M  SST ' [^\n]*
+    / newline 'M  SLB' [^\n]*
+    / newline 'M  SCN' [^\n]*
+    / newline 'M  SDS' [^\n]*
+    / newline 'M  SAL' [^\n]*
+    / newline 'M  SBL' [^\n]*
+    / newline 'M  SPA ' [^\n]*
+    / newline 'M  SMT ' [^\n]*
+    / newline 'M  CRS '[^\n]*
+    / newline 'M  SDI ' [^\n]*
+    / newline 'M  SBV ' [^\n]*
+    / newline 'M  SDT ' [^\n]*
+    / newline 'M  SDD ' [^\n]*
+    / newline 'M  SCD ' [^\n]*
+    / newline 'M  SED ' [^\n]*
+    / newline 'M  SPL' [^\n]*
+    / newline 'M  SNC' [^\n]*
+    / newline 'M  SAP ' [^\n]*
+    / newline 'M  SCL ' [^\n]*
+    / newline 'M  SBT' [^\n]*
+
+
+
+v2propOTHER
+    = newline 'M  PXA ' [^\n]*
+    / newline 'M  REG ' [^\n]*
+    / newline 'M  $3D' [^\n]*
+
+
+
 
 /*
  *======================================================================
@@ -693,6 +809,9 @@ sign
 /* ToDo: quoted strings */
 string
     = characters:[^ "'\n]+ { return characters.join(''); }
+
+string4
+    = characters:([^\n][^\n][^\n][^\n]) { return characters.join(''); }
 
 string3
     = characters:([^\n][^\n][^\n]) { return characters.join(''); }

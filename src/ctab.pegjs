@@ -517,7 +517,7 @@ v2propOTHER
  *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock v3collectionBlock? newline 'M  V30 END CTAB' { console.log('parsed V3000 CTAB'); }
+    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+  { console.log('parsed V3000 CTAB'); }
 
 /*
  *
@@ -730,6 +730,26 @@ bondStereoBox
 bondEndPoints
     = 'ENDPTS=ALL' { return {'endpts':'ALL', }; }
     / 'ENDPTS=ANY' { return {'endpts':'ANY', }; }
+
+
+/*
+ * V3000 Properties
+ */
+v3propertyBlocks
+    = v3SGROUP
+    / v3obj3dBlock
+    / v3LinkAtomLine
+    / v3collectionBlock
+    / newline 'M  V30 END CTAB' 
+
+v3SGROUP
+    = newline 'M  V30 BEGIN SGROUP' (newline !'M  V30 END SGROUP' [^\n]+)+ newline 'M  V30 END SGROUP'
+
+v3obj3dBlock
+    = newline 'M  V30 BEGIN OBJ3D' (newline !'M  V30 END OBJ3D'[^\n]+)+ newline 'M V30 END OBJ3D'
+
+v3LinkAtomLine
+    = newline 'M  V30 LINKNODE ' [^\n]*
 
 /*
  * V3000 Collection Block

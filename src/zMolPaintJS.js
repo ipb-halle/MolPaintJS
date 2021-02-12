@@ -38,6 +38,15 @@ function MolPaintJS (prop) {
     }
 
     /**
+     * @return the molecule from context cid in MDLv3000 format
+     */
+    this.getMDLv3000 = function (cid) {
+        var w = new MDLv3000Writer();
+        return w.write(contextRegistry[cid].molecule);
+    }
+
+
+    /**
      * @return global properties
      */
     this.getProperties = function () {
@@ -78,7 +87,20 @@ function MolPaintJS (prop) {
      */
     this.dump = function (cid, dumpId) {
         var o = document.getElementById(dumpId);
-        o.innerHTML = "<pre>" + this.getMDLv2000(cid) + "</pre>";
+        var format = arguments[2] || 'V2000';
+        var moltext = '';
+        
+        switch(format) {
+            case 'V3000':
+                moltext = this.getMDLv3000(cid);
+                break;
+            case 'V2000':
+                moltext = this.getMDLv2000(cid);
+                break;
+            default :
+                moltext = "Unknown output format: " + format;
+        }
+        o.innerHTML = "<pre>" + moltext + "</pre>";
     }
 
     /**

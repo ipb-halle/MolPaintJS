@@ -80,7 +80,11 @@
 
 <p>(c) 2017 - 2021 <a href="https://www.ipb-halle.de">Leibniz Institute of Plant Biochemistry</a><br>
 Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</a></p>
-<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output"); return false;'/>
+<select id="format" name="format">
+  <option value="V2000">V2000</option>
+  <option value="V3000">V3000</option>
+</select>
+<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output", document.getElementById("format").value); return false;'/>
 <div id="output"></div>
 
 </body>

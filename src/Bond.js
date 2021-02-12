@@ -18,6 +18,13 @@
 
 function Bond() {
 
+    const stereoMap = {
+        'iv2': { '0':0, '1':1, '4':2, '6':3 },
+        'iv3': { '0':0, '1':1, '2':2, '3':3 },
+        'ov2': [ 0, 1, 4, 6 ],
+        'ov3': [ 0, 1, 2, 3 ] 
+    };
+
     this.atomA = null;
     this.atomB = null;
     this.color = null;
@@ -67,6 +74,9 @@ function Bond() {
         return this.selected;
     }
     this.getStereo = function () {
+        if (arguments[0] != null) {
+            return stereoMap['o' + arguments[0]][this.stereo];
+        }
         return this.stereo;
     }
     this.getTemp = function () {
@@ -95,10 +105,15 @@ function Bond() {
         this.selected = s;
     }
     this.setStereo = function (s) {
-        if(s != "") {
-            this.stereo = s;
+        if(s != null) {
+            if (arguments[1] != null) {
+                this.stereo = stereoMap['i' + arguments[1]][s.toString()];
+            } else {
+                this.stereo = s;
+            }
         }
     }
+
     this.setTemp = function (t) {
         this.temp = t;
     }

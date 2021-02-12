@@ -94,7 +94,7 @@ function MDLv2000Writer() {
                 b.getAtomA().getIndex(),
                 b.getAtomB().getIndex(),
                 b.getType(),
-                b.getStereo());
+                b.getStereo('v2'));
         }
         return st;
     }

@@ -313,7 +313,7 @@ v2bondLine
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);
-            b.setStereo(sss);
+            b.setStereo(sss, 'v2');
 
             // optprop
 
@@ -706,7 +706,7 @@ bondEntry
                 bondCont = { };
             }
             if (bondCont.configuration != null) {
-                b.setStereo(bondCont.configuration);
+                b.setStereo(bondCont.configuration, 'v3');
             }
 
             return b;

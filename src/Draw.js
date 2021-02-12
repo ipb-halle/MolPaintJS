@@ -283,11 +283,11 @@ function Draw(v, mol) {
 
         ctx.moveTo(coord1.x, coord1.y);
         switch(bond.getStereo()) {
-            case "0": // not stereo
+            case 0: // not stereo
                 ctx.lineTo(coord2.x, coord2.y);
                 ctx.stroke();
                 break;
-            case "1": // up - solid wedge
+            case 1: // up - solid wedge
                 var coord3 = {x: (coord2.x - (scale * dy)), y: (coord2.y + (scale * dx))};
                 var coord4 = {x: (coord2.x + (scale * dy)), y: (coord2.y - (scale * dx))};
                 ctx.lineTo(coord3.x, coord3.y);
@@ -296,7 +296,7 @@ function Draw(v, mol) {
                 ctx.fillStyle = "#000000";
                 ctx.fill();
                 break;
-            case "6": // down - hashed (wedge)
+            case 3: // down - hashed (wedge)
                 ctx.setLineDash([2, 3]);
                 ctx.lineWidth = 6;
                 ctx.lineTo(coord2.x, coord2.y);
@@ -304,6 +304,7 @@ function Draw(v, mol) {
                 ctx.lineWidth = 1;
                 ctx.setLineDash([]);
                 break;
+            case 2: // either (wavy)
             default: // all others
                 ctx.lineTo(coord2.x, coord2.y);
                 ctx.stroke();

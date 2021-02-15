@@ -93,8 +93,8 @@ function Context(cid, prop, mp) {
                 ctx.widget.initEvents(ctx);
             }
             ctx.initRaster();
-            ctx.draw();
         });
+        return this;
     }
 
     /**
@@ -192,6 +192,7 @@ function Context(cid, prop, mp) {
 
         this.initRaster();
         this.view.setMolScale(this.properties.molScaleDefault / this.medianBondLength);
+        this.draw();
         return this;
     }
 

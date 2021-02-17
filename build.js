@@ -26,11 +26,14 @@
 const yargs = require('yargs');
 var fs = require('fs');
 var pathInfo = require('path');
+var tar = require('tar');
 var util = require('util');
 var peg = require("pegjs");
 var { minify } = require("terser");
 
 const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/releases/latest/download';
+const BUILD_DIR = 'molpaintjs';
+const DIST_FILE = 'molpaintjs.tar.gz';
 var entryPoint = "zMolPaintJS.js";
 
 /*
@@ -118,10 +121,10 @@ function build(release, compress) {
     var replacements = { 'index.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ], };
 
     copyTemplate(pathInfo.join(__dirname , 'template'),
-        pathInfo.join(__dirname, 'dist'),
+        pathInfo.join(__dirname, BUILD_DIR),
         replacements);
 
-    copyToplevelFiles(pathInfo.join(__dirname , 'dist'));
+    copyToplevelFiles(pathInfo.join(__dirname , BUILD_DIR));
 
     if (release) {
         replacements['index.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];
@@ -132,11 +135,16 @@ function build(release, compress) {
         copyToplevelFiles(pathInfo.join(__dirname , 'docs'));
     }
         
-    fs.mkdirSync(pathInfo.join(__dirname, 'dist', 'js'), {'recursive':true, });
+    fs.mkdirSync(pathInfo.join(__dirname, BUILD_DIR, 'js'), {'recursive':true, });
     // always compress on release
     compile(pathInfo.join(__dirname , 'src'),
-        pathInfo.join(__dirname, 'dist', 'js', 'molpaint.js'),
+        pathInfo.join(__dirname, BUILD_DIR, 'js', 'molpaint.js'),
         release | compress);
+
+    tar.c({
+        file: pathInfo.join(__dirname, DIST_FILE), 
+        gzip:true, },
+        [ BUILD_DIR, ]);
 }
 
 const argv = yargs

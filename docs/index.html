@@ -23,18 +23,30 @@
     <link type="text/css" rel="stylesheet" href="css/styles.css"/>
     <script type="text/javascript" src="https://github.com/ipb-halle/MolPaintJS/releases/latest/download/molpaint.js"></script>
     <script type="text/javascript">
-      var molpaintjs = new MolPaintJS();
+        var molpaintjs = new MolPaintJS();
 
-      /*
-       * changeListener() demo
-       * Every change to the molecule will cause the color of 
-       * the page heading to change.
-       */
-      var red = 0;
-      var changeListener = function() {
-          red = (red < 255) ? red + 1 : 0;
-          document.getElementById('heading').style.color = "rgb(" + red + ", 0, 0)";
-      }
+        /*
+         * changeListener() demo
+         * Every change to the molecule will cause the color of 
+         * the page heading to change.
+         */
+        var red = 0;
+        var changeListener = function() {
+            red = (red < 255) ? red + 1 : 0;
+            document.getElementById('heading').style.color = "rgb(" + red + ", 0, 0)";
+        }
+
+        /*
+         * load example molecules
+         */
+        function changeMolecule(name) {
+            fetch('examples/' + name)
+                .then(obj => obj.text())
+                .then(mol => { 
+                    var ctx = molpaintjs.getContext("mol");
+                    ctx.setMolecule(mol); 
+            });
+        }
 
     </script>
 </head>
@@ -49,16 +61,29 @@
 <tr><td><div id="mol"></div></td><td><div style="padding:40px">&nbsp;</div></td><td><div id="viewer" style="padding-top:40px"></div></td></tr>
 </table>
 <script type="text/javascript">
-    molpaintjs.newContext("mol", {iconSize: 32, debugId: "debug"}).setMolecule(
-        "n.n.\n  MolPaintJS\n\n 13 14  0  0  0  0  0  0  0  0999 V2000\n   -1.3492   -0.6188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.3492   -1.4438    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348   -1.8563    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797   -1.4438    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797   -0.6188    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348   -0.2062    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8643   -1.6987    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3492   -1.0313    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8643   -0.3638    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6348    0.6188    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7942    0.6188    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797    1.0313    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0797    1.8563    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n 12 13  1  0      \n 11 12  2  0      \n 10 12  1  0      \n  6 10  1  0      \n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9  5  1  0      \nM  END\n").setChangeListener(changeListener).init();
+    molpaintjs.newContext("mol", {iconSize: 32, debugId: "debug"}).init().setMolecule("3-Acetylcoumarin\n  MolPaintJS\n\n 14 15  0  0  0  0  0  0  0  0999 V2000\n   -2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.1434   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289   -1.2375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9 10  2  0      \n 10  5  1  0      \n  9 11  1  0      \n 11 12  1  0      \n 11 13  2  0      \n  8 14  2  0      \nM  END\n").setChangeListener(changeListener);
 
-    molpaintjs.newContext("viewer", {iconSize: 32, sizeX:250, sizeY:250, viewer: 1}).setMolecule(
-        "n.n.\n  MolPaintJS\n\n 12 13  0  0  0  0            999\n   -1.4605    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4605    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    2.4717    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1118   -0.0033    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  3  1  0\n  3  4  1  0\n  4  5  1  0\n  6  7  1  0\n  7  8  1  0\n  8  9  1  0\n  9 10  1  0\n  5 10  1  0\n  3  8  1  0\n  4 11  1  1\n 10 12  1  6\n  1  6  2  0\nM  END\n").init();
+    molpaintjs.newContext("viewer", {iconSize: 32, sizeX:250, sizeY:250, viewer: 1}).init().setMolecule(
+        "n.n.\n  MolPaintJS\n\n 12 13  0  0  0  0            999\n   -1.4605    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4605    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    2.4717    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1118   -0.0033    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  3  1  0\n  3  4  1  0\n  4  5  1  0\n  6  7  1  0\n  7  8  1  0\n  8  9  1  0\n  9 10  1  0\n  5 10  1  0\n  3  8  1  0\n  4 11  1  1\n 10 12  1  6\n  1  6  2  0\nM  END\n");
 
 </script>
+<div>Change molecule: 
+  <select id="examples" name="examples" onchange="changeMolecule(document.getElementById('examples').value); return false;">
+    <option value="v2000_3-acetylcoumarin.mol">3-Acetylcoumarin</option>
+    <option value="6-O-acetylhygrophorone_A12.mol">6-O-Acetylhygrophorone A12</option>
+    <option value="jasmonic_acid.mol">Jasmonic acid</option>
+    <option value="cholecalciferol.mol">Cholecalciferol</option>
+    <option value="v2000_(-)-nicotine.mol">(-)-Nicotine</option>
+  </select>
+</div>
+
 <p>(c) 2017 - 2021 <a href="https://www.ipb-halle.de">Leibniz Institute of Plant Biochemistry</a><br>
 Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</a></p>
-<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output"); return false;'/>
+<select id="format" name="format">
+  <option value="V2000">V2000</option>
+  <option value="V3000">V3000</option>
+</select>
+<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output", document.getElementById("format").value); return false;'/>
 <div id="output"></div>
 
 </body>

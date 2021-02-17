@@ -17,7 +17,7 @@
  * 
  * Small debugging tool for development
  */
-var molpaint = require('../dist/js/molpaint');
+var molpaint = require('../molpaintjs/js/molpaint');
 var fs = require('fs');
 var path = require('path');
 var util = require('util');

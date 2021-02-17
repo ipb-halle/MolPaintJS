@@ -6,7 +6,7 @@ var fs = require('fs');
 var path = require('path');
 var util = require('util');
 
-var molpaint = require('../dist/js/molpaint');
+var molpaint = require('../molpaintjs/js/molpaint');
 
 var testMolecules = [ {
         'name': 'v2000_14C_cyclopentane.mol',

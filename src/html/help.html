@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<div class="helpModalContent">
 <!--
  MolPaintJS
  Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
@@ -14,29 +14,18 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-  -->
+-->
 
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>MolPaintJS Help</title>
-</head>
-<body>
+<span onclick="document.getElementById('MolPaintJS_Help_Widget').style.display='none'" class="helpModalCloseButton">&times;</span>
 <h1>MolPaintJS</h1>
 <ol>
-<li><a href="#Help">Help</a></li>
+<li><a href="#Help">How to get help</a></li>
 <li><a href="#Authors">Authors</a></li>
 <li><a href="#Licensing">Licensing</a></li>
 <li><a href="#GetMolPaintJS">Get MolPaintJS</a></li>
 </ol>
-<h2 id="Help">Help</h2>
-<h3><img src="clear.png" height="32"/> Clear</h3>
-<p>The clear button completely wipes all atoms and bonds from the editor.</p>
-<h3><img src="pointer.png" height="32"/> Pointer Tool</h3>
-<p>The pointer tool has three different modes of operation: <i>Select mode</i>, <i>Translate mode</i> (move) and <i>Rotate mode</i>:</p>
-<p>The pointer tool operates in <i>Select mode</i>, when no already selected atom is under the mouse cursor when pressing the left mouse button. Within <i>Select mode</i>, there are 3 different submodes depending on the state of the Shift and Ctrl keys. If neither Shift nor Ctrl are pressed, prior selections are cleared and the user can make a new rectangular selection by dragging the mouse. Atoms and bonds which will be selected will be marked by red color. Upon release of the mouse button the color of selected atoms changes to green. If the Shift key is pressed while the left mouse button is pressed, no selection will be cleared. By dragging the mouse while holding the button pressed, it is possible to add additional atoms and bonds to the selection. When using the Ctrl key instead of the Shift key, it's possible to remove atoms and bonds from the selection. </p>
-<p><i>Translate mode</i> will be entered when an already selected atom is clicked. All selected atoms can be dragged around as long as the mouse button is pressed.</p>
-<p><i>Rotate mode</i> is selected, when clicking on an already selected atom while the Shift key is pressed. All selected atoms will be rotated around the z-axis when the mouse is moved along the x-axis.</p>
+<h2 id="Help">How to get help</h2>
+A help text can be opened in a separate browser window by clicking on this link: <a href="%HELP_URL%" target="_blank">%HELP_URL%</a>. This link can be configured by your vendor. 
 
 <h2 id="Authors">Authors</h2>
 MolPaintJS has been mainly written by Frank Broda (fbroda@ipb-halle.de) with valuable input from colleagues.
@@ -88,6 +77,4 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 <h2 id="GetMolPaintJS">Get MolPaintJS</h2>
 Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</a> to obtain your copy.</p>
-</body>
-</html>
-
+</div>

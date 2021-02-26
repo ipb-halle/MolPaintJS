@@ -22,6 +22,7 @@ function DefaultProperties(prop) {
     this.distMax = 0.1;
     this.fontFamily = "SansSerif";
     this.fontSize = 16;
+    this.helpURL = "https://ipb-halle.github.io/MolPaintJS/help";
     this.iconSize = 32;
     this.installPath = "";
     this.molScaleDefault = 33;	// pixel per Angstrom

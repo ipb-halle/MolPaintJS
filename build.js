@@ -36,6 +36,24 @@ const BUILD_DIR = 'molpaintjs';
 const DIST_FILE = 'molpaintjs.tar.gz';
 var entryPoint = "zMolPaintJS.js";
 
+
+function readResource(path, dirent, header, encoding) {
+    var code = '"' + dirent.name + '":"' + header;
+    if (encoding == 'base64') {
+        code += fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding': encoding});
+    } else {
+        code += encodeURI(fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding': encoding}));
+    }
+    code += '",\n';
+    return code;
+}
+
+function readPEG(path, dirent) {
+    return peg.generate(
+                fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}),
+                {'output':'source', 'format':'globals', 'exportVar':'MDLParser'});
+}
+
 /*
  * recursively read code files, compile them (PEGJS rules only),
  * and concatenate them. Returns a single code string.
@@ -43,29 +61,43 @@ var entryPoint = "zMolPaintJS.js";
 function readCode(path) {
     var code = '';
     var entryCode = '';
+    var resources = '';
 
     fs.readdirSync(path, {'withFileTypes': true})
             .forEach(dirent => {
         if (dirent.isDirectory()) {
-            code += readCode(pathInfo.join(path, dirent.name));
+            var result = readCode(pathInfo.join(path, dirent.name));
+            resources += result[0];
+            code += result[1];
+            entryCode += result[2];
         } else {
             if (dirent.name == entryPoint) {
                 entryCode = fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
             } else {
                 if (dirent.name.match(/\.pegjs$/)) {
                     code += ';\n';  // dirty fix for missing semicolon
-                    code += peg.generate(
-                        fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}), 
-                        {'output':'source', 'format':'globals', 'exportVar':'MDLParser'});
-                } else if (dirent.name.match(/\.js$/)) {
+                    code += readPEG(path, dirent);
+                } 
+                if (dirent.name.match(/\.js$/)) {
                     code += fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
+                }
+                if (dirent.name.match(/\.png$/)) {
+                    resources += readResource(path, dirent, 'data:;base64,', 'base64');
+                }
+                if (dirent.name.match(/\.css$/)) {
+                    resources += readResource(path, dirent, 'data:text/css;base64,', 'base64');
+                }
+                if (dirent.name.match(/\.mol$/)) {
+                    resources += readResource(path, dirent, '', 'base64');
+                }
+                if (dirent.name.match(/\.html$/)) {
+                    resources += readResource(path, dirent, 'data:text/html;charset=utf-8,', 'UTF-8');
                 }
             }
         }
     });
-    return code + entryCode;
+    return [resources, code, entryCode];
 }
-
 
 async function minifyCode(code) {
     var code = await minify(code, {compress:true, mangle:true} );
@@ -73,7 +105,12 @@ async function minifyCode(code) {
 }
 
 async function compile(src, dest, compress) {
-    var code = readCode(src);
+    var result = readCode(src);
+    var code = 'var molPaintJS_resources = {\n'
+            + result[0] + '\n};\n'
+            + result[1]
+            + result[2];
+
     if (compress == true) {
         code = (await minifyCode(code)).code;
     }

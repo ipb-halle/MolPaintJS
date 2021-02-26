@@ -23,6 +23,38 @@ function MolPaintJS (prop) {
      */
 
     /**
+     * add a list of templates to the current instance
+     * @param templateConfig an array of config objects [ {key:"Asn", molURL:"asparagine.mol", iconURL:"asparagine.png"} , ... ]
+     */
+    this.addTemplates = function (templateConfig) {
+        for (var cfg of templateConfig) {
+            molPaintJS_resources[cfg.key + ".png"] = cfg.iconURL;
+            this.loadTemplate(cfg.key, cfg.molURL);
+        }
+    }
+
+    this.createCSS = function() {
+        var e = document.getElementById("MolPaintJS_CSS");
+        if (e == null) {
+            e = document.createElement("link");
+            e.id = "MolPaintJS_CSS";
+            e.rel = "stylesheet";
+            e.href = molPaintJS_resources['styles.css'];
+            document.head.appendChild(e);
+        }
+    }
+
+    this.createHelpWidget = function() {
+        var e = document.getElementById("MolPaintJS_Help_Widget");
+        if (e == null) {
+            e = document.createElement("div");
+            e.id = "MolPaintJS_Help_Widget";
+            e.classList.add("helpModal");
+            document.body.appendChild(e);
+        }
+    }
+
+    /**
      * return the context for a given context id
      */
     this.getContext = function (cid) {
@@ -58,11 +90,11 @@ function MolPaintJS (prop) {
      * @return return the molecule string for template t
      */
     this.getTemplate = function (t) {
-        return this.templates[t];
+        return atob(molPaintJS_resources[t + '.mol']);
     }
 
     /**
-     * @return the list of templates
+     * @return the list of template keys
      */
     this.getTemplates = function () {
         return this.templates;
@@ -70,13 +102,19 @@ function MolPaintJS (prop) {
 
 
     /**
-     * allows to configure a list of templates
+     * allows to configure the order of templates
      * @param tp  array of template names
      */
     this.setTemplates = function (tp) { 
+        this.templates = tp;
+        this.templates = [];
         for(t of tp) {
-            this.templates[t] = "";     // synchronous
-            this.loadTemplate(t);       // asynchronous
+            if (molPaintJS_resources[t + '.png'] != null) {
+                // molecule might be delayed because of asynchronous load
+                this.templates.push(t);
+            } else {
+                console.log("Missing resources for template key: " + t);
+            }
         }
     }
     
@@ -107,17 +145,16 @@ function MolPaintJS (prop) {
      * load a template 
      * @param t the template
      */
-    this.loadTemplate = function (t) {
+    this.loadTemplate = function (t, url) {
         var that = this;
         var tp = t;
         var request = new XMLHttpRequest();
-        var url =  this.properties.installPath + 'templates/' + t +  ".mol";
         request.open('GET',url, true);
         request.overrideMimeType('text/html');
         request.send(null);
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
-                that.templates[tp] = request.responseText;
+                molPaintJS_resources[tp + ".mol"] = btoa(request.responseText);
             } 
         }
     }
@@ -137,8 +174,9 @@ function MolPaintJS (prop) {
      */
 
     this.properties = new DefaultProperties(prop);
-    this.templates = {};
+    this.templates = [];
 
-    this.setTemplates([ 'benzene', 'cyclohexane', 'cyclopentane']);
+    // set of internal templates
+    this.setTemplates([ 'benzene', 'cyclohexane', 'cyclopentane' ]);
 
 }

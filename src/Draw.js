@@ -270,7 +270,8 @@ function Draw(v, mol) {
         var dx = coord1.x - coord2.x;
         var dy = coord1.y - coord2.y;
 
-        var  scale = this.view.molScale / (12 * Math.sqrt(dx*dx + dy*dy));
+        var len = Math.sqrt(dx*dx + dy*dy);
+        var scale = this.view.molScale / (12 * len); 
 
         if (atomA.bbox != null) {
             //atomA.bbox.draw(ctx);
@@ -298,7 +299,16 @@ function Draw(v, mol) {
                 break;
             case 3: // down - hashed (wedge)
                 ctx.setLineDash([2, 3]);
-                ctx.lineWidth = 6;
+                var ax = coord1.x - coord2.x;
+                var ay = coord1.y - coord2.y;
+                for (var i = 1; i < 5 ; i++) {
+                    ctx.lineWidth = i * len / this.view.molScale;
+                    ctx.lineTo(coord1.x - (ax * 0.2 * i), coord1.y - (ay * 0.2 * i));
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(coord1.x - (ax * 0.2 * i), coord1.y - (ay * 0.2 * i));
+                }
+                ctx.lineWidth = 5.0 * len / this.view.molScale;
                 ctx.lineTo(coord2.x, coord2.y);
                 ctx.stroke();
                 ctx.lineWidth = 1;

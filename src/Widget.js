@@ -142,7 +142,12 @@ function Widget(contextId, prop, mp) {
         <iframe src="help/index.html" class="helpIframe">Iframe not supported</iframe>
 */
         var ctx = contextRegistry[evt.target.id];
-        window.open(ctx.properties.installPath + "help/index.html");
+        var e = document.getElementById('MolPaintJS_Help_Widget');
+        var content = decodeURI(molPaintJS_resources['help.html'])
+            .replace('data:text/html;charset=UTF-8,','');
+        e.innerHTML = content
+            .replaceAll('%HELP_URL%', ctx.properties['helpURL']);
+        e.style.display = 'block';
     }
 
     this.actionIsotope = function (evt) {
@@ -354,7 +359,7 @@ function Widget(contextId, prop, mp) {
         ctx.widget.registerEvent(ctx, "mousemove", "_canvas", this.onMouseMove);
         ctx.widget.registerEvent(ctx, "paste", "_canvas", this.actionPaste);
 
-        for(var t in this.molpaint.getTemplates()) {
+        for(var t of this.molpaint.getTemplates()) {
             ctx.widget.registerEvent(ctx, "click", "_" + t, this.actionTemplate);
         }
     }
@@ -395,7 +400,7 @@ function Widget(contextId, prop, mp) {
     this.item = function (id, img, title, style) {
         return "<img id='" + this.widgetId + "_" + id
             + "' width='" + this.iconSize + "' src='"
-            + this.installPath + "img/" + img + ".png' title='"
+            + molPaintJS_resources[img + '.png'] + "' title='"
             + title + "' class='" + style + "' />";
     }
 
@@ -482,8 +487,8 @@ function Widget(contextId, prop, mp) {
         var header = "<tr><td>"
             + "<div class='rightDropdown'>"
             + "<a href='javascript:void(0);' class='dropbtn'><img id='"
-            + this.widgetId + "_pse' src='"
-            + this.installPath + "img/pse.png' title='Periodic table' "
+            + this.widgetId + "_pse' src='" + molPaintJS_resources['pse.png']
+            + "' title='Periodic table' "
             + "width='" + this.iconSize + "' class='inactiveTool' /></a>"
             + "  <div class='rightDropdown-content'>"
             + "  <table class='elementTable'>";
@@ -570,7 +575,7 @@ function Widget(contextId, prop, mp) {
 
         var body = "";
         var i = 0;
-        for (var t in this.molpaint.getTemplates()) {
+        for (var t of this.molpaint.getTemplates()) {
 
             if ((i % 5) == 0) {
                 body += "<tr>";

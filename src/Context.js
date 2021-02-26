@@ -24,10 +24,12 @@ function Context(cid, prop, mp) {
 
     this.contextId = cid;
     this.molpaint = mp;
+    this.molpaint.createCSS();
+    this.molpaint.createHelpWidget();
     this.properties = new DefaultProperties(prop);
     this.changeListener = null;
     this.currentElement = Elements.instance.getElement("C");
-    this.currentTemplate = Object.keys(mp.getTemplates())[0]; 
+    this.currentTemplate = mp.getTemplates()[0]; 
 
     this.medianBondLength = 1.5;
     this.rasterX = [];

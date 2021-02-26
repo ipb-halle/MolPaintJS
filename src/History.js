@@ -34,16 +34,16 @@ function History(cid, prop) {
     this.updateIcons = function () {
         var e = document.getElementById(this.contextId + "_redo");
         if (this.actionPtr < (this.actions.length - 1)) {
-            e.src = this.installPath + "img/redo.png";
+            e.src = molPaintJS_resources['redo.png'];
         } else {
-            e.src = this.installPath + "img/redo_inactive.png";
+            e.src = molPaintJS_resources['redo_inactive.png'];
         }
 
         e = document.getElementById(this.contextId + "_undo");
         if (this.actionPtr > -1) {
-            e.src = this.installPath + "img/undo.png";
+            e.src = molPaintJS_resources['undo.png'];
         } else {
-            e.src = this.installPath + "img/undo_inactive.png";
+            e.src = molPaintJS_resources['undo_inactive.png'];
         }
     }
 

@@ -278,6 +278,11 @@ function Widget(contextId, prop, mp) {
         ctx.draw();
     }
 
+    this.actionWavyBond = function (evt) {
+        var ctx = contextRegistry[evt.target.id];
+        ctx.setCurrentTool(ctx.tools.wavyBondTool);
+    }
+
     this.actionZoomIn = function (evt) {
         var ctx = contextRegistry[evt.target.id];
         ctx.view.displayScale *= 1.5;
@@ -347,6 +352,7 @@ function Widget(contextId, prop, mp) {
         ctx.widget.registerEvent(ctx, "click", "_triple_bond", this.actionTripleBond);
         ctx.widget.registerEvent(ctx, "click", "_template", this.actionTemplate);
         ctx.widget.registerEvent(ctx, "click", "_undo", this.actionUndo);
+        ctx.widget.registerEvent(ctx, "click", "_wavy_bond", this.actionWavyBond);
         ctx.widget.registerEvent(ctx, "click", "_zoom_in", this.actionZoomIn);
         ctx.widget.registerEvent(ctx, "click", "_zoom_out", this.actionZoomOut);
         ctx.widget.registerEvent(ctx, "click", "_canvas", this.onClick);

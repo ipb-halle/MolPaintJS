@@ -270,9 +270,6 @@ function Draw(v, mol) {
         var dx = coord1.x - coord2.x;
         var dy = coord1.y - coord2.y;
 
-        var len = Math.sqrt(dx*dx + dy*dy);
-        var scale = this.view.molScale / (12 * len); 
-
         if (atomA.bbox != null) {
             //atomA.bbox.draw(ctx);
             coord1 = atomA.bbox.clip(coord1, dx, dy);
@@ -282,6 +279,12 @@ function Draw(v, mol) {
             coord2 = atomB.bbox.clip(coord2, -dx, -dy);
         }
 
+        dx = coord1.x - coord2.x;
+        dy = coord1.y - coord2.y;
+        var len = Math.sqrt(dx*dx + dy*dy);
+        var scale = 0.5 / Math.sqrt(len);
+        var x3, x4, y3, y4; 
+
         ctx.moveTo(coord1.x, coord1.y);
         switch(bond.getStereo()) {
             case 0: // not stereo
@@ -289,32 +292,59 @@ function Draw(v, mol) {
                 ctx.stroke();
                 break;
             case 1: // up - solid wedge
-                var coord3 = {x: (coord2.x - (scale * dy)), y: (coord2.y + (scale * dx))};
-                var coord4 = {x: (coord2.x + (scale * dy)), y: (coord2.y - (scale * dx))};
-                ctx.lineTo(coord3.x, coord3.y);
-                ctx.lineTo(coord4.x, coord4.y);
-                ctx.lineTo(coord1.x, coord1.y);
-                ctx.fillStyle = "#000000";
-                ctx.fill();
-                break;
-            case 3: // down - hashed (wedge)
-                ctx.setLineDash([2, 3]);
-                var ax = coord1.x - coord2.x;
-                var ay = coord1.y - coord2.y;
-                for (var i = 1; i < 5 ; i++) {
-                    ctx.lineWidth = i * len / this.view.molScale;
-                    ctx.lineTo(coord1.x - (ax * 0.2 * i), coord1.y - (ay * 0.2 * i));
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(coord1.x - (ax * 0.2 * i), coord1.y - (ay * 0.2 * i));
-                }
-                ctx.lineWidth = 5.0 * len / this.view.molScale;
+                x3 = coord2.x - (dy * scale); 
+                y3 = coord2.y + (dx * scale);
+                x4 = coord2.x + (dy * scale);
+                y4 = coord2.y - (dx * scale);
+
+                ctx.save();
+                ctx.lineWidth = 5 * len * scale;
                 ctx.lineTo(coord2.x, coord2.y);
+                ctx.clip(this.wedgeClipping(coord1.x, coord1.y, x3, y3, x4, y4));
                 ctx.stroke();
+                ctx.restore();
+                ctx.closePath();
+                break;
+
+            case 3: // down - hashed (wedge)
+                x3 = coord2.x - (dy * scale);
+                y3 = coord2.y + (dx * scale);
+                x4 = coord2.x + (dy * scale);
+                y4 = coord2.y - (dx * scale);
+
+                ctx.save();
+                ctx.setLineDash([2, 3]);
+                ctx.lineWidth = 5 * len * scale;
+                ctx.lineTo(coord2.x, coord2.y);
+                ctx.clip(this.wedgeClipping(coord1.x, coord1.y, x3, y3, x4, y4));
+                ctx.stroke();
+                ctx.restore();
                 ctx.lineWidth = 1;
                 ctx.setLineDash([]);
+                ctx.closePath();
                 break;
+
             case 2: // either (wavy)
+                var l = 0;
+                x3 = coord1.x;
+                y3 = coord1.y;
+                dx = 4 * dx / len;
+                dy = 4 * dy / len;
+                var ddx = 0.5 * dx;
+                var ddy = 0.5 * dy;
+                do {
+                    x4 = x3 - dx;
+                    y4 = y3 - dy;
+                    ctx.arcTo(x3-ddy, y3+ddx, x4-ddy, y4+ddx, 2);
+                    x3 = x4 - dx;
+                    y3 = y4 - dy;
+                    ctx.arcTo(x4+ddy, y4-ddx, x3+ddy, y3-ddx, 2);
+                    l += 8;
+                } while (l < (len - 6)); 
+                ctx.lineTo(x3-ddy, y3+ddx); 
+                ctx.stroke();
+                break;
+
             default: // all others
                 ctx.lineTo(coord2.x, coord2.y);
                 ctx.stroke();
@@ -322,7 +352,6 @@ function Draw(v, mol) {
         }
         ctx.beginPath();
     }
-
 
     this.drawTripleBond = function (bond) {
         var ctx = this.view.getContext();
@@ -395,4 +424,16 @@ function Draw(v, mol) {
         return st;
     }
 
+
+    /**
+     * @return a triangular clipping path according to the given coordinates
+     */
+    this.wedgeClipping = function(x1, y1, x2, y2, x3, y3) {
+        path = new Path2D();
+        path.moveTo(x1,y1);
+        path.lineTo(x2,y2);
+        path.lineTo(x3,y3);
+        path.closePath();
+        return path;
+    }
 }

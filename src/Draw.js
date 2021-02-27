@@ -144,87 +144,85 @@ function Draw(v, mol) {
      */
     this.drawSingleAtom = function (atom) {
         var ctx = this.view.getContext();
-        var type = atom.getType();
-        var sym = type.getIsotope().getSymbol();
-        var chg = atom.getCharge();
-        var rad = atom.getRadical();
+        var sym = atom.getType().getIsotope().getSymbol();
         var hcnt = atom.getHydrogenCount(this.molecule);
 
         this.view.setFont();
-        var dx = ctx.measureText(sym).width;
-        var dy = this.view.getFontSize();
+        var symbolWidth = ctx.measureText(sym).width;
+        var symbolHeight = this.view.getFontSize();
         var coord = this.view.getCoord(atom);
-        var x = coord.x - (dx / 2);
+        var x = coord.x - (symbolWidth / 2);
         var y = coord.y;
 
-        atom.bbox = new Box(x - 1, y - (dy / 2), x + dx + 1, y + (dy / 2) + 1);
-        ctx.fillStyle = type.getColor();
-        ctx.fillText(sym, x, y + (dy / 2) - 2);
+        atom.bbox = new Box(x - 1, y - (symbolHeight / 2), x + symbolWidth + 1, y + (symbolHeight / 2) + 1);
+        ctx.fillStyle = atom.getType().getColor();
+        ctx.fillText(sym, x, y + (symbolHeight/ 2) - 2);
 
-        var chgdx = 0;
-        var chgdy = 0;
-        var chgx = x + dx;
-        var chgy = y - (0.2 * dy);
+        this.drawIsotopeMass(ctx, atom, symbolHeight);
+        this.drawChargeRadical(ctx, atom, symbolHeight);
 
-        // isotope mass
-        if (atom.getType().getIsotope().getIsotope() > 0) {
-            this.view.setSubscript();
-            var lbl = atom.getType().getIsotope().getMass();
-
-            var isodx = ctx.measureText(lbl).width;
-            var isody = this.view.getSubscriptSize();
-            var isox = x - isodx;
-            var isoy = chgy;
-
-            var bx = new Box(isox, isoy, isox + isodx + 1, isoy - isody - 1);
-            atom.bbox.join(bx);
-
-            ctx.fillStyle = type.getColor();
-            ctx.fillText(lbl, isox, isoy);
-        }
-
-        // charge and radical indicators
-        if ((chg != 0) || (rad != 0)) {
-            this.view.setSubscript();
-            var lbl = this.getChargeLabel(chg, rad);
-            chgdx = ctx.measureText(lbl).width;
-            chgdy = this.view.getSubscriptSize();
-
-            var bx = new Box(chgx, chgy, chgx + chgdx + 1, chgy - chgdy - 1);
-            //	bx.draw(ctx);
-            //	atom.bbox.draw(ctx);
-            atom.bbox.join(bx);
-
-            ctx.fillStyle = type.getColor();
-            ctx.fillText(lbl, chgx, chgy);
-        }
-
-        var hdx = ctx.measureText("H").width;
-        var hdy = dy;
-        var hx = chgx + chgdx;
+        var hWidth = ctx.measureText("H").width;
+        var hHeight = symbolHeight;
+        var hx = atom.bbox.maxX;
         var hy = y;
 
         // this is just a crude approximation!
         if((hcnt > 0) && (sym != "C")) { 
             this.view.setFont();
-            hdx = ctx.measureText("H").width;
-            ctx.fillStyle = type.getColor();
-            ctx.fillText("H", hx, (hy + (hdy / 2) - 2));
-            var bx = new Box(hx, hy, hx + hdx + 1, hy - hdy -1);
+//          ctx.fillStyle = atom.getType().getColor();
+            ctx.fillText("H", hx, (hy + (hHeight / 2) - 2));
+            var bx = new Box(hx, hy, hx + hWidth + 1, hy - hHeight -1);
             atom.bbox.join(bx);
 
             if(hcnt > 1) {
                 this.view.setSubscript();
-                var lbl = hcnt + " ";
-                hx += hdx;      // old hdx
-                hy = y + (0.8 * dy);
-                hdx = ctx.measureText(lbl).width;
-                hdy = this.view.getSubscriptSize();
-                bx = new Box(hx, hy, hx + hdx, hy - hdy - 1);
+                var label = hcnt + " ";
+                hx += hWidth;   // old hWidth
+                hy = y + (0.8 * symbolHeight);
+                hWidth = ctx.measureText(label).width;
+                hHeight = this.view.getSubscriptSize();
+                bx = new Box(hx, hy, hx + hWidth , hy - hHeight - 1);
                 atom.bbox.join(bx);
-                ctx.fillStyle = type.getColor();
-                ctx.fillText(lbl, hx, hy);
+//              ctx.fillStyle = atom.getType().getColor();
+                ctx.fillText(label, hx, hy);
             }
+        }
+    }
+
+    this.drawChargeRadical = function (ctx, atom, symbolHeight) {
+        var charge = atom.getCharge();
+        var radical = atom.getRadical();
+        if ((charge != 0) || (radical != 0)) {
+            var chargeX = atom.bbox.maxX;
+            var chargeY =  this.view.getCoord(atom).y - (0.2 * symbolHeight);
+            this.view.setSubscript();
+            var label = this.getChargeLabel(charge, radical);
+            var chargeWidth = ctx.measureText(label).width;
+            var chargeHeight = this.view.getSubscriptSize();
+
+            var bx = new Box(chargeX, chargeY, chargeX + chargeWidth + 1, chargeY - chargeHeight - 1);
+            atom.bbox.join(bx);
+
+//          ctx.fillStyle = atom.getType().getColor();
+            ctx.fillText(label, chargeX, chargeY);
+        }
+    }
+
+    this.drawIsotopeMass = function (ctx, atom, symbolHeight) {
+        if (atom.getType().getIsotope().getIsotope() > 0) {
+            this.view.setSubscript();
+            var label = atom.getType().getIsotope().getMass();
+
+            var isoWidth = ctx.measureText(label).width;
+            var isoHeight = this.view.getSubscriptSize();
+            var isoX = atom.bbox.minX - isoWidth;
+            var isoY = this.view.getCoord(atom).y - (0.2 * symbolHeight);
+
+            var bx = new Box(isoX, isoY, isoX + isoWidth + 1, isoY - isoHeight - 1);
+            atom.bbox.join(bx);
+
+//          ctx.fillStyle = atom.getType().getColor();
+            ctx.fillText(label, isoX, isoY);
         }
     }
 
@@ -403,12 +401,12 @@ function Draw(v, mol) {
                 st = "+";
                 break;
             case -1 :
-                st = "-";
+                st = String.fromCharCode(0x2014);
                 break;
             case 0:
                 break;
             default:
-                st = Math.abs(chg) + ((chg > 0) ? "+" : "-");
+                st = Math.abs(chg) + ((chg > 0) ? "+" : String.fromCharCode(0x2014));
         }
         switch (rad) {
             case 1 :            // singlet radical

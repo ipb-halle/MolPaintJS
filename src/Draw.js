@@ -145,7 +145,6 @@ function Draw(v, mol) {
     this.drawSingleAtom = function (atom) {
         var ctx = this.view.getContext();
         var sym = atom.getType().getIsotope().getSymbol();
-        var hcnt = atom.getHydrogenCount(this.molecule);
 
         this.view.setFont();
         var symbolWidth = ctx.measureText(sym).width;
@@ -160,32 +159,8 @@ function Draw(v, mol) {
 
         this.drawIsotopeMass(ctx, atom, symbolHeight);
         this.drawChargeRadical(ctx, atom, symbolHeight);
-
-        var hWidth = ctx.measureText("H").width;
-        var hHeight = symbolHeight;
-        var hx = atom.bbox.maxX;
-        var hy = y;
-
-        // this is just a crude approximation!
-        if((hcnt > 0) && (sym != "C")) { 
-            this.view.setFont();
-//          ctx.fillStyle = atom.getType().getColor();
-            ctx.fillText("H", hx, (hy + (hHeight / 2) - 2));
-            var bx = new Box(hx, hy, hx + hWidth + 1, hy - hHeight -1);
-            atom.bbox.join(bx);
-
-            if(hcnt > 1) {
-                this.view.setSubscript();
-                var label = hcnt + " ";
-                hx += hWidth;   // old hWidth
-                hy = y + (0.8 * symbolHeight);
-                hWidth = ctx.measureText(label).width;
-                hHeight = this.view.getSubscriptSize();
-                bx = new Box(hx, hy, hx + hWidth , hy - hHeight - 1);
-                atom.bbox.join(bx);
-//              ctx.fillStyle = atom.getType().getColor();
-                ctx.fillText(label, hx, hy);
-            }
+        if (sym != "C") {
+            this.drawHydrogen(ctx, atom, symbolHeight);
         }
     }
 
@@ -203,7 +178,6 @@ function Draw(v, mol) {
             var bx = new Box(chargeX, chargeY, chargeX + chargeWidth + 1, chargeY - chargeHeight - 1);
             atom.bbox.join(bx);
 
-//          ctx.fillStyle = atom.getType().getColor();
             ctx.fillText(label, chargeX, chargeY);
         }
     }
@@ -221,9 +195,53 @@ function Draw(v, mol) {
             var bx = new Box(isoX, isoY, isoX + isoWidth + 1, isoY - isoHeight - 1);
             atom.bbox.join(bx);
 
-//          ctx.fillStyle = atom.getType().getColor();
             ctx.fillText(label, isoX, isoY);
         }
+    }
+
+    this.drawHydrogen = function (ctx, atom, symbolHeight) {
+        var hCount = atom.getHydrogenCount(this.molecule);
+        if (hCount > 0) {
+            var hWidth = ctx.measureText("H").width;
+            var hx = atom.bbox.maxX;
+            var hy = this.view.getCoord(atom).y;
+            if (this.getHydrogenLabelPositionRight(atom)) {
+                this.view.setFont();
+
+                ctx.fillText("H", hx, (hy + (symbolHeight / 2) - 2));
+                var bx = new Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
+                atom.bbox.join(bx);
+
+                if (hCount > 1) {
+                    hx = atom.bbox.maxX; 
+                    hy += (0.8 * symbolHeight);
+                    this.drawHydrogenCount(ctx, atom, hx, hy, hCount, true);
+                }
+            } else {
+                hx = atom.bbox.minX + 2;
+                if (hCount > 1) {
+                    hy += (0.8 * symbolHeight);
+                    this.drawHydrogenCount(ctx, atom, hx, hy, hCount, false);
+                }
+                hx = atom.bbox.minX - hWidth;
+                hy = this.view.getCoord(atom).y;
+                this.view.setFont();
+                ctx.fillText("H", hx, (hy + (symbolHeight / 2) - 2));
+                var bx = new Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
+                atom.bbox.join(bx);
+            }
+        }
+    }
+
+    this.drawHydrogenCount = function(ctx, atom, x, y, hCount, isRight) {
+        this.view.setSubscript();
+        var label = hCount + " ";
+        var lWidth = ctx.measureText(label).width;
+        var lHeight = this.view.getSubscriptSize();
+        var lx = isRight ? x : x - lWidth;
+        bx = new Box(lx, y, lx + lWidth, y - lHeight - 1);
+        atom.bbox.join(bx)
+        ctx.fillText(label, lx, y);
     }
 
     this.drawDoubleBond = function (bond) {
@@ -422,6 +440,33 @@ function Draw(v, mol) {
         return st;
     }
 
+
+    /**
+     * check whether an atom has a bond from right: in this case the hydrogen 
+     * label must be displayed on the left, if not bond from left is present
+     */
+    this.getHydrogenLabelPositionRight = function (atom) {
+        var rightFree = true;
+        var leftFree = true;
+        for(var id in atom.bonds) {
+            var bond = this.molecule.getBond(id);
+            var neighbourAtom = bond.getAtomA();
+            if (neighbourAtom.id == atom.id) {
+                neighbourAtom = bond.getAtomB();
+            }
+            var dx = atom.coordX - neighbourAtom.coordX;
+            var dy = atom.coordY - neighbourAtom.coordY;
+            var lenSq = dx*dx + dy*dy;
+            if ((dy * dy / lenSq) < 0.8) {
+                if (dx < 0) {
+                    rightFree = false;
+                } else {
+                    leftFree = false;
+                }
+            } 
+        }
+        return rightFree || (! leftFree);
+    }
 
     /**
      * @return a triangular clipping path according to the given coordinates

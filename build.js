@@ -34,7 +34,7 @@ var { minify } = require("terser");
 const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/releases/latest/download';
 const BUILD_DIR = 'molpaintjs';
 const DIST_FILE = 'molpaintjs.tar.gz';
-var entryPoint = "zMolPaintJS.js";
+var entryPoint = "MolPaintJS.js";
 
 
 function readResource(path, dirent, header, encoding) {

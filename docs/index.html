@@ -23,9 +23,8 @@
     <link type="text/css" rel="stylesheet" href="css/styles.css"/>
     <script type="text/javascript" src="https://github.com/ipb-halle/MolPaintJS/releases/latest/download/molpaint.js"></script>
     <script type="text/javascript">
-        var molpaintjs = new MolPaintJS();
-        molpaintjs.addTemplates([ {key:'asp', molURL:'templates/asparagine.mol', iconURL:'templates/asparagine.png'}, ]);
-        molpaintjs.setTemplates([ 'benzene', 'cyclohexane', 'cyclopentane', 'asp' ]);
+        molPaintJS.addTemplates([ {key:'asp', molURL:'templates/asparagine.mol', iconURL:'templates/asparagine.png'}, ]);
+        molPaintJS.setTemplates([ 'benzene', 'cyclohexane', 'cyclopentane', 'asp' ]);
 
         /*
          * changeListener() demo
@@ -45,7 +44,7 @@
             fetch('examples/' + name)
                 .then(obj => obj.text())
                 .then(mol => { 
-                    var ctx = molpaintjs.getContext("mol");
+                    var ctx = molPaintJS.getContext("mol");
                     ctx.setMolecule(mol); 
             });
         }
@@ -63,9 +62,9 @@
 <tr><td><div id="mol"></div></td><td><div style="padding:40px">&nbsp;</div></td><td><div id="viewer" style="padding-top:40px"></div></td></tr>
 </table>
 <script type="text/javascript">
-    molpaintjs.newContext("mol", {helpURL:"help/index.html", iconSize: 32, debugId: "debug"}).init().setMolecule("3-Acetylcoumarin\n  MolPaintJS\n\n 14 15  0  0  0  0  0  0  0  0999 V2000\n   -2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.1434   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289   -1.2375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9 10  2  0      \n 10  5  1  0      \n  9 11  1  0      \n 11 12  1  0      \n 11 13  2  0      \n  8 14  2  0      \nM  END\n").setChangeListener(changeListener);
+    molPaintJS.newContext("mol", {helpURL:"help/index.html", iconSize: 32, debugId: "debug"}).init().setMolecule("3-Acetylcoumarin\n  MolPaintJS\n\n 14 15  0  0  0  0  0  0  0  0999 V2000\n   -2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.1434   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289   -1.2375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9 10  2  0      \n 10  5  1  0      \n  9 11  1  0      \n 11 12  1  0      \n 11 13  2  0      \n  8 14  2  0      \nM  END\n").setChangeListener(changeListener);
 
-    molpaintjs.newContext("viewer", {iconSize: 32, sizeX:250, sizeY:250, viewer: 1}).init().setMolecule(
+    molPaintJS.newContext("viewer", {iconSize: 32, sizeX:250, sizeY:250, viewer: 1}).init().setMolecule(
         "n.n.\n  MolPaintJS\n\n 12 13  0  0  0  0            999\n   -1.4605    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    1.6467    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    1.2342    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4605    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7461   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0316    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829   -0.0033    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3974    0.4092    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6829    2.4717    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1118   -0.0033    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0\n  2  3  1  0\n  3  4  1  0\n  4  5  1  0\n  6  7  1  0\n  7  8  1  0\n  8  9  1  0\n  9 10  1  0\n  5 10  1  0\n  3  8  1  0\n  4 11  1  1\n 10 12  1  6\n  1  6  2  0\nM  END\n");
 
 </script>
@@ -85,7 +84,7 @@ Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</
   <option value="V2000">V2000</option>
   <option value="V3000">V3000</option>
 </select>
-<input type='button' value='write MOL' onclick='molpaintjs.dump("mol", "output", document.getElementById("format").value); return false;'/>
+<input type='button' value='write MOL' onclick='molPaintJS.dump("mol", "output", document.getElementById("format").value); return false;'/>
 <div id="output"></div>
 
 </body>

@@ -15,145 +15,186 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function Box(x1, y1, x2, y2) {
+var molPaintJS = (function (molpaintjs) {
 
-    /* 
-     * this class stores a bounding box 
+    /*
+     * this class stores a bounding box
      */
-    this.minX = (x1 < x2) ? x1 : x2;
-    this.minY = (y1 < y2) ? y1 : y2;
-    this.maxX = (x1 < x2) ? x2 : x1;
-    this.maxY = (y1 < y2) ? y2 : y1;
+    molpaintjs.Box = function (x1, y1, x2, y2) {
 
-    /**
-     * Join two bounding boxes forming a single
-     * larger box which contains both boxes
-     */
-    this.join = function (box) {
-        this.minX = (this.minX < box.minX) ? this.minX : box.minX;
-        this.minY = (this.minY < box.minY) ? this.minY : box.minY;
-        this.maxX = (this.maxX > box.maxX) ? this.maxX : box.maxX;
-        this.maxY = (this.maxY > box.maxY) ? this.maxY : box.maxY;
-    }
+        var minX = (x1 < x2) ? x1 : x2;
+        var minY = (y1 < y2) ? y1 : y2;
+        var maxX = (x1 < x2) ? x2 : x1;
+        var maxY = (y1 < y2) ? y2 : y1;
+        var centerX = (x1 + x2) / 2;
+        var centerY = (y1 + y2) / 2;
 
-    /**
-     * draw this bounding Box
-     */
-    this.draw = function (ctx) {
-        ctx.moveTo(this.minX, this.minY);
-        ctx.lineTo(this.minX, this.maxY);
-        ctx.lineTo(this.maxX, this.maxY);
-        ctx.lineTo(this.maxX, this.minY);
-        ctx.lineTo(this.minX, this.minY);
-        ctx.stroke();
-        ctx.beginPath();
-    }
-
-    /**
-     * clip a line segment originated at point coord.
-     * coord must be inside the current bounding box; otherwise
-     * outcome will be undefined.
-     */
-    this.clip = function (coord, dx, dy) {
-        var t = 0;
-        t += (dx > 0) ? 1 : 0;
-        t += (dx == 0) ? 2 : 0;
-        t += (dx < 0) ? 4 : 0;
-        t += (dy > 0) ? 8 : 0;
-        t += (dy == 0) ? 16 : 0;
-        t += (dy < 0) ? 32 : 0;
-        switch (t) {
-            // dx > 0; dy > 0
-            case 9:
-                return this.clip1(coord, dx, dy)
-
-            // dx == 0; dy > 0
-            case 10:
-                return {x: coord.x, y: this.minY};
-
-            // dx < 0; dy > 0
-            case 12:
-                return this.clip2(coord, dx, dy);
-
-            // dx > 0; dy == 0
-            case 17:
-                return {x: this.minX, y: coord.y};
-
-            // dx < 0; dy == 0
-            case 20:
-                return {x: this.maxX, y: coord.y};
-
-            // dx > 0; dy < 0
-            case 33:
-                return this.clip4(coord, dx, dy);
-
-            // dx == 0; dy < 0
-            case 34:
-                return {x: coord.x, y: this.maxY};
-
-            // dx < 0; dy < 0
-            case 36:
-                return this.clip3(coord, dx, dy);
-
-            default:
-                alert("Box.clip(): internal error");
+        /**
+         * clip in quadrant I
+         */
+        function clip1 (coord, dx, dy) {
+            var cx = coord.x - minX
+            var cy = coord.y - minY;
+            var d = dx / dy;
+            var c = cx / cy;
+            if (d < c) {
+                return {x: (coord.x - (d * cy)), y: minY};
+            }
+            return {x: minX, y: (coord.y - (cx / d))};
         }
-    }
 
-    /**
-     * clip in quadrant I
-     */
-    this.clip1 = function (coord, dx, dy) {
-        var cx = coord.x - this.minX
-        var cy = coord.y - this.minY;
-        var d = dx / dy;
-        var c = cx / cy;
-        if (d < c) {
-            return {x: (coord.x - (d * cy)), y: this.minY};
+        /**
+         * clip in quadrant II
+         */
+        function clip2 (coord, dx, dy) {
+            var cx = maxX - coord.x;
+            var cy = coord.y - minY;
+            var d = -dx / dy;
+            var c = cx / cy;
+            if (d < c) {
+                return {x: (coord.x + (d * cy)), y: minY};
+            }
+            return {x: maxX, y: (coord.y - (cx / d))};
         }
-        return {x: this.minX, y: (coord.y - (cx / d))};
-    }
 
-    /**
-     * clip in quadrant II
-     */
-    this.clip2 = function (coord, dx, dy) {
-        var cx = this.maxX - coord.x;
-        var cy = coord.y - this.minY;
-        var d = -dx / dy;
-        var c = cx / cy;
-        if (d < c) {
-            return {x: (coord.x + (d * cy)), y: this.minY};
+        /**
+         * clip in quadrant III
+         */
+        function clip3 (coord, dx, dy) {
+            var cx = maxX - coord.x;
+            var cy = maxY - coord.y;
+            var d = dx / dy;
+            var c = cx / cy;
+            if (d < c) {
+                return {x: (coord.x + (d * cy)), y: maxY};
+            }
+            return {x: maxX, y: (coord.y + (cx / d))};
         }
-        return {x: this.maxX, y: (coord.y - (cx / d))};
-    }
 
-    /**
-     * clip in quadrant III
-     */
-    this.clip3 = function (coord, dx, dy) {
-        var cx = this.maxX - coord.x;
-        var cy = this.maxY - coord.y;
-        var d = dx / dy;
-        var c = cx / cy;
-        if (d < c) {
-            return {x: (coord.x + (d * cy)), y: this.maxY};
+        /**
+         * clip in quadrant IV
+         */
+        function clip4 (coord, dx, dy) {
+            var cx = coord.x - minX;
+            var cy = maxY - coord.y;
+            var d = -dx / dy;
+            var c = cx / cy;
+            if (d < c) {
+                return {x: (coord.x - (d * cy)), y: maxY};
+            }
+            return {x: minX, y: (coord.y + (cx / d))};
         }
-        return {x: this.maxX, y: (coord.y + (cx / d))};
-    }
 
-    /**
-     * clip in quadrant IV
-     */
-    this.clip4 = function (coord, dx, dy) {
-        var cx = coord.x - this.minX;
-        var cy = this.maxY - coord.y;
-        var d = -dx / dy;
-        var c = cx / cy;
-        if (d < c) {
-            return {x: (coord.x - (d * cy)), y: this.maxY};
-        }
-        return {x: this.minX, y: (coord.y + (cx / d))};
+        return {
+
+            /**
+             * clip a line segment originated at point coord.
+             * coord must be inside the current bounding box; otherwise
+             * outcome will be undefined.
+             */
+            clip : function (coord, dx, dy) {
+                var t = 0;
+                t += (dx > 0) ? 1 : 0;
+                t += (dx == 0) ? 2 : 0;
+                t += (dx < 0) ? 4 : 0;
+                t += (dy > 0) ? 8 : 0;
+                t += (dy == 0) ? 16 : 0;
+                t += (dy < 0) ? 32 : 0;
+                switch (t) {
+                    // dx > 0; dy > 0
+                    case 9:
+                        return clip1(coord, dx, dy)
+
+                    // dx == 0; dy > 0
+                    case 10:
+                        return {x: coord.x, y: minY};
+
+                    // dx < 0; dy > 0
+                    case 12:
+                        return clip2(coord, dx, dy);
+
+                    // dx > 0; dy == 0
+                    case 17:
+                        return {x: minX, y: coord.y};
+
+                    // dx < 0; dy == 0
+                    case 20:
+                        return {x: maxX, y: coord.y};
+
+                    // dx > 0; dy < 0
+                    case 33:
+                        return clip4(coord, dx, dy);
+
+                    // dx == 0; dy < 0
+                    case 34:
+                        return {x: coord.x, y: maxY};
+
+                    // dx < 0; dy < 0
+                    case 36:
+                        return clip3(coord, dx, dy);
+
+                    default:
+                        alert("Box.clip(): internal error");
+                }
+            },
+
+            contains : function (x, y) {
+                return (minX < x)
+                    && (maxX > x)
+                    && (minY < y)
+                    && (maxY > y);
+            },
+
+            /**
+             * draw this bounding Box
+             */
+            draw : function (vctx) {
+                vctx.moveTo(minX, minY);
+                vctx.lineTo(minX, maxY);
+                vctx.lineTo(maxX, maxY);
+                vctx.lineTo(maxX, minY);
+                vctx.lineTo(minX, minY);
+                vctx.stroke();
+                vctx.beginPath();
+            },
+
+            /**
+             * Join two bounding boxes forming a single
+             * larger box which contains both boxes
+             */
+            join : function (box) {
+                minX = (minX < box.getMinX()) ? minX : box.getMinX();
+                minY = (minY < box.getMinY()) ? minY : box.getMinY();
+                maxX = (maxX > box.getMaxX()) ? maxX : box.getMaxX();
+                maxY = (maxY > box.getMaxY()) ? maxY : box.getMaxY();
+            },
+
+            getCenterX : function() {
+                return centerX;
+            },
+
+            getCenterY : function() {
+                return centerY;
+            },
+
+            getMaxX : function() {
+                return maxX;
+            },
+
+            getMaxY : function() {
+                return maxY;
+            },
+
+            getMinX : function() {
+                return minX;
+            },
+
+            getMinY : function() {
+                return minY;
+            }
+        };
     }
-}
+    return molpaintjs;
+}(molPaintJS || {}));

@@ -21,35 +21,43 @@
  * old versions of Firefox. Current implementations do not 
  * require this module.
  */
-function Promise(fn) {
+"use strict";
 
-	var state = 'pending';
-	var value;
-	var deferred;
+var molPaintJS = (function (molpaintjs) {
 
-	function resolve(newValue) {
-		value = newValue;
-		state = 'resolved';
+    molpaintjs.Promise = function (fn) {
 
-		if(deferred) {
-			handle(deferred);
-		}
-	}
+        var state = 'pending';
+        var value;
+        var deferred;
 
-	function handle(onResolved) {
-		if(state === 'pending') {
-			deferred = onResolved;
-			return;
-		}
+        fn(resolve);
 
-		onResolved(value);
-	}
+        return {
+            resolve : function(newValue) {
+                value = newValue;
+                state = 'resolved';
 
-	this.then = function(onResolved) {
-		handle(onResolved);
-	};
+                if(deferred) {
+                    handle(deferred);
+                }
+            },
 
-	fn(resolve);
-}
+            handle : function(onResolved) {
+                if(state === 'pending') {
+                    deferred = onResolved;
+                    return;
+                }
+
+                onResolved(value);
+            },
+
+            then : function(onResolved) {
+                handle(onResolved);
+            }
+        };
+    }
+    return molpaintjs;
+}(molPaintJS || {}));
 
 

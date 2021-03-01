@@ -15,21 +15,29 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function Action(at, ot, newObj, oldObj) {
+var molPaintJS = (function (molpaintjs) {
 
-    /* 
-     * this class stores an atomic action which is part of 
-     * an user action. The type of action can be "ADD", 
-     * "DEL", and "UPD". In case of "ADD", the only the new 
-     * object is stored (oldObject is null), in case of "DEL" 
-     * only the old object is stored and in case of "UPD" 
-     * both objects (old and new) are stored.
-     * 
-     * objectType so far can be "ATOM" and "BOND"
-     */
-    this.actionType = at;
-    this.newObject = newObj;
-    this.oldObject = oldObj;
-    this.objectType = ot;
-}
+    molpaintjs.Action = function (at, ot, newObj, oldObj) {
+
+        return {
+
+            /* 
+             * this class stores an atomic action which is part of 
+             * an user action. The type of action can be "ADD", 
+             * "DEL", and "UPD". In case of "ADD", the only the new 
+             * object is stored (oldObject is null), in case of "DEL" 
+             * only the old object is stored and in case of "UPD" 
+             * both objects (old and new) are stored.
+             * 
+             * objectType so far can be "ATOM" and "BOND"
+             */
+            actionType : at,
+            newObject : newObj,
+            oldObject : oldObj,
+            objectType : ot
+        };
+    }
+    return molpaintjs;
+}(molPaintJS || {}));

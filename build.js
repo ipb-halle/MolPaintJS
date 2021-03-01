@@ -51,7 +51,7 @@ function readResource(path, dirent, header, encoding) {
 function readPEG(path, dirent) {
     return peg.generate(
                 fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}),
-                {'output':'source', 'format':'globals', 'exportVar':'MDLParser'});
+                {'output':'source', 'format':'umd', 'exportVar':'molPaintJS.MDLParser'});
 }
 
 /*

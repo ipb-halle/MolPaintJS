@@ -49,8 +49,8 @@
      * a mass difference (V2000) or an absolute mass (V2000 'M  ISO' or V3000)
      */
     function getAtomType(sym, massDiff, absMass) {
-        var atomType = new AtomType();
-        var stdIsotope = Elements.instance.getElement(sym);
+        var atomType = molPaintJS.AtomType();
+        var stdIsotope = molPaintJS.Elements.getElement(sym);
         var atomicNumber = stdIsotope.getAtomicNumber() - 1;
         var targetMass = stdIsotope.getMass();
 
@@ -64,7 +64,7 @@
             }
         }
 
-        for(var iso of Elements.instance.elements[atomicNumber]) {
+        for(var iso of molPaintJS.Elements.elements[atomicNumber]) {
             if ((iso.getIsotope() > 0) && (iso.getMass() == targetMass)) {
                 return(getAtomTypeFromIsotope(iso));
             }
@@ -75,7 +75,7 @@
     }
 
     function getAtomTypeFromIsotope(iso) {
-        var atomType = new AtomType();
+        var atomType = molPaintJS.AtomType();
         atomType.setIsotope(iso);
         atomType.setColor(iso.getColor());
         return atomType;
@@ -210,7 +210,7 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.molecule = new Molecule();
+            mdlParserData.molecule = molPaintJS.Molecule();
             mdlParserData.molecule.setProperty('NAME', mdlParserData.header1);
             mdlParserData.molecule.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.molecule.setProperty('COMMENT', mdlParserData.header3);
@@ -268,10 +268,10 @@ v2atomLine
             }
             return false;
         } {
-            var a = new Atom();
-            a.coordX = atomX;
-            a.coordY = -1.0 * atomY; // flip on X axis
-            a.coordZ = atomZ;
+            var a = molPaintJS.Atom();
+            a.setX(atomX);
+            a.setY(-1.0 * atomY); // flip on X axis
+            a.setZ(atomZ);
 
             a.setType(getAtomType(atomType, massDiff, null));
             setV2AtomCharge(a, charge);
@@ -309,7 +309,7 @@ v2bondLine
             }
             return false;
         } {
-            var b = new Bond();
+            var b = molPaintJS.Bond();
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);
@@ -534,7 +534,7 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.molecule = new Molecule();
+            mdlParserData.molecule = molPaintJS.Molecule();
             mdlParserData.molecule.setProperty('NAME', mdlParserData.header1);
             mdlParserData.molecule.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.molecule.setProperty('COMMENT', mdlParserData.header3);
@@ -574,10 +574,10 @@ atomEntry
       atomZ:float atomAtomMap:uint atomCont:atomContinuation {
 
 
-            var a = new Atom();
-            a.coordX = atomX;
-            a.coordY = -1.0 * atomY; // flip on X axis
-            a.coordZ = atomZ;
+            var a = molPaintJS.Atom();
+            a.setX(atomX);
+            a.setY(-1.0 * atomY); // flip on X axis
+            a.setZ(atomZ);
 
             if (atomCont == undefined) {
                 atomCont = { };
@@ -697,7 +697,7 @@ v3bondBlock
 bondEntry
     = 'M  V30' bondIndex:uint bondType:uint atom1:uint atom2:uint bondCont:bondContinuation {
 
-            var b = new Bond();
+            var b = molPaintJS.Bond();
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);

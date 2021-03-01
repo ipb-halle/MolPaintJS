@@ -23,23 +23,39 @@
  * of the tool icons (i.e. change the icon CSS class).
  */
 
-function Tools() {
-}
+"use strict";
 
-Tools.abort = function (tool) {
-    var iconId = tool.context.contextId + "_" + tool.id;
-    var icon = document.getElementById(iconId);
-    icon.className = "inactiveTool";
-}
+var molPaintJS = (function (molpaintjs) {
 
-Tools.setup = function (tool) {
-    var iconId = tool.context.contextId + "_" + tool.id;
-    var icon = document.getElementById(iconId);
-    icon.className = "activeTool";
+    molpaintjs.Tools = {
 
-    try {
-        tool.setup();
-    } catch (err) {
-        // ignore
-    }
-}
+        abort : function (tool) {
+            if (tool == null) {
+                return;
+            }
+            var iconId = tool.context.contextId + "_" + tool.id;
+            var icon = document.getElementById(iconId);
+            if (icon != null) {
+                // ToDo: use promises
+                icon.className = "inactiveTool";
+            }
+        },
+
+        setup : function (tool) {
+            var iconId = tool.context.contextId + "_" + tool.id;
+            var icon = document.getElementById(iconId);
+            if (icon == null) {
+                // ToDo: use promises
+                return;
+            }
+            icon.className = "activeTool";
+
+            try {
+                tool.setup();
+            } catch (err) {
+                // ignore
+            }
+        }
+    };
+    return molpaintjs;
+}(molPaintJS || {}));

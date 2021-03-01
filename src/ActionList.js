@@ -15,38 +15,45 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function ActionList() {
+var molPaintJS = (function (molpaintjs) {
 
-    /* 
-     * this class stores all atomic actions of a user. A single 
-     * user action (e.g. adding a residue) may be composed of 
-     * several atomic actions.
-     */
-    this.actions = [];
+    molpaintjs.ActionList = function () {
 
-    /**
-     * add a single atomic action
-     * @param a the single (atomic) action
-     */
-    this.addAction = function (a) {
-        this.actions.push(a);
+        /* 
+         * this class stores all atomic actions of a user. A single 
+         * user action (e.g. adding a residue) may be composed of 
+         * several atomic actions.
+         */
+        var actions = [];
+
+        return {
+            /**
+             * add a single atomic action
+             * @param a the single (atomic) action
+             */
+            addAction : function (a) {
+                actions.push(a);
+            },
+
+            /**
+             * append a whole action list
+             * @param al the ActionList object to append
+             */
+            addActionList : function (al) {
+                for(var i in al.actions) {
+                    actions.push(al.actions[i]);
+                }
+            },
+
+            /**
+             * @return the array of atomic actions
+             */
+            getActions : function () {
+                return actions;
+            }
+        };
     }
-
-    /**
-     * append a whole action list
-     * @param al the ActionList object to append
-     */
-    this.addActionList = function (al) {
-        for(var i in al.actions) {
-            this.actions.push(al.actions[i]);
-        }
-    }
-
-    /**
-     * @return the array of atomic actions
-     */
-    this.getActions = function () {
-        return this.actions;
-    }
-}
+    return molpaintjs;
+}(molPaintJS || {}));

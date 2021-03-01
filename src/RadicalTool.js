@@ -15,71 +15,76 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function RadicalTool(ctx, prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.id = "radical";
+    molpaintjs.RadicalTool = function(ctx, prop) {
 
-    this.context = ctx;
-    this.distMax = prop.distMax;
-    this.type = "radical";
+        var distMax = prop.distMax;
+        var type = "radical_up";
 
-    this.abort = function () {
-        Tools.abort(this);
-    }
+        return {
+            id : "radical",
+            context : ctx,
 
-    this.getType = function () {
-        return this.type;
-    }
+            abort : function () {
+                molPaintJS.Tools.abort(this);
+            },
 
-    this.onClick = function (x, y, evt) {
-        var coord = this.context.view.getCoordReverse(x, y);
-        var atomId = this.context.molecule.selectAtom(coord, this.distMax);
-        if (atomId != null) {
+            getType : function () {
+                return type;
+            },
 
-            var actionList = new ActionList();
-            var atom = this.context.molecule.getAtom(atomId);
-            var oldAtom = atom.copy();
-            var dir = (this.type == "isotope_up") ? 1 : -1;
+            onClick : function (x, y, evt) {
+                var coord = this.context.getView().getCoordReverse(x, y);
+                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                if (atomId != null) {
 
-            switch (this.type) {
-                case "singlet" :
-                    atom.setRadical(1);
-                    break;
-                case "doublet" :
-                    atom.setRadical(2);
-                    break;
-                case "triplet" :
-                    atom.setRadical(3);
-                    break;
-                case "no_radical" :
-                    atom.setRadical(0);
-                    break;
+                    var actionList = molPaintJS.ActionList();
+                    var atom = this.context.getMolecule().getAtom(atomId);
+                    var oldAtom = atom.copy();
+
+                    switch (type) {
+                        case "singlet" :
+                            atom.setRadical(1);
+                            break;
+                        case "doublet" :
+                            atom.setRadical(2);
+                            break;
+                        case "triplet" :
+                            atom.setRadical(3);
+                            break;
+                        case "no_radical" :
+                            atom.setRadical(0);
+                            break;
+                    }
+                    this.context.getMolecule().replaceAtom(atom);
+                    actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
+                    this.context.getHistory().appendAction(actionList);
+
+                }
+                this.context.draw();
+            },
+
+            onMouseDown : function (x, y, evt) {
+            },
+
+            onMouseMove : function (x, y, evt) {
+            },
+
+            setType : function(t) {
+                type = t;
+            },
+
+            setup : function () {
+                var srcIconId = this.context.contextId + "_" + type;
+                var destIconId = this.context.contextId + "_radical";
+                icon = document.getElementById(destIconId);
+                icon.src = document.getElementById(srcIconId).src;
             }
-            this.context.molecule.replaceAtom(atom);
-            actionList.addAction(new Action("UPD", "ATOM", atom, oldAtom));
-            this.context.history.appendAction(actionList);
-
-        }
-        this.context.draw();
+        };
     }
-
-    this.onMouseDown = function (x, y, evt) {
-    }
-
-    this.onMouseMove = function (x, y, evt) {
-    }
-
-    this.setType = function(t) {
-        this.type = t;
-    }
-
-    this.setup = function () {
-        var srcIconId = this.context.contextId + "_" + this.type;
-        var destIconId = this.context.contextId + "_radical";
-        icon = document.getElementById(destIconId);
-        icon.src = document.getElementById(srcIconId).src;
-    }
-
-}
+    return molpaintjs;
+}(molPaintJS || {}));
 

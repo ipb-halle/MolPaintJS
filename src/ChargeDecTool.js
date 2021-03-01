@@ -15,31 +15,38 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function ChargeDecTool(ctx, prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.id = "minus";
+    molpaintjs.ChargeDecTool = function (ctx, prop) {
 
-    this.context = ctx;
-    this.distMax = prop.distMax;
+        var distMax = prop.distMax;
 
-    this.abort = function () {
-        Tools.abort(this);
+        return {
+
+            id : "minus",
+            context : ctx,
+
+            abort : function () {
+                molPaintJS.Tools.abort(this);
+            },
+
+            onClick : function (x, y, evt) {
+                var coord = this.context.getView().getCoordReverse(x, y);
+                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                if (atomId != null) {
+                    this.context.getMolecule().getAtom(atomId).chargeDecrement();
+                }
+                this.context.draw();
+            },
+
+            onMouseDown : function (x, y, evt) {
+            },
+
+            onMouseMove : function (x, y, evt) {
+            },
+        };
     }
-
-    this.onClick = function (x, y, evt) {
-        var coord = this.context.view.getCoordReverse(x, y);
-        var atomId = this.context.molecule.selectAtom(coord, this.distMax);
-        if (atomId != null) {
-            this.context.molecule.atoms[atomId].chargeDecrement();
-        }
-        this.context.draw();
-    }
-
-    this.onMouseDown = function (x, y, evt) {
-    }
-
-    this.onMouseMove = function (x, y, evt) {
-    }
-}
-
+    return molpaintjs;
+}(molPaintJS || {}));

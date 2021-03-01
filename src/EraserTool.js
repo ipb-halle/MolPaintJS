@@ -15,78 +15,85 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function EraserTool(ctx, prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.id = "eraser";
+    molpaintjs.EraserTool = function (ctx, prop) {
 
-    this.context = ctx;
-    this.distMax = prop.distMax;
+        var distMax = prop.distMax;
+        var actionList;
 
-    this.abort = function () {
-        Tools.abort(this);
-    }
+        return {
+            id : "eraser",
+            context : ctx,
 
+            abort : function () {
+                molPaintJS.Tools.abort(this);
+            },
 
-    /**
-     * erase a single atom and all of its bonds
-     */
-    this.eraseAtom = function (id) {
-        var actionList = new ActionList();
-        var atom = this.context.molecule.getAtom(id);
-        for (var b in atom.bonds) {
-            var bond = this.context.molecule.getBond(b);
-            actionList.addAction(new Action("DEL", "BOND", null, bond));
-            this.context.molecule.delBond(bond);
-        }
-        actionList.addAction(new Action("DEL", "ATOM", null, atom));
-        this.context.molecule.delAtom(atom);
-        this.context.history.appendAction(actionList);
-        this.context.draw();
-    }
+            /**
+             * erase a single atom and all of its bonds
+             */
+            eraseAtom : function (id) {
+                var actionList = molPaintJS.ActionList();
+                var atom = this.context.getMolecule().getAtom(id);
+                for (var b in atom.getBonds()) {
+                    var bond = this.context.getMolecule().getBond(b);
+                    actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
+                    context.getMolecule().delBond(bond);
+                }
+                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atom));
+                this.context.getMolecule().delAtom(atom);
+                this.context.getHistory().appendAction(actionList);
+                this.context.draw();
+            },
 
-    /**
-     * erase a single bond. If one or both of its atoms
-     * have no more bonds left they're erased as well.
-     */
-    this.eraseBond = function (id) {
-        var actionList = new ActionList();
-        var bond = this.context.molecule.getBond(id);
-        var atomA = bond.atomA;
-        var atomB = bond.atomB;
-        actionList.addAction(new Action("DEL", "BOND", null, bond));
-        this.context.molecule.delBond(bond);
-        if (Object.keys(atomA.bonds).length == 0) {
-            actionList.addAction(new Action("DEL", "ATOM", null, atomA));
-            this.context.molecule.delAtom(atomA);
-        }
-        if (Object.keys(atomB.bonds).length == 0) {
-            actionList.addAction(new Action("DEL", "ATOM", null, atomB));
-            this.context.molecule.delAtom(atomB);
-        }
-        this.context.history.appendAction(actionList);
-        this.context.draw();
-    }
+            /**
+             * erase a single bond. If one or both of its atoms
+             * have no more bonds left they're erased as well.
+             */
+            eraseBond : function (id) {
+                var actionList = molPaintJS.ActionList();
+                var bond = this.context.getMolecule().getBond(id);
+                var atomA = bond.getAtomA();
+                var atomB = bond.getAtomB();
+                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
+                this.context.getMolecule().delBond(bond);
+                if (Object.keys(atomA.getBonds()).length == 0) {
+                    actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atomA));
+                    this.context.getMolecule().delAtom(atomA);
+                }
+                if (Object.keys(atomB.bonds).length == 0) {
+                    actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atomB));
+                    this.context.getMolecule().delAtom(atomB);
+                }
+                this.context.getHistory().appendAction(actionList);
+                this.context.draw();
+            },
 
-    this.onClick = function (x, y, evt) {
-        var coord = this.context.view.getCoordReverse(x, y);
-        var bonds = this.context.molecule.selectBond(coord, this.distMax);
-        if (bonds.length == 1) {
-            this.eraseBond(bonds[0]);
-            // alert("Erase bond: id=" + bonds[0]);
-        } else {
-            var atom = this.context.molecule.selectAtom(coord, this.distMax);
-            if (atom != null) {
-                this.eraseAtom(atom);
-                // alert("Erase atom: id=" + atom);
+            onClick : function (x, y, evt) {
+                var coord = this.context.getView().getCoordReverse(x, y);
+                var bonds = this.context.getMolecule().selectBond(coord, distMax);
+                if (bonds.length == 1) {
+                    eraseBond(bonds[0]);
+                    // alert("Erase bond: id=" + bonds[0]);
+                } else {
+                    var atom = this.context.getMolecule().selectAtom(coord, distMax);
+                    if (atom != null) {
+                        eraseAtom(atom);
+                        // alert("Erase atom: id=" + atom);
+                    }
+                }
+            },
+
+            onMouseDown : function (x, y, evt) {
+            },
+
+            onMouseMove : function (x, y, evt) {
             }
-        }
+        };
     }
-
-    this.onMouseDown = function (x, y, evt) {
-    }
-
-    this.onMouseMove = function (x, y, evt) {
-    }
-}
+    return molpaintjs;
+}(molPaintJS || {}));
 

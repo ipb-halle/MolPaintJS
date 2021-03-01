@@ -15,22 +15,29 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function NullTool(ctx) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.id = "nullTool";
+    molpaintjs.NullTool = function(ctx) {
 
-    this.context = ctx;
-    this.imgData = null;
-    this.originX = null;
-    this.originY = null;
+        var imgData = null;
+        var originX = null;
+        var originY = null;
 
-    this.abort = function () { Tools.abort(this); }
+        return {
+            id : "nullTool",
+            context : ctx,
 
-    this.onClick = function (x, y, evt) { }
+            abort : function () { Tools.abort(this); },
 
-    this.onMouseDown = function (x, y, evt) { }
+            onClick : function (x, y, evt) { },
 
-    this.onMouseMove = function (x, y, evt) { }
-}
+            onMouseDown : function (x, y, evt) { },
+
+            onMouseMove : function (x, y, evt) { }
+        };
+    }
+    return molpaintjs;
+}(molPaintJS || {}));
 

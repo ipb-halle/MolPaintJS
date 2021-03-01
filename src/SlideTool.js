@@ -15,39 +15,45 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-/**
- * The SlideTool does not provide history as it does not affect 
- * the coordinates of the molecule. Only the View is manipulated.
- */
-function SlideTool(ctx) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.id = "slide";
+    /**
+     * The SlideTool does not provide history as it does not affect
+     * the coordinates of the molecule. Only the View is manipulated.
+     */
+    molpaintjs.SlideTool = function(ctx) {
 
-    this.context = ctx;
-    this.origin = null;
+        var origin = null;
 
-    this.abort = function () {
-        Tools.abort(this);
+        return {
+            id : "slide",
+            context : ctx,
+
+            abort : function () {
+                molPaintJS.Tools.abort(this);
+            },
+
+            onClick : function (x, y, evt) {
+                origin = null;
+                this.context.draw();
+            },
+
+            onMouseDown : function (x, y, evt) {
+                origin = { 'x' : x, 'y' : y };
+            },
+
+            onMouseMove : function (x, y, evt) {
+                if (origin != null) {
+                    var dx = x - origin.x;
+                    var dy = y - origin.y;
+                    origin = { 'x' : x, 'y' : y };
+                    this.context.getView().slide(dx, dy);
+                    this.context.draw();
+                }
+            }
+        };
     }
-
-    this.onClick = function (x, y, evt) {
-        this.origin = null;
-        this.context.draw();
-    }
-
-    this.onMouseDown = function (x, y, evt) {
-        this.origin = { 'x' : x, 'y' : y };
-    }
-
-    this.onMouseMove = function (x, y, evt) {
-        if (this.origin != null) {
-            var dx = x - this.origin.x;
-            var dy = y - this.origin.y;
-            this.origin = { 'x' : x, 'y' : y };
-            this.context.view.slide(dx, dy);
-            this.context.draw();
-        }
-    }
-}
-
+    return molpaintjs;
+}(molPaintJS || {}));

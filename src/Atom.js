@@ -15,182 +15,253 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function Atom() {
+var molPaintJS = (function (molpaintjs) {
 
-    this.bbox = null;	// bounding box for the atom label
-    this.bonds = {};
-    this.coordX;
-    this.coordY;
-    this.coordZ;
-
-    this.charge = 0;	// formal charge of the atom
-    this.radical = 0;	// 0 = no radical, 1=singlet, 2=doublet, 3=triplet
-
-    this.id = null;	// unique id (i.e. for undo / redo)
-    this.index;		// numeric index in list of atoms
-    this.selected = 0;	// non zero, if the atom is currently selected
-    this.stereo = 0;
-    this.temp = 0;	// non zero if the atom is transient (temporary)
-    this.type;		// atom type / element / isotope
+    molpaintjs.Atom = function () {
 
 
-    /**
-     * change the isotope for the current atom
-     * @param dir direction 1=up, -1=down
-     */
-    this.changeIsotope = function (dir) {
-        var idx = this.type.getIsotope().getAtomicNumber() - 1;
-        var massExact = this.type.getIsotope().getMassExact();
-        var newIsotope = null;
-        var oldDelta = 100.0;
+        var bbox = null;        // bounding box for the atom label
+        var bonds = {};
+        var coordX = 0.0;
+        var coordY = 0.0;
+        var coordZ = 0.0;
 
-        for (var iso of Elements.instance.elements[idx]) {
-            var delta = (iso.getMassExact() - massExact) * dir;
-            if ((delta > 0.0) && (delta < oldDelta)) {
-                oldDelta = delta;
-                newIsotope = iso;
-            }
-        }
-            
-        if (newIsotope != null) {
-            var at = new AtomType();
-            at.setIsotope(newIsotope); 
-            at.setColor(newIsotope.getColor()); 
-            this.type = at;
-            return true;
-        }
-        return false;
-    }
+        var charge = 0;         // formal charge of the atom
+        var radical = 0;        // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
 
-    this.chargeDecrement = function () {
-        this.charge -= 1;
-    }
-    this.chargeIncrement = function () {
-        this.charge += 1;
-    }
+        var id = null;          // unique id (i.e. for undo / redo)
+        var index = null;       // numeric index in list of atoms
+        var selected = 0;       // non zero, if the atom is currently selected
+        var stereo = 0;
+        var temp = 0;           // non zero if the atom is transient (temporary)
+        var type = null;        // atom type / element / isotope
 
-    this.addBond = function (idx) {
-        this.bonds[idx] = idx;
-    }
 
-    /**
-     * make a copy (clone) of this Atom
-     * @return a new Atom with identical properties
-     * including the bond list
-     */
-    this.copy = function () {
-        var a = new Atom();
-        a.coordX = this.coordX;
-        a.coordY = this.coordY;
-        a.coordZ = this.coordZ;
-        a.charge = this.charge;
-        a.radical = this.radical;
-        a.id = this.id;
-        a.index = this.index;
-        a.selected = this.selected;
-        a.stereo = this.stereo;
-        a.temp = this.temp;
-        a.type = this.type;
-        a.bonds = this.copyBonds();
-        return a;
-    }
+        return {
+            addX : function (x) {
+                coordX += x;
+            },
 
-    this.copyBonds = function () {
-        var b = {};
-        for (var i in this.bonds) {
-            b[i] = i;
-        }
-        return b;
-    }
+            addY : function (y) {
+                coordY += y;
+            },
 
-    /**
-     * delete a specific bond from this atom
-     */
-    this.delBond = function (idx) {
-        delete this.bonds[idx];
-    }
+            addZ : function (z) {
+                coordZ += z;
+            },
 
-    this.getBonds = function () {
-        return this.bonds;
-    }
-    this.getCharge = function () {
-        return this.charge;
-    }
+            /**
+             * change the isotope for the current atom
+             * @param dir direction 1=up, -1=down
+             */
+            changeIsotope : function (dir) {
+                var idx = type.getIsotope().getAtomicNumber() - 1;
+                var massExact = type.getIsotope().getMassExact();
+                var newIsotope = null;
+                var oldDelta = 100.0;
 
-    /**
-     * compute the hydrogen count (implicit hydrogens)
-     * for this atom. Currently does not account for 
-     * explicit hydrogens!
-     */
-    this.getHydrogenCount = function(molecule) {
-        var cnt = 0;
+                for (var iso of molPaintJS.Elements.getIsotopes[idx]) {
+                    var delta = (iso.getMassExact() - massExact) * dir;
+                    if ((delta > 0.0) && (delta < oldDelta)) {
+                        oldDelta = delta;
+                        newIsotope = iso;
+                    }
+                }
+                    
+                if (newIsotope != null) {
+                    var at = molPaintJS.AtomType();
+                    at.setIsotope(newIsotope); 
+                    at.setColor(newIsotope.getColor()); 
+                    type = at;
+                    return true;
+                }
+                return false;
+            },
 
-        // evaluate bond order
-        for(var id in this.bonds) {
-            switch(molecule.getBond(id).getType()) {
-                case 1 : cnt -= 1;
+            chargeDecrement : function () {
+                charge -= 1;
+            },
+
+            chargeIncrement : function () {
+                charge += 1;
+            },
+
+            addBond : function (idx) {
+                bonds[idx] = idx;
+            },
+
+            /**
+             * make a copy (clone) of this Atom
+             * @return a new Atom with identical properties
+             * including the bond list
+             */
+            copy : function () {
+                var a = molPaintJS.Atom();
+                a.setX(coordX);
+                a.setY(coordY);
+                a.setZ(coordZ);;
+                a.setCharge(charge);
+                a.setRadical(radical);
+                a.setId(id);
+                a.setIndex(index);
+                a.setSelected(selected);
+                a.setStereo(stereo);
+                a.setTemp(temp);
+                a.setType(type);
+                a.setBonds(this.copyBonds());
+                return a;
+            },
+
+            copyBonds : function () {
+                var b = {};
+                for (var i in bonds) {
+                    b[i] = i;
+                }
+                return b;
+            },
+
+            /**
+             * delete a specific bond from this atom
+             */
+            delBond : function (idx) {
+                delete bonds[idx];
+            },
+
+            getBBox : function () {
+                return bbox;
+            },
+
+            getBonds : function () {
+                return bonds;
+            },
+
+            getCharge : function () {
+                return charge;
+            },
+
+            /**
+             * compute the hydrogen count (implicit hydrogens)
+             * for this atom. Currently does not account for 
+             * explicit hydrogens!
+             */
+            getHydrogenCount : function(molecule) {
+                var cnt = 0;
+
+                // evaluate bond order
+                for(var id in bonds) {
+                    switch(molecule.getBond(id).getType()) {
+                        case 1 : cnt -= 1;
+                                break;
+                        case 2 : cnt -= 2; 
+                                break;
+                        case 3 : cnt -= 3;
+                    }
+                }
+                switch(type.getIsotope().getSymbol()) {
+                    case "N" : cnt += 3 + charge;
                         break;
-                case 2 : cnt -= 2; 
+                    case "O" : cnt += 2 + charge;
                         break;
-                case 3 : cnt -= 3;
+                    case "S" : cnt += 2 + charge;
+                        break;
+                }
+                return (cnt > 0) ? cnt : 0;
+            },
+
+            getId : function () {
+                return id;
+            },
+
+            getIndex : function () {
+                return index;
+            },
+
+            getRadical : function () {
+                return radical;
+            },
+
+            getSelected : function () {
+                return selected;
+            },
+
+            getStereo : function () {
+                return stereo;
+            },
+
+            getTemp : function () {
+                return temp;
+            },
+
+            getType : function () {
+                return type;
+            },
+
+            getX : function() {
+                return coordX;
+            },
+
+            getY : function() {
+                return coordY;
+            },
+
+            getZ : function() {
+                return coordZ;
+            },
+
+            setBBox : function (b) {
+                bbox = b;
+            },
+
+            setBonds : function (b) {
+                bonds = b;
+            },
+
+            setCharge : function (c) {
+                charge = c;
+            },
+
+            setId : function (i) {
+                id = i;
+            },
+
+            setIndex : function (i) {
+                index = i;
+            },
+
+            setRadical : function (r) {
+                radical = r;
+            },
+
+            setSelected : function (s) {
+                selected = s;
+            },
+
+            setStereo : function (s) {
+                stereo = s;
+            },
+
+            setTemp : function (t) {
+                temp = t;
+            },
+
+            setType : function (t) {
+                type = t;
+            },
+
+            setX : function (x) {
+                coordX = x;
+            },
+
+            setY : function (y) {
+                coordY = y;
+            },
+
+            setZ : function (z) {
+                coordZ = z;
             }
-        }
-        switch(this.type.isotope.symbol) {
-            case "N" : cnt += 3 + this.charge;
-                break;
-            case "O" : cnt += 2 + this.charge;
-                break;
-            case "S" : cnt += 2 + this.charge;
-                break;
-        }
-        return (cnt > 0) ? cnt : 0;
+        }; // return
     }
-
-    this.getId = function () {
-        return this.id;
-    }
-    this.getIndex = function () {
-        return this.index;
-    }
-    this.getRadical = function () {
-        return this.radical;
-    }
-    this.getSelected = function () {
-        return this.selected;
-    }
-    this.getStereo = function () {
-        return this.stereo;
-    }
-    this.getTemp = function () {
-        return this.temp;
-    }
-    this.getType = function () {
-        return this.type;
-    }
-
-    this.setCharge = function (c) {
-        this.charge = c;
-    }
-    this.setId = function (i) {
-        this.id = i;
-    }
-    this.setIndex = function (i) {
-        this.index = i;
-    }
-    this.setRadical = function (r) {
-        this.radical = r;
-    }
-    this.setSelected = function (s) {
-        this.selected = s;
-    }
-    this.setStereo = function (s) {
-        this.stereo = s;
-    }
-    this.setTemp = function (t) {
-        this.temp = t;
-    }
-    this.setType = function (t) {
-        this.type = t;
-    }
-}
+    return molpaintjs;
+}(molPaintJS || {}));

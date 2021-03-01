@@ -15,127 +15,129 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function TemplateTool(ctx, prop, i) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.actionList = null;
-    this.context = ctx;
-    this.properties = prop;
-    this.id = i;
+    molpaintjs.TemplateTool = function (ctx, prop, i) {
 
-    this.template = "";
-    this.templateId = "";
-    this.origin = null;
+        var actionList = null;
+        var properties = prop;
+        var template = "";
+        var templateId = "";
+        var origin = null;
 
-    this.abort = function () {
-        Tools.abort(this);
-    }
+        return {
+            id : i,
+            context : ctx,
 
+            abort : function () {
+                molPaintJS.Tools.abort(this);
+            },
 
-    /**
-     * @param a1 the atom from the original molecule which is to be replaced
-     * @param a2 the atom from the template fragment
-     */
-    this.joinAtoms = function (atom1, atom2) {
-        var a1 = atom1.id;
-        var a2 = atom2.id;
-        for (var b in atom1.bonds) {
-            var atom = null;
-            var bond = null;
-            if (this.context.molecule.bonds[b].atomA.id == a1) {
-                var atom = this.context.molecule.bonds[b].atomB;
-                if ((atom.selected & 2) === 0) {
-                    bond = new Bond();
-                    bond.setAtomA(atom2);
-                    bond.setAtomB(atom);
-                    bond.setType(this.context.molecule.bonds[b].getType());
-                    bond.setStereo(this.context.molecule.bonds[b].getStereo());
+            /**
+             * @param a1 the atom from the original molecule which is to be replaced
+             * @param a2 the atom from the template fragment
+             */
+            joinAtoms : function (atom1, atom2) {
+                var a1 = atom1.getId();
+                var a2 = atom2.getId();
+                var allBonds = this.context.getMolecule().getBonds();
+                for (var b in atom1.getBonds()) {
+                    var atom = null;
+                    var bond = null;
+                    if (allBonds[b].getAtomA().getId() == a1) {
+                        var atom = allBonds[b].getAtomB();
+                        if ((atom.selected & 2) === 0) {
+                            bond = molPaintJS.Bond();
+                            bond.setAtomA(atom2);
+                            bond.setAtomB(atom);
+                            bond.setType(allBonds[b].getType());
+                            bond.setStereo(allBonds[b].getStereo());
+                        }
+                    } else {
+                        atom = atom = allBonds[b].getAtomA();
+                        if ((atom.selected & 2) === 0) {
+                            bond = molPaintJS.Bond();
+                            bond.setAtomA(atom);
+                            bond.setAtomB(atom2);
+                            bond.setType(allBonds[b].getType());
+                            bond.setStereo(allBonds[b].getStereo());
+                        }
+                    }
+                    if (bond != null) {
+                        actionList.addAction(molPaintJS.Action("ADD", "BOND", bond, null));
+                        this.context.getMolecule().addBond(bond, null);
+                    }
+                    bond = allBonds[b];
+                    actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond)); 
+                    this.context.getMolecule().delBond(bond); 
                 }
-            } else {
-                atom = this.context.molecule.bonds[b].atomA;
-                if ((atom.selected & 2) === 0) {
-                    bond = new Bond();
-                    bond.setAtomA(atom);
-                    bond.setAtomB(atom2);
-                    bond.setType(this.context.molecule.bonds[b].getType());
-                    bond.setStereo(this.context.molecule.bonds[b].getStereo());
+                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atom1));
+                this.context.getMolecule().delAtom(atom1);
+            },
+
+            onClick : function (x, y, evt) {
+                origin = null;
+
+                this.context.getMolecule().adjustSelection(2,2,0);
+                var box = this.context.getMolecule().computeBBox(1);
+                var sel = this.context.getMolecule().selectBBox(box, 2, 1);  // overlapping atoms and bonds
+                var tpl = this.context.getMolecule().getSelected(1);         // return the template
+
+                for (var a1 of sel.atoms) {
+                    for (var a2 of tpl.atoms) {
+                        var atom1 = this.context.getMolecule().getAtom(a1);
+                        var atom2 = this.context.getMolecule().getAtom(a2);
+                        var dx = atom1.getX() - atom2.getX();
+                        var dy = atom1.getY() - atom2.getY();
+                        if (prop.distMax > ((dx * dx) + (dy * dy))) {
+                            joinAtoms(atom1, atom2);
+                            break;
+                        }
+                    }
                 }
-            }
-            if (bond != null) {
-                this.actionList.addAction(new Action("ADD", "BOND", bond, null));
-                this.context.molecule.addBond(bond, null);
-            }
-            bond = this.context.molecule.bonds[b];
-            this.actionList.addAction(new Action("DEL", "BOND", null, bond)); 
-            this.context.molecule.delBond(bond); 
-        }
-        this.actionList.addAction(new Action("DEL", "ATOM", null, atom1));
-        this.context.molecule.delAtom(atom1);
-    }
+            
+                this.context.getMolecule().clearSelection(3);
+                this.context.draw();
+            },
 
-    this.onClick = function (x, y, evt) {
-        this.origin = null;
+            onMouseDown : function (x, y, evt) {
+                origin = this.context.getView().getCoordReverse(x, y);
+                actionList = this.context.pasteMolecule(template, 1);
+                this.context.getMolecule().transform([[1, 0, origin.x], [0, 1, origin.y]], true);
+                this.context.draw();
+            },
 
-        this.context.molecule.adjustSelection(2,2,0);
-        var box = this.context.molecule.computeBBox(1);
-        var sel = this.context.molecule.selectBBox(box, 2, 1);  // overlapping atoms and bonds
-        var tpl = this.context.molecule.getSelected(1);         // return the template
+            onMouseMove : function (x, y, evt) {
+                /* move template around */
+                if (origin != null) {
+                    var coord = this.context.getView().getCoordReverse(x, y);
+                    var dx = coord.x - origin.x;
+                    var dy = coord.y - origin.y;
+                    origin = coord;
+                    this.context.getMolecule().transform([[1, 0, dx], [0, 1, dy]], 1)
 
-        for (var a1 of sel.atoms) {
-            for (var a2 of tpl.atoms) {
-                var atom1 = this.context.molecule.getAtom(a1);
-                var atom2 = this.context.molecule.getAtom(a2);
-                var dx = atom1.coordX - atom2.coordX;
-                var dy = atom1.coordY - atom2.coordY;
-                if (prop.distMax > ((dx * dx) + (dy * dy))) {
-                    this.joinAtoms(atom1, atom2);
-                    break;
+                    this.context.getMolecule().adjustSelection(2,2,0);
+                    var box = this.context.getMolecule().computeBBox(1);
+                    this.context.getMolecule().selectBBox(box, 2, 1);
+                    this.context.draw();
                 }
+
+            },
+
+            setTemplate : function (i, t) {
+                templateId = i;
+                template = t;
+            },
+
+            setup : function () {
+                var srcIconId = this.context.contextId + "_" + templateId;
+                var destIconId = this.context.contextId + "_template";
+                icon = document.getElementById(destIconId);
+                icon.src = document.getElementById(srcIconId).src;
             }
-        }
-    
-        this.context.molecule.clearSelection(3);
-        this.context.draw();
+        };
     }
-
-    this.onMouseDown = function (x, y, evt) {
-        this.origin = this.context.view.getCoordReverse(x, y);
-        this.actionList = this.context.pasteMolecule(this.template, 1);
-        this.context.molecule.transform([[1, 0, this.origin.x], [0, 1, this.origin.y]], true);
-        this.context.draw();
-    }
-
-    this.onMouseMove = function (x, y, evt) {
-        /* move template around */
-        if (this.origin != null) {
-            var coord = this.context.view.getCoordReverse(x, y);
-            var dx = coord.x - this.origin.x;
-            var dy = coord.y - this.origin.y;
-            this.origin = coord;
-            this.context.molecule.transform([[1, 0, dx], [0, 1, dy]], 1)
-
-            this.context.molecule.adjustSelection(2,2,0);
-            var box = this.context.molecule.computeBBox(1);
-            this.context.molecule.selectBBox(box, 2, 1);
-            this.context.draw();
-/*
-            var xbox = this.context.view.getBBox(box);
-            xbox.draw(this.context.view.getContext());
-*/
-        }
-
-    }
-
-    this.setTemplate = function (i, t) {
-        this.templateId = i;
-        this.template = t;
-    }
-
-    this.setup = function () {
-        var srcIconId = this.context.contextId + "_" + this.templateId;
-        var destIconId = this.context.contextId + "_template";
-        icon = document.getElementById(destIconId);
-        icon.src = document.getElementById(srcIconId).src;
-    }
-
-}
+    return molpaintjs;
+}(molPaintJS || {}));

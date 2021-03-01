@@ -15,166 +15,173 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function History(cid, prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.actions = [];
-    this.actionPtr = -1;
-    this.contextId = cid;
-    this.installPath = prop.installPath;
+    molpaintjs.History = function (cid) {
 
-    this.appendAction = function (a) {
-        this.actionPtr++;
-        this.actions[this.actionPtr] = a;
-        this.actions.splice(this.actionPtr + 1,
-            this.actions.length - this.actionPtr - 1);
-        this.updateIcons();
-    }
+        var actions = [];
+        var actionPtr = -1;
+        var contextId = cid;
 
-    this.updateIcons = function () {
-        var e = document.getElementById(this.contextId + "_redo");
-        if (this.actionPtr < (this.actions.length - 1)) {
-            e.src = molPaintJS_resources['redo.png'];
-        } else {
-            e.src = molPaintJS_resources['redo_inactive.png'];
-        }
+        return {
 
-        e = document.getElementById(this.contextId + "_undo");
-        if (this.actionPtr > -1) {
-            e.src = molPaintJS_resources['undo.png'];
-        } else {
-            e.src = molPaintJS_resources['undo_inactive.png'];
-        }
-    }
+            appendAction : function (a) {
+                actionPtr++;
+                actions[actionPtr] = a;
+                actions.splice(actionPtr + 1,
+                    actions.length - actionPtr - 1);
+                this.updateIcons();
+            },
 
-    this.redo = function (ctx) {
-        if (this.actionPtr > (this.actions.length - 2)) {
-            return;
-        }
-        this.actionPtr++;
-        var al = this.actions[this.actionPtr];	// ActionList
+            updateIcons : function () {
+                var e = document.getElementById(contextId + "_redo");
+                if (actionPtr < (actions.length - 1)) {
+                    e.src = molPaintJS_resources['redo.png'];
+                } else {
+                    e.src = molPaintJS_resources['redo_inactive.png'];
+                }
 
-        for (var i = al.actions.length; i-- > 0;) {	// loop actionList backwards in redo 
-            var action = al.actions[i];
-            switch (action.actionType) {
-                case "ADD" :
-                    this.redoAdd(ctx, action);
-                    break;
-                case "DEL" :
-                    this.redoDelete(ctx, action);
-                    break;
-                case "UPD" :
-                    this.redoUpdate(ctx, action);
-                    break;
-                default :
-                    alert("Unknown actionType " + i.actionType + " of action in History.redo().");
+                e = document.getElementById(contextId + "_undo");
+                if (actionPtr > -1) {
+                    e.src = molPaintJS_resources['undo.png'];
+                } else {
+                    e.src = molPaintJS_resources['undo_inactive.png'];
+                }
+            },
+
+            redo : function (ctx) {
+                if (actionPtr > (actions.length - 2)) {
+                    return;
+                }
+                actionPtr++;
+                var al = actions[actionPtr];	// ActionList
+
+                for (var i = al.actions.length; i-- > 0;) {	// loop actionList backwards in redo 
+                    var action = al.actions[i];
+                    switch (action.actionType) {
+                        case "ADD" :
+                            redoAdd(ctx, action);
+                            break;
+                        case "DEL" :
+                            redoDelete(ctx, action);
+                            break;
+                        case "UPD" :
+                            redoUpdate(ctx, action);
+                            break;
+                        default :
+                            alert("Unknown actionType " + i.actionType + " of action in History.redo().");
+                    }
+                }
+                this.updateIcons();
+            },
+
+            redoAdd : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.addAtom(action.newObject, action.newObject.id);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.addBond(action.newObject, action.newObject.id);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
+                }
+            },
+
+            redoDelete : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.delAtom(action.oldObject);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.delBond(action.oldObject);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
+                }
+            },
+
+            redoUpdate : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.replaceAtom(action.newObject);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.replaceBond(action.newObject);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
+                }
+            },
+
+            undo : function (ctx) {
+                if (actionPtr < 0) {
+                    return;
+                }
+                var al = actions[actionPtr];    // ActionList
+
+                for (var i in al.actions) {
+                    var action = al.actions[i];
+                    switch (action.actionType) {
+                        case "ADD" :
+                            undoAdd(ctx, action);
+                            break;
+                        case "DEL" :
+                            undoDelete(ctx, action);
+                            break;
+                        case "UPD" :
+                            undoUpdate(ctx, action);
+                            break;
+                        default:
+                            alert("Unknown actionType " + i.actionType + " of action in History.undo().");
+                    }
+                }
+
+                actionPtr--;
+                this.updateIcons();
+            },
+
+            undoAdd : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.delAtom(action.newObject);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.delBond(action.newObject);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
+                }
+            },
+
+            undoDelete : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.addAtom(action.oldObject, action.oldObject.id);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.addBond(action.oldObject, action.oldObject.id);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
+                }
+            },
+
+            undoUpdate : function (ctx, action) {
+                switch (action.objectType) {
+                    case "ATOM" :
+                        ctx.molecule.replaceAtom(action.oldObject);
+                        break;
+                    case "BOND" :
+                        ctx.molecule.replaceBond(action.oldObject);
+                        break;
+                    default :
+                        alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
+                }
             }
-        }
-        this.updateIcons();
+        };
     }
-
-    this.redoAdd = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.addAtom(action.newObject, action.newObject.id);
-                break;
-            case "BOND" :
-                ctx.molecule.addBond(action.newObject, action.newObject.id);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
-        }
-    }
-
-    this.redoDelete = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.delAtom(action.oldObject);
-                break;
-            case "BOND" :
-                ctx.molecule.delBond(action.oldObject);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
-        }
-    }
-
-    this.redoUpdate = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.replaceAtom(action.newObject);
-                break;
-            case "BOND" :
-                ctx.molecule.replaceBond(action.newObject);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
-        }
-    }
-
-    this.undo = function (ctx) {
-        if (this.actionPtr < 0) {
-            return;
-        }
-        var al = this.actions[this.actionPtr];    // ActionList
-
-        for (var i in al.actions) {
-            var action = al.actions[i];
-            switch (action.actionType) {
-                case "ADD" :
-                    this.undoAdd(ctx, action);
-                    break;
-                case "DEL" :
-                    this.undoDelete(ctx, action);
-                    break;
-                case "UPD" :
-                    this.undoUpdate(ctx, action);
-                    break;
-                default:
-                    alert("Unknown actionType " + i.actionType + " of action in History.undo().");
-            }
-        }
-
-        this.actionPtr--;
-        this.updateIcons();
-    }
-
-    this.undoAdd = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.delAtom(action.newObject);
-                break;
-            case "BOND" :
-                ctx.molecule.delBond(action.newObject);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
-        }
-    }
-
-    this.undoDelete = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.addAtom(action.oldObject, action.oldObject.id);
-                break;
-            case "BOND" :
-                ctx.molecule.addBond(action.oldObject, action.oldObject.id);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
-        }
-    }
-
-    this.undoUpdate = function (ctx, action) {
-        switch (action.objectType) {
-            case "ATOM" :
-                ctx.molecule.replaceAtom(action.oldObject);
-                break;
-            case "BOND" :
-                ctx.molecule.replaceBond(action.oldObject);
-                break;
-            default :
-                alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
-        }
-    }
-}
+    return molpaintjs;
+}(molPaintJS || {}));

@@ -15,30 +15,41 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function AtomType() {
+var molPaintJS = (function (molpaintjs) {
 
-    this.color;
-    this.label;
-    this.isotope;
+    molpaintjs.AtomType = function () {
 
-    this.getColor = function () {
-        return this.color;
-    }
-    this.getIsotope = function () {
-        return this.isotope;
-    }
-    this.getLabel = function () {
-        return this.label;
-    }
+        var color;
+        var label;
+        var isotope;
 
-    this.setColor = function (c) {
-        this.color = c;
+        return {
+            getColor : function () {
+                return color;
+            },
+
+            getIsotope : function () {
+                return isotope;
+            },
+
+            getLabel : function () {
+                return label;
+            },
+
+            setColor : function (c) {
+                color = c;
+            },
+
+            setIsotope : function (i) {
+                isotope = i;
+            },
+
+            setLabel : function (l) {
+                label = l;
+            }
+        };
     }
-    this.setIsotope = function (i) {
-        this.isotope = i;
-    }
-    this.setLabel = function (l) {
-        this.label = l;
-    }
-}
+    return molpaintjs;
+}(molPaintJS || {}));

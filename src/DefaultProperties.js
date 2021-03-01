@@ -15,35 +15,59 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function DefaultProperties(prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.bondLength = 1.5;
-    this.distMax = 0.1;
-    this.fontFamily = "SansSerif";
-    this.fontSize = 16;
-    this.helpURL = "https://ipb-halle.github.io/MolPaintJS/help";
-    this.iconSize = 32;
-    this.installPath = "";
-    this.molScaleDefault = 33;	// pixel per Angstrom
-    this.sizeX = 400;
-    this.sizeY = 400;
-    this.subscriptFactor = 0.7;	// subscript fontsize = fontSize * subscriptFactor
+    molpaintjs.DefaultProperties = function (prop) {
 
-    /**
-     * override current properties
-     * @param p the new properties
-     */
-    this.setProperties = function (p) {
-        if (p != null) {
-            for (var i in p) {
-                this[i] = p[i];
+        var properties = {
+            bondLength: 1.5,
+            distMax: 0.1,
+            fontFamily: "SansSerif",
+            fontSize: 16,
+            helpURL: "https://ipb-halle.github.io/MolPaintJS/help",
+            iconSize: 32,
+            installPath: "",
+            molScaleDefault: 33,  // pixel per Angstrom
+            sizeX: 400,
+            sizeY: 400,
+            subscriptFactor: 0.7, // subscript fontsize = fontSize * subscriptFactor
+        }
+ 
+        /**
+         * override current properties
+         * @param p the new properties
+         */
+        function setProp(p) {
+            if (p != null) {
+                for (var i in p) {
+                    properties[i] = p[i];
+                }
             }
         }
-    }
 
-    /**
-     * Override default properties with custom settings
-     */
-    this.setProperties(prop);
-}
+        setProp(prop);
+
+        return {
+
+            getProperties : function () {
+                return properties;
+            },
+
+            getProperty : function (p) {
+                return properties[p];
+            },
+
+            /**
+             * override current properties
+             * @param p the new properties
+             */
+            setProperties : function (p) {
+                setProp(p);
+                return this;
+            }
+        };
+    }
+    return molpaintjs;
+}(molPaintJS || {}));

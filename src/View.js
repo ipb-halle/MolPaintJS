@@ -15,181 +15,194 @@
  * limitations under the License.
  *
  */
+"use strict";
 
-function View(cid, prop) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.displayScale = 1.0;
-    this.fontFamily = prop.fontFamily;
-    this.fontSize = prop.fontSize;
-    this.molScale = prop.molScaleDefault;
-    this.sizeX = prop.sizeX;
-    this.sizeY = prop.sizeY;
-    this.subscriptFactor = prop.subscriptFactor;
+    molpaintjs.View = function (cid, prop) {
 
-    this.centerX = this.sizeX / 2;
-    this.centerY = this.sizeY / 2;
+        var displayScale = 1.0;
+        var fontFamily = prop.fontFamily;
+        var fontSize = prop.fontSize;
+        var molScale = prop.molScaleDefault;
+        var sizeX = prop.sizeX;
+        var sizeY = prop.sizeY;
+        var subscriptFactor = prop.subscriptFactor;
 
-    this.contextId = cid + "_canvas";
-    this.context = null;
-    this.element = null;
+        var centerX = this.sizeX / 2;
+        var centerY = this.sizeY / 2;
 
-    /**
-     * center the View. Changes centerX and centerY.
-     */
-    this.center = function () {
-        this.centerX = this.sizeX / 2;
-        this.centerY = this.sizeY / 2;
-    }
+        var contextId = cid + "_canvas";
+        var viewContext = null;
+        var element = null;
 
-
-    /**
-     * forward transform coordinates (i.e. from atom 
-     * coordinates to canvas coordinates)
-     * @param bbox bounding box
-     * @return transformed box
-     */
-    this.getBBox = function (bbox) {
-        return new Box((bbox.minX * this.molScale * this.displayScale) + this.centerX,
-          (bbox.minY * this.molScale * this.displayScale) + this.centerY,
-          (bbox.maxX * this.molScale * this.displayScale) + this.centerX,
-          (bbox.maxY * this.molScale * this.displayScale) + this.centerY);
-    }
-
-    /**
-     * Reverse transform bounding box coordinates,
-     * i.e. from canvas coordinates to atom coordinates
-     * @param bbox bounding box
-     * @return bounding box with transformed coordinates
-     */
-    this.getBBoxReverse = function (bbox) {
-        return new Box((bbox.minX - this.centerX) / (this.molScale * this.displayScale),
-            (bbox.minY - this.centerY) / (this.molScale * this.displayScale),
-            (bbox.maxX - this.centerX) / (this.molScale * this.displayScale),
-            (bbox.maxY - this.centerY) / (this.molScale * this.displayScale));
-    }
-
-    /*
-     * @return the current context
-     */
-    this.getContext = function () {
-        return this.context;
-    }
-
-    /**
-     * Forward transform coordinates
-     * i.e. from atom coordinates to canvas coordinates
-     */
-    this.getCoord = function (atom) {
         return {
-            x: (this.centerX + (atom.coordX * this.molScale * this.displayScale)),
-            y: (this.centerY + (atom.coordY * this.molScale * this.displayScale))
+
+            /**
+             * center the View. Changes centerX and centerY.
+             */
+            center : function () {
+                centerX = sizeX / 2;
+                centerY = sizeY / 2;
+            },
+
+            /**
+             * forward transform coordinates (i.e. from atom 
+             * coordinates to canvas coordinates)
+             * @param bbox bounding box
+             * @return transformed box
+             */
+            getBBox : function (bbox) {
+                return molPaintJS.Box((bbox.getMinX() * molScale * displayScale) + centerX,
+                  (bbox.getMinY() * molScale * displayScale) + centerY,
+                  (bbox.getMaxX() * molScale * displayScale) + centerX,
+                  (bbox.getMaxY() * molScale * displayScale) + centerY);
+            },
+
+            /**
+             * Reverse transform bounding box coordinates,
+             * i.e. from canvas coordinates to atom coordinates
+             * @param bbox bounding box
+             * @return bounding box with transformed coordinates
+             */
+            getBBoxReverse : function (bbox) {
+                return molPaintJS.Box((bbox.getMinX() - centerX) / (molScale * displayScale),
+                    (bbox.getMinY() - centerY) / (molScale * displayScale),
+                    (bbox.getMaxX() - centerX) / (molScale * displayScale),
+                    (bbox.getMaxY() - centerY) / (molScale * displayScale));
+            },
+
+            /**
+             * Forward transform coordinates
+             * i.e. from atom coordinates to canvas coordinates
+             */
+            getCoord : function (atom) {
+                return {
+                    x: (centerX + (atom.getX() * molScale * displayScale)),
+                    y: (centerY + (atom.getY() * molScale * displayScale))
+                };
+            },
+
+            /**
+             * Reverse transform coordinates
+             * i.e. from canvas coordinates to atom coordinates
+             */
+            getCoordReverse : function (canvasX, canvasY) {
+                return {
+                    x: ((canvasX - centerX) / (molScale * displayScale)),
+                    y: ((canvasY - centerY) / (molScale * displayScale))
+                };
+            },
+
+            /**
+             * @return the drawing area DOM element
+             */
+            getElement : function () {
+                return element;
+            },
+
+            /**
+             * @return current normal font size
+             */
+            getFontSize : function () {
+                return fontSize;
+            },
+
+            getMolScale : function () {
+                return molScale;
+            },
+
+            getOffset : function () {
+                var bbox = element.getBoundingClientRect();
+                // var bdy = document.body.getBoundingClientRect();
+                // DO NOT USE: offset.??? = bbox.??? + bdy.???
+                return {
+                    x: bbox.left,
+                    y: bbox.top
+                };
+            },
+
+            getSizeX : function () {
+                return sizeX;
+            },
+
+            getSizeY : function () {
+                return sizeY;
+            },
+
+            /**
+             * @return current font size for subscripts and superscripts
+             */
+            getSubscriptSize : function () {
+                return fontSize * subscriptFactor;
+            },
+
+            /*
+             * @return the current viewContext
+             */
+            getViewContext : function () {
+                return viewContext;
+            },
+
+            /**
+             * initialize  object
+             */
+            init : function () {
+                element = document.getElementById(contextId);
+                viewContext = element.getContext("2d");
+                viewContext.font = fontSize + "px " + fontFamily;
+            },
+
+            scaleDisplay : function (s) {
+                displayScale *= s;
+            },
+
+            /**
+             * scale the font size
+             */
+            scaleFontSize : function (fs) {
+                fontSize *= fs;
+                viewContext.font = fontSize + "px " + fontFamily;
+            },
+
+            /**
+             * set the viewContext.font property to the default font
+             */
+            setFont : function () {
+                viewContext.font = fontSize + "px " + fontFamily;
+            },
+
+            /**
+             * set the default font size
+             */
+            setFontSize : function (f) {
+                fontSize = f;
+                viewContext.font = f + "px " + fontFamily;
+            },
+
+            /**
+             * set the molecule scaling factor
+             */
+            setMolScale : function (s) {
+                molScale = s;
+            },
+
+            /**
+             * set superscript / subscript size
+             */
+            setSubscript : function () {
+                var fs = fontSize * subscriptFactor;
+                viewContext.font = fs + "px " + fontFamily;
+            },
+
+            /**
+             * slide the view (i.e. move the center)
+             */
+            slide : function (x, y) {
+                centerX += x;
+                centerY += y;
+            }
         };
     }
-
-    /**
-     * Reverse transform coordinates
-     * i.e. from canvas coordinates to atom coordinates
-     */
-    this.getCoordReverse = function (canvasX, canvasY) {
-        return {
-            x: ((canvasX - this.centerX) / (this.molScale * this.displayScale)),
-            y: ((canvasY - this.centerY) / (this.molScale * this.displayScale))
-        };
-    }
-
-    /**
-     * @return the drawing area DOM element
-     */
-    this.getElement = function () {
-        return this.element;
-    }
-
-    /**
-     * @return current normal font size
-     */
-    this.getFontSize = function () {
-        return this.fontSize;
-    }
-
-    /**
-     * @return current font size for subscripts and superscripts
-     */
-    this.getSubscriptSize = function () {
-        return this.fontSize * this.subscriptFactor;
-    }
-
-    /**
-     */
-    this.getOffset = function () {
-        var bbox = this.element.getBoundingClientRect();
-        // var bdy = document.body.getBoundingClientRect();
-        // DO NOT USE: offset.??? = bbox.??? + bdy.???
-        return {
-            x: bbox.left,
-            y: bbox.top
-        };
-    }
-
-    this.getSizeX = function () {
-        return this.sizeX;
-    }
-    this.getSizeY = function () {
-        return this.sizeY;
-    }
-
-    /**
-     * initialize this  object
-     */
-    this.init = function () {
-        this.element = document.getElementById(this.contextId);
-        this.context = this.element.getContext("2d");
-        this.context.font = this.fontSize + "px " + this.fontFamily;
-    }
-
-    /**
-     * scale the font size
-     */
-    this.scaleFontSize = function (fs) {
-        this.fontSize *= fs;
-        this.context.font = this.fontSize + "px " + this.fontFamily;
-    }
-
-    /**
-     * set the context.font property to the default font
-     */
-    this.setFont = function () {
-        this.context.font = this.fontSize + "px " + this.fontFamily;
-    }
-
-    /**
-     * set the default font size
-     */
-    this.setFontSize = function (f) {
-        this.fontSize = f;
-        this.context.font = f + "px " + this.fontFamily;
-    }
-
-    /**
-     * set the molecule scaling factor
-     */
-    this.setMolScale = function (s) {
-        this.molScale = s;
-    }
-
-    /**
-     * set superscript / subscript size
-     */
-    this.setSubscript = function () {
-        var fs = this.fontSize * this.subscriptFactor;
-        this.context.font = fs + "px " + this.fontFamily;
-    }
-
-    /**
-     * slide the view (i.e. move the center)
-     */
-    this.slide = function (x, y) {
-        this.centerX += x;
-        this.centerY += y;
-    }
-
-}
+    return molpaintjs;
+}(molPaintJS || {}));

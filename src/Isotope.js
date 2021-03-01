@@ -15,41 +15,55 @@
  * limitations under the License.
  *  
  */
+"use strict";
 
-function Isotope(n, p, g, s, m, i, me, c) {
+var molPaintJS = (function (molpaintjs) {
 
-    this.atomicNumber = n;
-    this.color = c;
-    this.group = g;
-    this.isotope = i;
-    this.mass = m;
-    this.massExact = me;
-    this.period = p;
-    this.symbol = s;
+    molpaintjs.Isotope = function (n, p, g, s, m, i, me, c) {
 
-    this.getAtomicNumber = function () {
-        return this.atomicNumber;
-    }
-    this.getColor = function () {
-        return this.color;
-    }
-    this.getGroup = function () {
-        return this.group;
-    }
-    this.getIsotope = function () {
-        return this.isotope;
-    }
-    this.getMass = function () {
-        return this.mass;
-    }
-    this.getMassExact = function () {
-        return this.massExact;
-    }
-    this.getPeriod = function () {
-        return this.period;
-    }
-    this.getSymbol = function () {
-        return this.symbol;
-    }
+        var atomicNumber = n;
+        var color = c;
+        var group = g;
+        var isotope = i;
+        var mass = m;
+        var massExact = me;
+        var period = p;
+        var symbol = s;
 
-}
+        return {
+
+            getAtomicNumber : function () {
+                return atomicNumber;
+            },
+
+            getColor : function () {
+                return color;
+            },
+
+            getGroup : function () {
+                return group;
+            },
+
+            getIsotope : function () {
+                return isotope;
+            },
+
+            getMass : function () {
+                return mass;
+            },
+
+            getMassExact : function () {
+                return massExact;
+            },
+
+            getPeriod : function () {
+                return period;
+            },
+
+            getSymbol : function () {
+                return symbol;
+            }
+        };
+    }
+    return molpaintjs;
+}(molPaintJS || {}));

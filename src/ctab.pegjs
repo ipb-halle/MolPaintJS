@@ -51,7 +51,7 @@
     function getAtomType(sym, massDiff, absMass) {
         var atomType = molPaintJS.AtomType();
         var stdIsotope = molPaintJS.Elements.getElement(sym);
-        var atomicNumber = stdIsotope.getAtomicNumber() - 1;
+        var atomicNumber = stdIsotope.getAtomicNumber();
         var targetMass = stdIsotope.getMass();
 
         if (absMass != null) {

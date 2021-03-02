@@ -29,8 +29,8 @@ var molPaintJS = (function (molpaintjs) {
         var sizeY = prop.sizeY;
         var subscriptFactor = prop.subscriptFactor;
 
-        var centerX = this.sizeX / 2;
-        var centerY = this.sizeY / 2;
+        var centerX = sizeX / 2;
+        var centerY = sizeY / 2;
 
         var contextId = cid + "_canvas";
         var viewContext = null;
@@ -151,6 +151,7 @@ var molPaintJS = (function (molpaintjs) {
                 element = document.getElementById(contextId);
                 viewContext = element.getContext("2d");
                 viewContext.font = fontSize + "px " + fontFamily;
+                this.center();
             },
 
             scaleDisplay : function (s) {

@@ -169,6 +169,8 @@ var molPaintJS = (function (molpaintjs) {
                 minY = (minY < box.getMinY()) ? minY : box.getMinY();
                 maxX = (maxX > box.getMaxX()) ? maxX : box.getMaxX();
                 maxY = (maxY > box.getMaxY()) ? maxY : box.getMaxY();
+                centerX = (minX + maxX) / 2.0;
+                centerY = (minY + maxY) / 2.0;
             },
 
             getCenterX : function() {

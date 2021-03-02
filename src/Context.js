@@ -252,7 +252,6 @@ var molPaintJS = (function (molpaintjs) {
                 }
 
                 molecule.center();
-                view.center();
 
                 this.initRaster();
                 view.setMolScale(properties.molScaleDefault / medianBondLength);

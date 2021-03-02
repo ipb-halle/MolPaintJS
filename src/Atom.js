@@ -57,12 +57,12 @@ var molPaintJS = (function (molpaintjs) {
              * @param dir direction 1=up, -1=down
              */
             changeIsotope : function (dir) {
-                var idx = type.getIsotope().getAtomicNumber() - 1;
+                var idx = type.getIsotope().getAtomicNumber();
                 var massExact = type.getIsotope().getMassExact();
                 var newIsotope = null;
                 var oldDelta = 100.0;
 
-                for (var iso of molPaintJS.Elements.getIsotopes[idx]) {
+                for (var iso of molPaintJS.Elements.getIsotopes(idx)) {
                     var delta = (iso.getMassExact() - massExact) * dir;
                     if ((delta > 0.0) && (delta < oldDelta)) {
                         oldDelta = delta;

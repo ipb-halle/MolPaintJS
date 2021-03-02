@@ -111,11 +111,12 @@ var molPaintJS = (function (molpaintjs) {
                     atoms[id].addY(cy);
                     // ignore z
                 }
-                return molPaintJS.Box(
+                var b = molPaintJS.Box(
                     bbox.getMinX() + cx, 
                     bbox.getMinY() + cy,
                     bbox.getMaxX() + cx,
                     bbox.getMaxY() + cy);
+                return b;
             },
 
             /**
@@ -175,10 +176,10 @@ var molPaintJS = (function (molpaintjs) {
                         var y = a.getY();
                         var z = a.getZ();
                         if (first == 0) {
-                            bbox = molPaintJS.Box(x, x, y, y);
+                            bbox = molPaintJS.Box(x, y, x, y);
                             first = 1;
                         } else {
-                            bbox.join(molPaintJS.Box(x, x, y, y));
+                            bbox.join(molPaintJS.Box(x, y, x, y));
                         }
                     }
                 }

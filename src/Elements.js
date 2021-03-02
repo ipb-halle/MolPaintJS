@@ -240,7 +240,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getIsotopes : function (z) {
-                return elements[i];
+                return elements[z];
             },
         
             initElements : function () {

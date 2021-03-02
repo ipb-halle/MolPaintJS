@@ -151,7 +151,6 @@ var molPaintJS = (function (molpaintjs) {
                 element = document.getElementById(contextId);
                 viewContext = element.getContext("2d");
                 viewContext.font = fontSize + "px " + fontFamily;
-                this.center();
             },
 
             scaleDisplay : function (s) {

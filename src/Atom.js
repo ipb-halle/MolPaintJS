@@ -101,7 +101,7 @@ var molPaintJS = (function (molpaintjs) {
                 var a = molPaintJS.Atom();
                 a.setX(coordX);
                 a.setY(coordY);
-                a.setZ(coordZ);;
+                a.setZ(coordZ);
                 a.setCharge(charge);
                 a.setRadical(radical);
                 a.setId(id);

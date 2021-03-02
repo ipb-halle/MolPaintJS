@@ -146,13 +146,13 @@ var molPaintJS = (function (molpaintjs) {
                 var actionList = molPaintJS.ActionList();
 
                 for (var id in atoms) {
-                    if(atoms[id].getTemp()) {
-                        atoms[id].setTemp();
+                    if(atoms[id].getTemp() != 0) {
+                        atoms[id].setTemp(0);
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atoms[id], null));
                     }
                 }
                 for (var id in bonds) {
-                    if(bonds[id].getTemp()) {
+                    if(bonds[id].getTemp() != 0) {
                         bonds[id].setTemp(0);
                         actionList.addAction(molPaintJS.Action("ADD", "BOND", bonds[id], null));
                     }
@@ -214,15 +214,15 @@ var molPaintJS = (function (molpaintjs) {
              * molecule
              */
             delAtom : function (a) {
-                var idx = a.id;
+                var idx = a.getId();
                 delete atoms[idx];
             },
 
             delBond : function (b) {
-                var idx = b.id;
-                var b = bonds[idx];
-                b.getAtomA().delBond(idx);
-                b.getAtomB().delBond(idx);
+                var idx = b.getId();
+                var bond = bonds[idx];
+                bond.getAtomA().delBond(idx);
+                bond.getAtomB().delBond(idx);
                 delete bonds[idx];
             },
 
@@ -230,7 +230,7 @@ var molPaintJS = (function (molpaintjs) {
              * delete a SGroup
              */
             delSGroup : function (sg) {
-                var idx = sg.id;
+                var idx = sg.getId();
                 /*
                  * ToDo: remove sgroup from atoms and bonds
                  */
@@ -242,14 +242,14 @@ var molPaintJS = (function (molpaintjs) {
              */
             delTemp : function() {
                 for(var b in bonds) {
-                    if(bonds[b].getTemp()) {
+                    if(bonds[b].getTemp() != 0) {
                         bonds[b].getAtomA().delBond(b);
                         bonds[b].getAtomB().delBond(b);
                         delete bonds[b]; 
                     }
                 }
                 for(var a in atoms) {
-                    if(atoms[a].getTemp()) {
+                    if(atoms[a].getTemp() != 0) {
                         delete atoms[a]; 
                     }
                 }
@@ -340,7 +340,7 @@ var molPaintJS = (function (molpaintjs) {
                     alert("Molecule.replaceAtom() called for non-existing atom.");
                     return;
                 }
-                for (var i in o.bonds) {
+                for (var i in a.getBonds()) {
                     var b = bonds[i];
                     if (b.getAtomA().getId() == id) {
                         b.setAtomA(a);

@@ -25,6 +25,84 @@ var molPaintJS = (function (molpaintjs) {
         var actionPtr = -1;
         var contextId = cid;
 
+        function redoAdd (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().addAtom(action.newObject, action.newObject.id);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().addBond(action.newObject, action.newObject.id);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
+            }
+        }
+
+        function redoDelete (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().delAtom(action.oldObject);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().delBond(action.oldObject);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
+            }
+        }
+
+        function redoUpdate (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().replaceAtom(action.newObject);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().replaceBond(action.newObject);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
+            }
+        }
+
+        function undoAdd (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().delAtom(action.newObject);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().delBond(action.newObject);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
+            }
+        }
+
+        function undoDelete (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().addAtom(action.oldObject, action.oldObject.id);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().addBond(action.oldObject, action.oldObject.id);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
+            }
+        }
+
+        function undoUpdate (ctx, action) {
+            switch (action.objectType) {
+                case "ATOM" :
+                    ctx.getMolecule().replaceAtom(action.oldObject);
+                    break;
+                case "BOND" :
+                    ctx.getMolecule().replaceBond(action.oldObject);
+                    break;
+                default :
+                    alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
+            }
+        }
+
         return {
 
             appendAction : function (a) {
@@ -58,8 +136,8 @@ var molPaintJS = (function (molpaintjs) {
                 actionPtr++;
                 var al = actions[actionPtr];	// ActionList
 
-                for (var i = al.actions.length; i-- > 0;) {	// loop actionList backwards in redo 
-                    var action = al.actions[i];
+                for (var i = al.getActions().length; i-- > 0;) {	// loop actionList backwards in redo 
+                    var action = al.getActions()[i];
                     switch (action.actionType) {
                         case "ADD" :
                             redoAdd(ctx, action);
@@ -77,53 +155,13 @@ var molPaintJS = (function (molpaintjs) {
                 this.updateIcons();
             },
 
-            redoAdd : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.addAtom(action.newObject, action.newObject.id);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.addBond(action.newObject, action.newObject.id);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
-                }
-            },
-
-            redoDelete : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.delAtom(action.oldObject);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.delBond(action.oldObject);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
-                }
-            },
-
-            redoUpdate : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.replaceAtom(action.newObject);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.replaceBond(action.newObject);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
-                }
-            },
-
             undo : function (ctx) {
                 if (actionPtr < 0) {
                     return;
                 }
                 var al = actions[actionPtr];    // ActionList
 
-                for (var i in al.actions) {
-                    var action = al.actions[i];
+                for (var action of al.getActions()) {
                     switch (action.actionType) {
                         case "ADD" :
                             undoAdd(ctx, action);
@@ -135,51 +173,12 @@ var molPaintJS = (function (molpaintjs) {
                             undoUpdate(ctx, action);
                             break;
                         default:
-                            alert("Unknown actionType " + i.actionType + " of action in History.undo().");
+                            alert("Unknown actionType " + action.actionType + " of action in History.undo().");
                     }
                 }
 
                 actionPtr--;
                 this.updateIcons();
-            },
-
-            undoAdd : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.delAtom(action.newObject);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.delBond(action.newObject);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
-                }
-            },
-
-            undoDelete : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.addAtom(action.oldObject, action.oldObject.id);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.addBond(action.oldObject, action.oldObject.id);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
-                }
-            },
-
-            undoUpdate : function (ctx, action) {
-                switch (action.objectType) {
-                    case "ATOM" :
-                        ctx.molecule.replaceAtom(action.oldObject);
-                        break;
-                    case "BOND" :
-                        ctx.molecule.replaceBond(action.oldObject);
-                        break;
-                    default :
-                        alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
-                }
             }
         };
     }

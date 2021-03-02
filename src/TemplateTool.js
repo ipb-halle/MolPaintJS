@@ -48,7 +48,7 @@ var molPaintJS = (function (molpaintjs) {
                     var bond = null;
                     if (allBonds[b].getAtomA().getId() == a1) {
                         var atom = allBonds[b].getAtomB();
-                        if ((atom.selected & 2) === 0) {
+                        if ((atom.getSelected() & 2) === 0) {
                             bond = molPaintJS.Bond();
                             bond.setAtomA(atom2);
                             bond.setAtomB(atom);
@@ -57,7 +57,7 @@ var molPaintJS = (function (molpaintjs) {
                         }
                     } else {
                         atom = atom = allBonds[b].getAtomA();
-                        if ((atom.selected & 2) === 0) {
+                        if ((atom.getSelected() & 2) === 0) {
                             bond = molPaintJS.Bond();
                             bond.setAtomA(atom);
                             bond.setAtomB(atom2);
@@ -92,7 +92,7 @@ var molPaintJS = (function (molpaintjs) {
                         var dx = atom1.getX() - atom2.getX();
                         var dy = atom1.getY() - atom2.getY();
                         if (prop.distMax > ((dx * dx) + (dy * dy))) {
-                            joinAtoms(atom1, atom2);
+                            this.joinAtoms(atom1, atom2);
                             break;
                         }
                     }

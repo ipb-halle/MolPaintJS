@@ -47,15 +47,15 @@ var molPaintJS = (function (molpaintjs) {
              */
             copy : function () {
                 var b = molPaintJS.Bond();
-                b.atomA = atomA;
-                b.atomB = atomB;
-                b.color = color;
-                b.id = id;
-                b.index = index;
-                b.selected = selected;
-                b.temp = temp;
-                b.type = type;
-                b.stereo = stereo;
+                b.setAtomA(atomA);
+                b.setAtomB(atomB);
+                b.setColor(color);
+                b.setId(id);
+                b.setIndex(index);
+                b.setSelected(selected);
+                b.setTemp(temp);
+                b.setType(type);
+                b.setStereo(stereo);
                 return b;
             },
 

@@ -146,7 +146,7 @@ var molPaintJS = (function (molpaintjs) {
                 } else {
                     atomB = this.context.getMolecule().getAtom(atomId);
                 }
-                var bond = molPaintJS.Bond ();
+                var bond = molPaintJS.Bond();
                 bond.setAtomA(atomA);
                 bond.setAtomB(atomB);
                 bond.setType(bondType);

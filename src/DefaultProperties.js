@@ -23,7 +23,7 @@ var molPaintJS = (function (molpaintjs) {
 
         var properties = {
             bondLength: 1.5,
-            distMax: 0.1,
+            distMax: 0.2,
             fontFamily: "SansSerif",
             fontSize: 16,
             helpURL: "https://ipb-halle.github.io/MolPaintJS/help",

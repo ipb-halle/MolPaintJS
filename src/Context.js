@@ -51,7 +51,7 @@ var molPaintJS = (function (molpaintjs) {
         function setupTools (ctx, properties) {
             if(properties.viewer != "1") {
                 tools = { pointerTool: molPaintJS.PointerTool(ctx, properties),
-                  slideTool: molPaintJS.SlideTool(this),
+                  slideTool: molPaintJS.SlideTool(ctx),
                   eraserTool: molPaintJS.EraserTool(ctx, properties),
                   singleBondTool: molPaintJS.BondTool(ctx, properties,  1, 0, "single_bond"),
                   doubleBondTool: molPaintJS.BondTool(ctx, properties,  2, 0, "double_bond"),
@@ -101,8 +101,14 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            getCurrentBondTool : function () {
+                return currentBondTool;
+            },
             getCurrentElement : function () {
                 return currentElement;
+            },
+            getCurrentTemplate : function() {
+                return currentTemplate;
             },
             getCurrentTool : function () {
                 return currentTool;
@@ -190,7 +196,7 @@ var molPaintJS = (function (molpaintjs) {
                 var atoms = mol.getAtoms();
                 for (var i in atoms) {
                     var a = atoms[i];
-                    a.selected = sel;
+                    a.setSelected(sel);
                     molecule.addAtom(a, null);
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
                 }
@@ -199,7 +205,7 @@ var molPaintJS = (function (molpaintjs) {
                 var bonds = mol.getBonds();
                 for (var i in bonds) {
                     var b = bonds[i];
-                    b.selected = sel;
+                    b.setSelected(sel);
                     molecule.addBond(b, null);
                     actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
                 }
@@ -222,6 +228,16 @@ var molPaintJS = (function (molpaintjs) {
              */
             setChangeListener : function (listener) {
                 changeListener = listener;
+                return this;
+            },
+
+            setCurrentElement : function(el) {
+                currentElement = el;
+                return this;
+            },
+
+            setCurrentTemplate : function (tp) {
+                currentTemplate = tp;
                 return this;
             },
 
@@ -252,11 +268,16 @@ var molPaintJS = (function (molpaintjs) {
                 }
 
                 molecule.center();
+                view.center();
 
                 this.initRaster();
                 view.setMolScale(properties.molScaleDefault / medianBondLength);
                 this.draw();
                 return this;
+            },
+
+            setMoleculeObject : function (m) {
+                molecule = m;
             }
 
         };  // return

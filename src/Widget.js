@@ -21,14 +21,14 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.setElement = function (id, el) {
         var ctx = molPaintJS.getContext(id);
-        ctx.currentElement = molPaintJS.Elements.getElement(el);
-        ctx.widget.actionCustomElement({target: {id: id}});
+        ctx.setCurrentElement(molPaintJS.Elements.getElement(el));
+        ctx.getWidget().onCustomElement({target: {id: id}});
     }
 
     molpaintjs.setCurrentBond = function (id) {
         var ctx = molPaintJS.getContext(id);
         if (ctx != undefined) {
-            ctx.setCurrentTool(ctx.currentBondTool);
+            ctx.setCurrentTool(ctx.getCurrentBondTool());
         }
     }
 
@@ -49,7 +49,7 @@ var molPaintJS = (function (molpaintjs) {
          */
         actionCarbon = function (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
-            ctx.currentElement = molPaintJS.Elements.getElement("C");
+            ctx.setCurrentElement(molPaintJS.Elements.getElement("C"));
             ctx.setCurrentTool(ctx.getTools().carbonAtomTool);
         }
 
@@ -87,7 +87,7 @@ var molPaintJS = (function (molpaintjs) {
             var dummy = document.createElement("textarea");
             document.body.appendChild(dummy);
             dummy.setAttribute("id", evt.target.id + "dummyId");
-            document.getElementById(evt.target.id + "dummyId").value = w.write(ctx.molecule); 
+            document.getElementById(evt.target.id + "dummyId").value = w.write(ctx.getMolecule()); 
             dummy.select();
             document.execCommand("copy");
             document.body.removeChild(dummy);
@@ -98,21 +98,22 @@ var molPaintJS = (function (molpaintjs) {
             var ctx = molPaintJS.getContext(evt.target.id);
             var actionList = molPaintJS.ActionList();
 
-            for (var a in ctx.molecule.getAtoms()) {
-                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, ctx.molecule.getAtom(a)));
+            var molecule = ctx.getMolecule();
+            for (var a in molecule.getAtoms()) {
+                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, molecule.getAtom(a)));
             }
-            for (var b in ctx.molecule.getBonds()) {
-                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, ctx.molecule.getBond(b)));
+            for (var b in molecule.getBonds()) {
+                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, molecule.getBond(b)));
             }
 
             ctx.getHistory().appendAction(actionList);
-            ctx.molecule = molPaintJS.Molecule();
+            ctx.setMoleculeObject(molPaintJS.Molecule());
             ctx.draw();
         }
 
         actionCustomElement = function (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
-            var sym = ctx.currentElement.getSymbol();
+            var sym = ctx.getCurrentElement().getSymbol();
             switch (sym) {
                 case "H":
                     ctx.setCurrentTool(ctx.getTools().hydrogenAtomTool);
@@ -147,7 +148,7 @@ var molPaintJS = (function (molpaintjs) {
 
         actionHydrogen = function (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
-            ctx.currentElement = molPaintJS.Elements.getElement("H");
+            ctx.setCurrentElement(molPaintJS.Elements.getElement("H"));
             ctx.setCurrentTool(ctx.getTools().hydrogenAtomTool);
         }
 
@@ -177,13 +178,13 @@ var molPaintJS = (function (molpaintjs) {
 
         actionNitrogen = function (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
-            ctx.currentElement = molPaintJS.Elements.getElement("N");
+            ctx.setCurrentElement(molPaintJS.Elements.getElement("N"));
             ctx.setCurrentTool(ctx.getTools().nitrogenAtomTool);
         }
 
         actionOxygen = function (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
-            ctx.currentElement = molPaintJS.Elements.getElement("O");
+            ctx.setCurrentElement(molPaintJS.Elements.getElement("O"));
             ctx.setCurrentTool(ctx.getTools().oxygenAtomTool);
         }
 
@@ -274,9 +275,9 @@ var molPaintJS = (function (molpaintjs) {
             var tool = ctx.getTools().templateTool;
             var tp = evt.target.id.replace(ctx.contextId + "_", "");
             if (tp == "template") {
-                tp = ctx.currentTemplate;
+                tp = ctx.getCurrentTemplate();
             } else {
-                ctx.currentTemplate = tp;
+                ctx.setCurrentTemplate(tp);
             }
             tool.setTemplate(tp, molPaintJS.getTemplate(tp));
             ctx.setCurrentTool(tool); 
@@ -527,7 +528,7 @@ var molPaintJS = (function (molpaintjs) {
 
         renderTemplateMenu = function() {
             var ctx = molPaintJS.getContext(widgetId);
-            var currentTemplate = ctx.currentTemplate;
+            var currentTemplate = ctx.getCurrentTemplate();
 
             var header = "<tr><td>"
                 + "<div class='leftDropdown'>"
@@ -625,6 +626,10 @@ var molPaintJS = (function (molpaintjs) {
                 for(var t of molpaint.getTemplates()) {
                     registerEvent(ctx, "click", "_" + t, actionTemplate);
                 }
+            },
+
+            onCustomElement : function(evt) {
+                actionCustomElement(evt);
             },
 
             /*

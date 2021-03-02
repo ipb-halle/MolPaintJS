@@ -221,7 +221,7 @@ var molPaintJS = (function (molpaintjs) {
             var lWidth = ctx.measureText(label).width;
             var lHeight = view.getSubscriptSize();
             var lx = isRight ? x : x - lWidth;
-            bx = molPaintJS.Box(lx, y, lx + lWidth, y - lHeight - 1);
+            var bx = molPaintJS.Box(lx, y, lx + lWidth, y - lHeight - 1);
             atom.getBBox().join(bx)
             ctx.fillText(label, lx, y);
         }
@@ -357,7 +357,7 @@ var molPaintJS = (function (molpaintjs) {
             var dx = coord1.x - coord2.x;
             var dy = coord1.y - coord2.y;
 
-            var scale = view.molScale / (8 * Math.sqrt(dx*dx + dy*dy));
+            var scale = view.getMolScale() / (8 * Math.sqrt(dx*dx + dy*dy));
 
             var coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
             var coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
@@ -427,10 +427,10 @@ var molPaintJS = (function (molpaintjs) {
         function getHydrogenLabelPositionRight (atom) {
             var rightFree = true;
             var leftFree = true;
-            for(var id in atom.bonds) {
+            for(var id in atom.getBonds()) {
                 var bond = molecule.getBond(id);
                 var neighbourAtom = bond.getAtomA();
-                if (neighbourAtom.id == atom.id) {
+                if (neighbourAtom.getId() == atom.getId()) {
                     neighbourAtom = bond.getAtomB();
                 }
                 var dx = atom.getX() - neighbourAtom.getX();
@@ -451,7 +451,7 @@ var molPaintJS = (function (molpaintjs) {
          * @return a triangular clipping path according to the given coordinates
          */
         function wedgeClipping (x1, y1, x2, y2, x3, y3) {
-            path = new Path2D();
+            var path = new Path2D();
             path.moveTo(x1,y1);
             path.lineTo(x2,y2);
             path.lineTo(x3,y3);

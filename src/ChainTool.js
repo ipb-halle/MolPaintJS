@@ -113,7 +113,6 @@ var molPaintJS = (function (molpaintjs) {
                 var m = (dw > 0.5) ? 1 : 0;     // which raster to start with
                 dx = 0.0;
                 dy = 0.0;
-                dbg = "";
                 var atomB = atomA;
                 do { 
                     var atom = molPaintJS.Atom();

@@ -116,16 +116,16 @@ var molPaintJS = (function (molpaintjs) {
             updateIcons : function () {
                 var e = document.getElementById(contextId + "_redo");
                 if (actionPtr < (actions.length - 1)) {
-                    e.src = molPaintJS_resources['redo.png'];
+                    e.src = molPaintJS.Resources['redo.png'];
                 } else {
-                    e.src = molPaintJS_resources['redo_inactive.png'];
+                    e.src = molPaintJS.Resources['redo_inactive.png'];
                 }
 
                 e = document.getElementById(contextId + "_undo");
                 if (actionPtr > -1) {
-                    e.src = molPaintJS_resources['undo.png'];
+                    e.src = molPaintJS.Resources['undo.png'];
                 } else {
-                    e.src = molPaintJS_resources['undo_inactive.png'];
+                    e.src = molPaintJS.Resources['undo_inactive.png'];
                 }
             },
 

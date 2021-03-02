@@ -26,13 +26,12 @@ var molPaintJS = (function (molpaintjs) {
     var properties = molpaintjs.DefaultProperties();
     var templates = [ 'benzene', 'cyclohexane', 'cyclopentane' ];
 
-    molpaintjs.Elements = molPaintJS.Elements().initElements();
 
     /**
      * load a template 
      * @param t the template
      */
-    loadTemplate = function (t, url) {
+    function loadTemplate (t, url) {
         var that = this;
         var tp = t;
         var request = new XMLHttpRequest();
@@ -41,10 +40,12 @@ var molPaintJS = (function (molpaintjs) {
         request.send(null);
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
-                molPaintJS_resources[tp + ".mol"] = btoa(request.responseText);
+                molPaintJS.Resources[tp + ".mol"] = btoa(request.responseText);
             } 
         }
     }
+
+    molpaintjs.Elements = molPaintJS.Elements().initElements();
 
     /**
      * add a list of templates to the current instance
@@ -52,7 +53,7 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.addTemplates = function (templateConfig) {
         for (var cfg of templateConfig) {
-            molPaintJS_resources[cfg.key + ".png"] = cfg.iconURL;
+            molPaintJS.Resources[cfg.key + ".png"] = cfg.iconURL;
             loadTemplate(cfg.key, cfg.molURL);
         }
     }
@@ -63,7 +64,7 @@ var molPaintJS = (function (molpaintjs) {
             e = document.createElement("link");
             e.id = "MolPaintJS_CSS";
             e.rel = "stylesheet";
-            e.href = molPaintJS_resources['styles.css'];
+            e.href = molPaintJS.Resources['styles.css'];
             document.head.appendChild(e);
         }
     },
@@ -113,7 +114,7 @@ var molPaintJS = (function (molpaintjs) {
      * @return return the molecule string for template t
      */
     molpaintjs.getTemplate = function (t) {
-        return atob(molPaintJS_resources[t + '.mol']);
+        return atob(molPaintJS.Resources[t + '.mol']);
     },
 
     /**
@@ -130,8 +131,8 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.setTemplates = function (tp) { 
         templates = [];
-        for(t of tp) {
-            if (molPaintJS_resources[t + '.png'] != null) {
+        for(let t of tp) {
+            if (molPaintJS.Resources[t + '.png'] != null) {
                 // molecule might be delayed because of asynchronous load
                 templates.push(t);
             } else {

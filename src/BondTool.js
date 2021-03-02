@@ -25,7 +25,6 @@ var molPaintJS = (function (molpaintjs) {
         var distMax = prop.distMax;
         var bondType = bt;
         var stereoType = st;
-        var id = i;
 
         var atomA = null;
         var actionList;
@@ -96,7 +95,7 @@ var molPaintJS = (function (molpaintjs) {
                         at.setColor(this.context.getCurrentElement().getColor());
                         atomA.setType(at);
                         this.context.getMolecule().addAtom(atomA, null);
-                        atomId = atomA.id;
+                        atomId = atomA.getId();
                         
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atomA, null));
 
@@ -157,10 +156,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var srcIconId = this.context.contextId + "_" + id;
                 var destIconId = this.context.contextId + "_currentBond";
-                icon = document.getElementById(destIconId);
-                icon.src = document.getElementById(srcIconId).src;
+                var icon = document.getElementById(destIconId);
+                icon.src = molPaintJS.Resources[this.id + ".png"];
                 icon.className = "activeTool";
                 this.context.currentBondTool = this;
             }

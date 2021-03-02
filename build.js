@@ -106,8 +106,9 @@ async function minifyCode(code) {
 
 async function compile(src, dest, compress) {
     var result = readCode(src);
-    var code = 'var molPaintJS_resources = {\n'
-            + result[0] + '\n};\n'
+    var code = '/* MolPaintJS generated resources module */\n"use strict";\nvar molPaintJS = (function (molpaintjs) {\n    molpaintjs.Resources = {\n'
+            + result[0] 
+            + '\n};\n    return molpaintjs;\n}(molPaintJS || {}));\n'
             + result[1]
             + result[2];
 

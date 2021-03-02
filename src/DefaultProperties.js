@@ -28,7 +28,6 @@ var molPaintJS = (function (molpaintjs) {
             fontSize: 16,
             helpURL: "https://ipb-halle.github.io/MolPaintJS/help",
             iconSize: 32,
-            installPath: "",
             molScaleDefault: 33,  // pixel per Angstrom
             sizeX: 400,
             sizeY: 400,

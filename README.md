@@ -13,16 +13,10 @@ MolPaintJS was originally started within the [Leibniz Bioactives Cloud](https://
 Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 
 ## Installation / Use
-* Build the code using `npm clean-install-test`
-* Copy the content of the `dist/` directory to an empty directory (hereafter referenced as PLUGIN_DIR) on your web server
-* All pages using the plugin must include the following code snippet (preferably in the page header section): 
+* In principle, only the JavaScript file `molpaint.js` is needed. You can obtain it from a recent release of MolPaintJS. The script will create its own namespace `molPaintJS`. Preferably, the script should be loaded in the page header. 
 
 ```html
-<link type="text/css" rel="stylesheet" href="PLUGIN_DIR/css/styles.css"/>
 <script type="text/javascript" src="PLUGIN_DIR/js/molpaint.js"></script>
-<script type="text/javascript">
-    var molpaintjs = new MolPaintJS();
-</script>
 ```
 
 * For each editor or viewer you need to include the follwing code snippet. You may have multiple instances on your page.
@@ -33,17 +27,19 @@ Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 -->
 <div id="mol"></div>
 <script type="text/javascript">
-  molpaintjs.newContext("mol", {installPath: "PLUGIN_DIR", ..., debugId: "molDebug"})
-   .setMolecule(... MDL MOL v2000 string ...).init();
+  molPaintJS.newContext("mol", {sizeX: 400, sizeY: 400, debugId: "molDebug"})
+    .init()
+    .setMolecule(... MDL MOL string ...);
 </script>
 ```
- 
-To build your own copy, check out the sources, and call (`npm clean-install-test`) to get an executable copy in the `dist` directory. Please also see the `docs` directory, which contains the static content for the MolPaintJS Playground on Github Pages.
+* For additional comfort, you may want to provide additional files (e.g. additional templates, help text, example files, etc.). In this case, please download the compressed tar archive (`molpaintjs.tar.gz`) from a recent release. It contains everything needed to set up a small test environment.
+
+* To build your own copy, check out the sources of MolPaintJS and call `npm clean-install-test`. This will set up a complete environment in the directory `molpaintjs` directory. The `docs` directory is reserved for GitHub Pages (MolPaintJS Playground). GitHub pages builds on the latest release of MolPaintJS, which may be incompatible with the master branch. 
 
 
 ## Features
 * Pure HTML5 / JavaScript
-* Import and export of chemical structures in MDL MOL format (V2000 and V3000), either via JavaScript method calls or copy / paste. The copy / paste feature is especially useful in conjunction with newer releases of ChemDraw.
+* Import and export of chemical structures in MDL MOL format (V2000 and V3000), either via JavaScript method calls or copy / paste from clipboard. Newer releases of ChemDraw support copying as MDL mol string and do not require saving of mol files.
 * Configurable set of template molecules
 * Possibility to define electronic state (singlet, doublet, triplet) and the isotopic composition of a compound
 
@@ -51,11 +47,18 @@ Currently the software concentrates on small molecules. Many other features (e.g
 
 ## Configuration
 ### Changing the set of templates
-To provide a different set of template molecules, you need to place the MOL files in the `docs/templates/` folder and a corresponding icons in the `docs/img/` folder. You can then configure the list of available templates in the header section of the page, e.g.:
+To provide a different set of template molecules, you need to provide URLs to template mol files and icons. You can then configure the list of available templates in the header section of the page, e.g.:
 ```javascript
-  var molpaintjs = new MolPaintJS();
-  molpaintjs.setTemplates({"glucose", "fructose", "galactose", "ribose"});
+  molPaintJS.addTemplates([ 
+        {key:'Ala', molURL:'templates/alanine.mol', iconURL:'templates/alanine.png'}},
+        {key:'Asn', molURL:'templates/asparagine.mol', iconURL:'templates/asparagine.png'}, 
+        ...
+    ]);
+  molPaintJS.setTemplates(['Ala', 'Asn', ...]);
 ```
+### Change Listener
+A change listener can be registered to an instance of MolPaintJS. The method will be invoked each time, the content of the plugin is rendered.
+
 ### Options
 All options can be specified either on the global level (`new MolPaintJS({...options...})`) or on the instance level (`newContext(...)`). Instance level options override global options. However, some options make little sense on the instance level (e.g. **installPath**).
 
@@ -65,7 +68,6 @@ All options can be specified either on the global level (`new MolPaintJS({...opt
 * **fontFamily** font family for atom labels etc. (default "SansSerif")
 * **fontSize** font size (default 16)
 * **iconSize** the size of the icons (default 32)
-* **installPath** the absolute or relative path where the plugin resides (above referenced as PLUGIN_DIR, default "") *NOTE: if* **installPath** *is not empty, it must end with a slash '/'.*
 * **molScaleDefault** scaling factor (default 33); unit is pixels per Angstrom
 * **sizeX** the width of the display area (default 400)
 * **sizeY** the height of the display area (default 400)

@@ -37,7 +37,6 @@ var molPaintJS = (function (molpaintjs) {
         var distMax = prop.distMax;
         var molpaint = mp;
         var iconSize = prop.iconSize;
-        var installPath = prop.installPath;
         var height = prop.sizeY;
         var helpURL = prop.helpURL;
         var widgetId = contextId;

@@ -196,8 +196,9 @@ var molPaintJS = (function (molpaintjs) {
                 var atoms = mol.getAtoms();
                 for (var i in atoms) {
                     var a = atoms[i];
+                    a.setBonds({});
                     a.setSelected(sel);
-                    molecule.addAtom(a, null);
+                    a.setId(molecule.addAtom(a, null));
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
                 }
 

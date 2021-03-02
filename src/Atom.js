@@ -150,8 +150,8 @@ var molPaintJS = (function (molpaintjs) {
                 var cnt = 0;
 
                 // evaluate bond order
-                for(var id in bonds) {
-                    switch(molecule.getBond(id).getType()) {
+                for(var b in bonds) {
+                    switch(molecule.getBond(b).getType()) {
                         case 1 : cnt -= 1;
                                 break;
                         case 2 : cnt -= 2; 
@@ -159,6 +159,7 @@ var molPaintJS = (function (molpaintjs) {
                         case 3 : cnt -= 3;
                     }
                 }
+
                 switch(type.getIsotope().getSymbol()) {
                     case "N" : cnt += 3 + charge;
                         break;

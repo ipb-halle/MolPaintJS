@@ -68,7 +68,7 @@ var molPaintJS = (function (molpaintjs) {
 
                 if (atomId == null) {
                     if (bonds.length > 0) {
-                        var b = this.context.getMolecule().bonds[bonds[0]];
+                        var b = this.context.getMolecule().getBonds()[bonds[0]];
                         var old = b.copy();
                         var changed = false;
                         if((b.getType() != bondType) || (b.getStereo() != stereoType)) { 

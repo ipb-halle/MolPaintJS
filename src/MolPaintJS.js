@@ -89,7 +89,7 @@ var molPaintJS = (function (molpaintjs) {
      * @return the molecule from context cid in MDLv2000 format
      */
     molpaintjs.getMDLv2000 = function (cid) { 
-        var w = MDLv2000Writer();
+        var w = this.MDLv2000Writer();
         return w.write(contextRegistry[cid].getMolecule());
     },
 
@@ -97,7 +97,7 @@ var molPaintJS = (function (molpaintjs) {
      * @return the molecule from context cid in MDLv3000 format
      */
     molpaintjs.getMDLv3000 = function (cid) {
-        var w = MDLv3000Writer();
+        var w = this.MDLv3000Writer();
         return w.write(contextRegistry[cid].getMolecule());
     },
 
@@ -152,10 +152,10 @@ var molPaintJS = (function (molpaintjs) {
         
         switch(format) {
             case 'V3000':
-                moltext = getMDLv3000(cid);
+                moltext = this.getMDLv3000(cid);
                 break;
             case 'V2000':
-                moltext = getMDLv2000(cid);
+                moltext = this.getMDLv2000(cid);
                 break;
             default :
                 moltext = "Unknown output format: " + format;

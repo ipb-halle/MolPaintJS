@@ -39,6 +39,7 @@ var molPaintJS = (function (molpaintjs) {
         var iconSize = prop.iconSize;
         var installPath = prop.installPath;
         var height = prop.sizeY;
+        var helpURL = prop.helpURL;
         var widgetId = contextId;
         var widgetObject = document.getElementById(contextId);
         var width = prop.sizeX;
@@ -162,7 +163,7 @@ var molPaintJS = (function (molpaintjs) {
             var content = decodeURI(molPaintJS.Resources['help.html'])
                 .replace('data:text/html;charset=UTF-8,','');
             e.innerHTML = content
-                .replaceAll('%HELP_URL%', ctx.properties['helpURL']);
+                .replaceAll('%HELP_URL%', helpURL); 
             e.style.display = 'block';
         }
 

@@ -22,7 +22,7 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.RadicalTool = function(ctx, prop) {
 
         var distMax = prop.distMax;
-        var type = "radical_up";
+        var type = "radical";
 
         return {
             id : "radical",
@@ -78,10 +78,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var srcIconId = this.context.contextId + "_" + type;
                 var destIconId = this.context.contextId + "_radical";
-                icon = document.getElementById(destIconId);
-                icon.src = document.getElementById(srcIconId).src;
+                var icon = document.getElementById(destIconId);
+                icon.src = molPaintJS.Resources[type + ".png"]; 
             }
         };
     }

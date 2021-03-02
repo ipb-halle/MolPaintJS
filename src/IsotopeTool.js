@@ -60,10 +60,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var srcIconId = this.context.contextId + "_" + type;
                 var destIconId = this.context.contextId + "_isotope";
-                icon = document.getElementById(destIconId);
-                icon.src = document.getElementById(srcIconId).src;
+                var icon = document.getElementById(destIconId);
+                icon.src = molPaintJS.Resources[type + ".png"];
             }
         };
     }

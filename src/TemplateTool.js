@@ -132,10 +132,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var srcIconId = this.context.contextId + "_" + templateId;
                 var destIconId = this.context.contextId + "_template";
-                icon = document.getElementById(destIconId);
-                icon.src = document.getElementById(srcIconId).src;
+                var icon = document.getElementById(destIconId);
+                icon.src = molPaintJS.Resources[templateId + ".png"];
             }
         };
     }

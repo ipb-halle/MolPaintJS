@@ -145,7 +145,7 @@ var molPaintJS = (function (molpaintjs) {
              * stereo indicators)
              */
             swap : function () {
-                [ this.atomA, this.atomB ] = [ this.atomB, this.atomA ];
+                [ atomA, atomB ] = [ atomB, atomA ];
             },
         };
     }

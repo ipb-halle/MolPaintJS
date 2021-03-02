@@ -1,33 +1,62 @@
 /*
- * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *     http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * 
- * Small debugging tool for development
+ * Unit test for the MDL parser
  */
-var molpaint = require('../molpaintjs/js/molpaint');
+var assert = require('assert');
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
 
+var molpaintjs = require('../molpaintjs/js/molpaint');
+
+var testMolecules = [ {
+        'name': 'v2000_14C_cyclopentane.mol',
+        'nAtoms': 5,
+        'nBonds': 5
+    }, {
+        'name': 'v3000_ethyl_acetate.mol',
+        'nAtoms': 6,
+        'nBonds': 5
+    }, {
+        'name': 'v3000_benzene.mol',
+        'nAtoms': 6,
+        'nBonds': 6
+    }, {
+        'name': 'v3000_(R)-2-chloroheptane.mol',
+        'nAtoms': 8,
+        'nBonds': 7
+    }, {
+        'name': 'v3000_(S)-2-chloroheptane.mol',
+        'nAtoms': 8,
+        'nBonds': 7
+    } ];
+
+
+var atomCounts = { };
+var bondCounts = { };
 
 function readFile(name) {
     return fs.readFileSync(path.join(path.dirname(__filename), 'molecules', name), {'encoding':'UTF-8'});
 }
 
-//console.log(util.inspect(molpaint, {showHidden: false, depth: null}));
-
-var mol = molpaint.MDLParser.parse(readFile('v3000_benzene.mol') /* , {'logLevel':2} */);
-//console.log(util.inspect(mol, {showHidden: false, depth: null}));
+describe('Parser', function() {
+    it('should parse the list of molecules', function() {
+        for(var entry of testMolecules) {
+            var mol = molpaintjs.parse(readFile(entry.name)); 
+//          console.log(util.inspect(mol, {showHidden: false, depth: null}));
+            assert(mol, 'Parse error for ' + entry.name);
+            mol.reIndex();
+            atomCounts[entry.name] = mol.getAtomCount();
+            bondCounts[entry.name] = mol.getBondCount();
+        }
+    });
+    it('should match the number of atoms', function() {
+        for(var entry of testMolecules) {
+            assert.equal(entry.nAtoms, atomCounts[entry.name], 'Mismatch for ' + entry.name);
+        }
+    });
+    it('should match the number of bonds', function() {
+        for(var entry of testMolecules) {
+            assert.equal(entry.nBonds, bondCounts[entry.name], 'Mismatch for ' + entry.name);
+        }
+    });
+});

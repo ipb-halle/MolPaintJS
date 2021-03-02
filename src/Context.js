@@ -184,7 +184,7 @@ var molPaintJS = (function (molpaintjs) {
             pasteMolecule : function (st, sel) {
                 var mol;
                 try {
-                    mol = molpaintjs.MDLParser.parse(st);
+                    mol = molPaintJS.MDLParser.parse(st);
                 } catch(e) {
                     console.log("Parse error:");
                     console.log(st);
@@ -261,7 +261,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             setMolecule : function (st) {
                 try {
-                    molecule = molpaintjs.MDLParser.parse(st);
+                    molecule = molPaintJS.MDLParser.parse(st);
                 } catch(e) {
                     console.log("Parse error:");
                     console.log(st);

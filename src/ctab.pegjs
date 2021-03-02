@@ -64,7 +64,7 @@
             }
         }
 
-        for(var iso of molPaintJS.Elements.elements[atomicNumber]) {
+        for(var iso of molPaintJS.Elements.getIsotopes(atomicNumber)) {
             if ((iso.getIsotope() > 0) && (iso.getMass() == targetMass)) {
                 return(getAtomTypeFromIsotope(iso));
             }
@@ -777,13 +777,14 @@ v3collectionBlock
     = newline 'M  V30 BEGIN COLLECTION' collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); }
 
 collectionEntry
-    = newline 'M  V30 DEFAULT' collectionContinuation* 
-    / newline 'M  V30 ' string collectionContinuation*
+    = newline 'M  V30 collectionName:DEFAULT' collectionContinuation* 
+    / newline 'M  V30 ' collectionName:string collectionContinuation*
 
+/* ToDo multi line lists */
 collectionContinuation
-    = v3LineContinuation cont:collectionContinuation
-    / ' '* 'ATOMS=(' [^)]* ')' collectionContinuation
-    / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
+    = v3LineContinuation cont:collectionContinuation { return cont; }
+    / ' '* 'ATOMS=(' atoms:uint* ')' cont:collectionContinuation { return flatten(cont, atoms); }
+    / ' '* 'BONDS=(' bonds:uint* ')' collectionContinuation { return flatten(cont, bonds); }
     / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation

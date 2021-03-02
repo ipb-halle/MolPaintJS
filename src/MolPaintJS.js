@@ -180,5 +180,10 @@ var molPaintJS = (function (molpaintjs) {
         contextRegistry[id] = ctx;
     }
 
+    if (typeof module === "object" && module.exports) {
+        module.exports.molPaintJS = molPaintJS;
+    }
+
     return molpaintjs;
 }(molPaintJS || {}));
+

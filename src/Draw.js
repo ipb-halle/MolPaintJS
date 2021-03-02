@@ -56,11 +56,7 @@ var molPaintJS = (function (molpaintjs) {
             var r = view.getFontSize() * 0.6;
             ctx.save();
             ctx.lineWidth = 4;
-            if (atom.getSelected() == 2) {
-                ctx.strokeStyle = "#22ff22";
-            } else {
-                ctx.strokeStyle = "#ff2222";
-            }
+            setStrokeStyle(ctx, atom.getSelected());
             ctx.moveTo(coord.x + r, coord.y);
             ctx.arc(coord.x, coord.y, r, 0, 2.0 * Math.PI);
             ctx.stroke();
@@ -110,11 +106,7 @@ var molPaintJS = (function (molpaintjs) {
 
             ctx.save();
             ctx.lineWidth = 4;
-            if (bond.getSelected() == 2) {
-                ctx.strokeStyle = "#22ff22";
-            } else {
-                ctx.strokeStyle = "#ff2222";
-            }
+            setStrokeStyle(ctx, bond.getSelected());
             ctx.moveTo(coord1.x, coord1.y);
             ctx.lineTo(coord2.x, coord2.y);
             ctx.stroke();
@@ -445,6 +437,24 @@ var molPaintJS = (function (molpaintjs) {
                 } 
             }
             return rightFree || (! leftFree);
+        }
+
+        function setStrokeStyle(ctx, sel) {
+            if ((sel & 2) != 0) {
+                // selected
+                ctx.strokeStyle = "#22ff22";
+                return;
+            }
+            if ((sel & 1) != 0) {
+                // temp selected
+                ctx.strokeStyle = "#ff2222";
+                return;
+            }
+            if ((sel & 4) != 0) {
+                // highligted
+                ctx.strokeStyle = "#2222ff";
+                return;
+            }
         }
 
         /**

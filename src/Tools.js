@@ -37,7 +37,7 @@ var molPaintJS = (function (molpaintjs) {
             var icon = document.getElementById(iconId);
             if (icon != null) {
                 // ToDo: use promises
-                icon.className = "inactiveTool";
+                icon.className = "molPaintJS-inactiveTool";
             }
         },
 
@@ -48,7 +48,7 @@ var molPaintJS = (function (molpaintjs) {
                 // ToDo: use promises
                 return;
             }
-            icon.className = "activeTool";
+            icon.className = "molPaintJS-activeTool";
 
             try {
                 tool.setup();

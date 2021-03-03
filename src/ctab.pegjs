@@ -774,23 +774,25 @@ v3LinkAtomLine
 
 /* ToDo collection block parsing */
 v3collectionBlock
-    = newline 'M  V30 BEGIN COLLECTION' collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); }
+    = newline 'M  V30 BEGIN COLLECTION' entry:collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); 
+//          logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
+}
 
 collectionEntry
-    = newline 'M  V30 collectionName:DEFAULT' collectionContinuation* 
-    / newline 'M  V30 ' collectionName:string collectionContinuation*
+    = newline 'M  V30 collectionName:DEFAULT' data:collectionContinuation* { return {name:collectionName, data:data}; }
+    / newline 'M  V30 ' collectionName:string data:collectionContinuation* { return {name:collectionName, data:data}; }
 
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=(' atoms:uint* ')' cont:collectionContinuation { return flatten(cont, atoms); }
-    / ' '* 'BONDS=(' bonds:uint* ')' collectionContinuation { return flatten(cont, bonds); }
+    / ' '* 'ATOMS=(' count:uint atoms:uint* ')' cont:collectionContinuation { return {type:'ATOM', collection:flatten(cont, atoms)}; }
+    / ' '* 'BONDS=(' count:uint bonds:uint* ')' collectionContinuation { return flatten(cont, bonds); }
     / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
     / ' '* 'RGROUPS=(' [^)]* ')' collectionContinuation
-    / ' '* newline
+    / ' '* newline { }
 /*
  *======================================================================
  *

@@ -20,24 +20,24 @@
  * @author Frank Broda
  */
 
-.canvas {
+.molPaintJS-canvas {
     border-style: solid;
     border-width: 1px;
     border-color: #000000;
     cursor: default;
 }
 
-.defaultTool {
+.molPaintJS-defaultTool {
     border-width: 0px;
 }
 
-.inactiveTool img {
+.molPaintJS-inactiveTool img {
     border-style: solid;
     border-width: 1px;
     border-color: #a0a0a0;
 }
 
-.inactiveTool {
+.molPaintJS-inactiveTool {
     border-style: solid;
     border-width: 1px;
     border-color: #a0a0a0;
@@ -46,13 +46,13 @@
     text-align: center;
 }
 
-.activeTool img {
+.molPaintJS-activeTool img {
     border-style: solid;
     border-width: 1px;
     border-color: #ff0000;
 }
 
-.activeTool {
+.molPaintJS-activeTool {
     border-style: solid;
     border-width: 1px;
     border-color: #ff0000;
@@ -66,7 +66,7 @@
  */
 
 /* button */
-.dropbtn {
+.molPaintJS-dropbtn {
     border-collapse: collapse;
     border-spacing: 0px;
     border-width: 0px;
@@ -79,18 +79,18 @@
     cursor: pointer;
 }
 
-.leftMenubar {
+.molPaintJS-leftMenubar {
     vertical-align: top;
 }
 
 /* The container <div> - needed to position the dropdown content */
-.leftDropdown {
+.molPaintJS-leftDropdown {
     position: relative;
     display: inline-block;
 }
 
 /* Dropdown Content (Hidden by Default) */
-.leftDropdown-content {
+.molPaintJS-leftDropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -100,7 +100,7 @@
 }
 
 /* Links inside the dropdown */
-.leftDropdown-content a {
+.molPaintJS-leftDropdown-content a {
     color: black;
     padding: 6px 6px;
     text-decoration: none;
@@ -108,34 +108,34 @@
 }
 
 /* Change color of dropdown links on hover */
-.leftDropdown-content a:hover {
+.molPaintJS-leftDropdown-content a:hover {
     background-color: #e0e0e0
 }
 
 /* Show the dropdown menu on hover */
-.leftDropdown:hover .leftDropdown-content {
+.molPaintJS-leftDropdown:hover .leftDropdown-content {
     display: block;
     left: 0px;
 }
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.leftDropdown:hover .dropbtn {
+.molPaintJS-leftDropdown:hover .dropbtn {
     background-color: #f9f9f9;
 }
 
 /*
  * Popup menu for right menubar
  */
-.rightMenubar {
+.molPaintJS-rightMenubar {
     vertical-align: top;
 }
 
-.rightDropdown {
+.molPaintJS-rightDropdown {
     position: relative;
     display: inline-block;
 }
 
-.rightDropdown-content {
+.molPaintJS-rightDropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -144,47 +144,47 @@
     z-index: 1;
 }
 
-.rightDropdown-content a {
+.molPaintJS-rightDropdown-content a {
     color: black;
     padding: 6px 6px;
     text-decoration: none;
     display: block;
 }
 
-.rightDropdown-content a:hover {
+.molPaintJS-rightDropdown-content a:hover {
     background-color: #e0e0e0;
 }
 
-.rightDropdown:hover .rightDropdown-content {
+.molPaintJS-rightDropdown:hover .rightDropdown-content {
     display: block;
     right: 0px;
 }
 
-.rightDropdown:hover .dropbtn {
+.molPaintJS-rightDropdown:hover .dropbtn {
     background-color: #f9f9f9;
 }
 
 /*
  * decoration for element links
  */
-.elementLink {
+.molPaintJS-elementLink {
     font-family: Verdana, sans-serif;
     font-size: 10px;
     text-decoration: none;
 }
 
-.elementTable {
+.molPaintJS-elementTable {
     border-collapse: collapse;
     border-spacing: 0px;
     border-width: 0px;
     white-space: nowrap;
 }
 
-.elementTable td {
+.molPaintJS-elementTable td {
     padding: 0px;
 }
 
-.helpModal { 
+.molPaintJS-helpModal { 
     z-index: 3;
     display: none;
     padding-top: 100px;
@@ -198,7 +198,7 @@
     background-color: rgba(0,0,0,0.4);
 }
 
-.helpModalContent {
+.molPaintJS-helpModalContent {
     margin:auto;
     background-color: #fff;
     position: relative;
@@ -209,7 +209,7 @@
     overflow: auto;
 }
 
-.helpModalCloseButton {
+.molPaintJS-helpModalCloseButton {
     position: absolute;
     right: 0;
     top: 0;

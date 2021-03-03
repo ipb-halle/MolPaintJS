@@ -153,10 +153,6 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionInfo (evt) {
-    /* 
-            Alterinatively could also dynamically add iframe to DOM (see actionCopy method):
-            <iframe src="help/index.html" class="helpIframe">Iframe not supported</iframe>
-    */
             var ctx = molPaintJS.getContext(evt.target.id);
             var e = document.getElementById('MolPaintJS_Help_Widget');
             var content = decodeURI(molPaintJS.Resources['help.html'])
@@ -333,7 +329,7 @@ var molPaintJS = (function (molpaintjs) {
         function itemE (id, title, color) {
             return "<tr><td>"
                 + "<div id='" + widgetId + "_" + id
-                + "' class='inactiveTool' style='height:"
+                + "' class='molPaintJS-inactiveTool' style='height:"
                 + iconSize + "px; width:" + iconSize
                 + "px; line-height:" + iconSize + "px; color:" + color
                 + "'>" + title + "</div></td></tr>";
@@ -390,21 +386,21 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderBondMenu () {
             return "<tr><td>"
-                + "<div class='leftDropdown'>"
-                + "  <a href='javascript:void(0);' class='dropbtn' "
+                + "<div class='molPaintJS-leftDropdown'>"
+                + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn' "
                 + "onclick=\"molPaintJS.setCurrentBond('" + widgetId + "');\" >"
-                + item("currentBond", "single_bond", "", "inactiveTool")
-                + "</a><div class='leftDropdown-content'>"
+                + item("currentBond", "single_bond", "", "molPaintJS-inactiveTool")
+                + "</a><div class='molPaintJS-leftDropdown-content'>"
                 + "<table><tr>"
-                + itemH("single_bond", "Single bond", "inactiveTool")
-                + itemH("double_bond", "Double bond", "inactiveTool")
-                + itemH("triple_bond", "Triple bond", "inactiveTool")
+                + itemH("single_bond", "Single bond", "molPaintJS-inactiveTool")
+                + itemH("double_bond", "Double bond", "molPaintJS-inactiveTool")
+                + itemH("triple_bond", "Triple bond", "molPaintJS-inactiveTool")
                 + "    </tr><tr>"
-                + itemH("solid_wedge", "Solid wedge", "inactiveTool")
-                + itemH("dashed_bond", "Dashed bond", "inactiveTool")
-                + itemH("wavy_bond", "Wavy bond", "inactiveTool")
+                + itemH("solid_wedge", "Solid wedge", "molPaintJS-inactiveTool")
+                + itemH("dashed_bond", "Dashed bond", "molPaintJS-inactiveTool")
+                + itemH("wavy_bond", "Wavy bond", "molPaintJS-inactiveTool")
                 + "    </tr><tr>"
-                + itemH("hashed_wedge", "Hashed Wedge", "inactiveTool")
+                + itemH("hashed_wedge", "Hashed Wedge", "molPaintJS-inactiveTool")
                 + "    <td></td><td></td></tr></table>"
                 + "  </div>"
                 + "</div>"
@@ -413,20 +409,20 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderCanvas () {
             return "<canvas id='" + widgetId + "_canvas' width='" + width 
-                + "' height='" + height + "' class='canvas' contenteditable='true' >"
+                + "' height='" + height + "' class='molPaintJS-canvas' contenteditable='true' >"
                 + "Sorry, your browser does not support the canvas element."
                 + "</canvas>";
         }
 
         function renderIsotopeMenu () {
             return "<tr><td>"
-                + "<div class='rightDropdown'>"
-                + "  <a href='javascript:void(0);' class='dropbtn'>"
-                + item("isotope", "isotope_up", "Isotope menu", "inactiveTool")
-                + "</a><div class='rightDropdown-content'>"
+                + "<div class='molPaintJS-rightDropdown'>"
+                + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn'>"
+                + item("isotope", "isotope_up", "Isotope menu", "molPaintJS-inactiveTool")
+                + "</a><div class='molPaintJS-rightDropdown-content'>"
                 + "<table>"
-                + itemV("isotope_up", "Heavier isotope", "inactiveTool")
-                + itemV("isotope_down", "Lighter isotope", "inactiveTool")
+                + itemV("isotope_up", "Heavier isotope", "molPaintJS-inactiveTool")
+                + itemV("isotope_down", "Lighter isotope", "molPaintJS-inactiveTool")
                 + "</table>"
                 + "  </div>"
                 + "</div>"
@@ -434,24 +430,24 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderLeftMenu () {
-            return itemV("pointer", "Select, Translate, Rotate", "activeTool")
-                + itemV("eraser", "Eraser", "inactiveTool")
+            return itemV("pointer", "Select, Translate, Rotate", "molPaintJS-activeTool")
+                + itemV("eraser", "Eraser", "molPaintJS-inactiveTool")
                 + renderBondMenu()
-                + itemV("chain", "Chain", "inactiveTool")
+                + itemV("chain", "Chain", "molPaintJS-inactiveTool")
                 + renderTemplateMenu()
-                + itemV("plus", "Increment charge", "inactiveTool")
-                + itemV("minus", "Decrement charge", "inactiveTool");
+                + itemV("plus", "Increment charge", "molPaintJS-inactiveTool")
+                + itemV("minus", "Decrement charge", "molPaintJS-inactiveTool");
         }
 
         function renderPeriodicTable () {
             var header = "<tr><td>"
-                + "<div class='rightDropdown'>"
-                + "<a href='javascript:void(0);' class='dropbtn'><img id='"
+                + "<div class='molPaintJS-rightDropdown'>"
+                + "<a href='javascript:void(0);' class='molPaintJS-dropbtn'><img id='"
                 + widgetId + "_pse' src='" + molPaintJS.Resources['pse.png']
                 + "' title='Periodic table' "
-                + "width='" + iconSize + "' class='inactiveTool' /></a>"
-                + "  <div class='rightDropdown-content'>"
-                + "  <table class='elementTable'>";
+                + "width='" + iconSize + "' class='molPaintJS-inactiveTool' /></a>"
+                + "  <div class='molPaintJS-rightDropdown-content'>"
+                + "  <table class='molPaintJS-elementTable'>";
 
             var footer = "</table>"
                 + "</div>"
@@ -485,7 +481,7 @@ var molPaintJS = (function (molpaintjs) {
                     tbl += "<td colspan='" + colspan + "'></td>";
                 }
                 tbl += "<td><a href='javascript:void(0)' "
-                    + "class='elementLink' "
+                    + "class='molPaintJS-elementLink' "
                     + "onclick=\"molPaintJS.setElement('"
                     + widgetId + "','" + el.getSymbol()
                     + "');\"><span style='color: " + el.getColor()
@@ -498,16 +494,16 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderRadicalMenu () {
             return "<tr><td>"
-                + "<div class='rightDropdown'>"
-                + "  <a href='javascript:void(0);' class='dropbtn' >"
-                + item("radical", "radical", "Radicals menu", "inactiveTool")
-                + "</a><div class='rightDropdown-content'>"
+                + "<div class='molPaintJS-rightDropdown'>"
+                + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn' >"
+                + item("radical", "radical", "Radicals menu", "molPaintJS-inactiveTool")
+                + "</a><div class='molPaintJS-rightDropdown-content'>"
                 + "<table><tr>"
-                + itemH("no_radical", "no radical", "inactiveTool")
-                + itemH("singlet", "Singlet", "inactiveTool")
+                + itemH("no_radical", "no radical", "molPaintJS-inactiveTool")
+                + itemH("singlet", "Singlet", "molPaintJS-inactiveTool")
                 + "</tr><tr>"
-                + itemH("doublet", "Doublet", "inactiveTool")
-                + itemH("triplet", "Triplet", "inactiveTool")
+                + itemH("doublet", "Doublet", "molPaintJS-inactiveTool")
+                + itemH("triplet", "Triplet", "molPaintJS-inactiveTool")
                 + "</tr>"
                 + "</table>"
                 + "  </div>"
@@ -531,10 +527,10 @@ var molPaintJS = (function (molpaintjs) {
             var currentTemplate = ctx.getCurrentTemplate();
 
             var header = "<tr><td>"
-                + "<div class='leftDropdown'>"
-                + " <a href='javascript:void(0);' class='dropbtn' >"
-                + item("template", currentTemplate, currentTemplate, "inactiveTool")
-                + "</a><div class='leftDropdown-content'>"
+                + "<div class='molPaintJS-leftDropdown'>"
+                + " <a href='javascript:void(0);' class='molPaintJS-dropbtn' >"
+                + item("template", currentTemplate, currentTemplate, "molPaintJS-inactiveTool")
+                + "</a><div class='molPaintJS-leftDropdown-content'>"
                 + "<table>";
 
             var body = "";
@@ -545,7 +541,7 @@ var molPaintJS = (function (molpaintjs) {
                     body += "<tr>";
                 }
                 i++;
-                body += itemH(t, t, "inactiveTool");
+                body += itemH(t, t, "molPaintJS-inactiveTool");
                 if ((i % 5) == 0) {
                     body += "</tr>";
                 }
@@ -566,16 +562,16 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderTopMenu () {
-            return itemH("clear", "Clear", "defaultTool")
-                + itemH("undo", "Undo", "defaultTool")
-                + itemH("redo", "Redo", "defaultTool")
-                + itemH("center", "Center", "inactiveTool")
-                + itemH("slide", "Slide", "inactiveTool")
-                + itemH("copy", "Copy", "defaultTool")
-                + itemH("paste", "Paste", "defaultTool")
-                + itemH("zoom_in", "Zoom in", "defaultTool")
-                + itemH("zoom_out", "Zoom out", "defaultTool")
-                + itemH("info", "Info", "defaultTool");
+            return itemH("clear", "Clear", "molPaintJS-defaultTool")
+                + itemH("undo", "Undo", "molPaintJS-defaultTool")
+                + itemH("redo", "Redo", "molPaintJS-defaultTool")
+                + itemH("center", "Center", "molPaintJS-inactiveTool")
+                + itemH("slide", "Slide", "molPaintJS-inactiveTool")
+                + itemH("copy", "Copy", "molPaintJS-defaultTool")
+                + itemH("paste", "Paste", "molPaintJS-defaultTool")
+                + itemH("zoom_in", "Zoom in", "molPaintJS-defaultTool")
+                + itemH("zoom_out", "Zoom out", "molPaintJS-defaultTool")
+                + itemH("info", "Info", "molPaintJS-defaultTool");
         }
 
         return {
@@ -640,9 +636,9 @@ var molPaintJS = (function (molpaintjs) {
                     widgetObject.innerHTML = "<table><tr><td colspan=3><table>"
                         + "<tr>" + renderTopMenu() + "</tr></table></td></tr>"
                         + "<tr>"
-                        + "<td class='leftMenubar'><table>" + renderLeftMenu() + "</table></td>"
+                        + "<td class='molPaintJS-leftMenubar'><table>" + renderLeftMenu() + "</table></td>"
                         + "<td>" + renderCanvas() + "</td>"
-                        + "<td class='rightMenubar'><table>" + renderRightMenu() + "</table></td>"
+                        + "<td class='molPaintJS-rightMenubar'><table>" + renderRightMenu() + "</table></td>"
                         + "</tr>"
                         + "<tr><td colspan=3><table>"
                         + "<tr>" + renderBottomMenu() + "</tr></table></td></tr>"

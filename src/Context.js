@@ -186,9 +186,10 @@ var molPaintJS = (function (molpaintjs) {
                 try {
                     mol = molPaintJS.MDLParser.parse(st);
                 } catch(e) {
-                    console.log("Parse error:");
-                    console.log(st);
-                    throw(e);
+                    console.log("Parse error in Context.pasteMolecule(): " + e.message);
+                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
+                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
+                    return;
                 }
                 var actionList = molPaintJS.ActionList();
 
@@ -263,9 +264,10 @@ var molPaintJS = (function (molpaintjs) {
                 try {
                     molecule = molPaintJS.MDLParser.parse(st);
                 } catch(e) {
-                    console.log("Parse error:");
-                    console.log(st);
-                    throw(e);
+                    console.log("Parse error in Context.setMolecule(): " + e.message);
+                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
+                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
+                    return;
                 }
 
                 molecule.center();

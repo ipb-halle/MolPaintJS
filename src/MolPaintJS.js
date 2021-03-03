@@ -74,7 +74,7 @@ var molPaintJS = (function (molpaintjs) {
         if (e == null) {
             e = document.createElement("div");
             e.id = "MolPaintJS_Help_Widget";
-            e.classList.add("helpModal");
+            e.classList.add("molPaintJS-helpModal");
             document.body.appendChild(e);
         }
     },

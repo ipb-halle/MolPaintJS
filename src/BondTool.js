@@ -38,7 +38,7 @@ var molPaintJS = (function (molpaintjs) {
                 molPaintJS.Tools.abort(this);
 
                 var iconId = this.context.contextId + "_currentBond";
-                document.getElementById(iconId).className = "inactiveTool";
+                document.getElementById(iconId).className = "molPaintJS-inactiveTool";
 
                 atomA = null;
             },
@@ -159,7 +159,7 @@ var molPaintJS = (function (molpaintjs) {
                 var destIconId = this.context.contextId + "_currentBond";
                 var icon = document.getElementById(destIconId);
                 icon.src = molPaintJS.Resources[this.id + ".png"];
-                icon.className = "activeTool";
+                icon.className = "molPaintJS-activeTool";
                 this.context.currentBondTool = this;
             }
         };

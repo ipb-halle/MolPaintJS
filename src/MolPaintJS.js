@@ -181,7 +181,7 @@ var molPaintJS = (function (molpaintjs) {
     }
 
     if (typeof module === "object" && module.exports) {
-        module.exports.molPaintJS = molPaintJS;
+        module.exports = molPaintJS;
     }
 
     return molpaintjs;

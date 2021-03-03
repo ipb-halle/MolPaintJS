@@ -28,14 +28,14 @@ function readFile(name) {
     return fs.readFileSync(path.join(path.dirname(__filename), 'molecules', name), {'encoding':'UTF-8'});
 }
 
-// console.log(util.inspect(mp.parse, {showHidden: true, depth: null}));
+// console.log(util.inspect(mp, {showHidden: true, depth: null}));
 
-var atom = mp.molPaintJS.Atom();
+var atom = mp.Atom();
 atom.setX(5.0);
 atom.addX(1.0);
 console.log(atom.getX());
 
 
-// var mol = mp.parse(readFile('../molpaintjs/examples/cholecalciferol.mol'), {'logLevel':2});
-var mol = mp.parse(readFile('v3000_benzene.mol') /* , {'logLevel':2} */);
+var mol = mp.MDLParser.parse(readFile('../../molpaintjs/examples/cholecalciferol.mol'), {'logLevel':2});
+// var mol = mp.MDLParser.parse(readFile('v3000_benzene.mol') /* , {'logLevel':2} */);
 // console.log(util.inspect(mol.getAtoms(), {showHidden: false, depth: null}));

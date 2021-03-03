@@ -49,9 +49,18 @@ function readResource(path, dirent, header, encoding) {
 }
 
 function readPEG(path, dirent) {
-    return peg.generate(
+    return  '/* MolPaintJS generated PEGJS parser module */\n'
+        + '"use strict";\n'
+        + 'var molPaintJS = (function (molpaintjs) {\n'
+        + '    molpaintjs.MDLParser = '
+
+        + peg.generate(
                 fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'}),
-                {'output':'source', 'format':'umd', 'exportVar':'molPaintJS.MDLParser'});
+                {'output':'source'})
+
+        + ';\n'
+        + '    return molpaintjs;\n'
+        + '}(molPaintJS || {}));\n';
 }
 
 /*
@@ -75,7 +84,6 @@ function readCode(path) {
                 entryCode = fs.readFileSync(pathInfo.join(path, dirent.name), {'encoding':'UTF-8'});
             } else {
                 if (dirent.name.match(/\.pegjs$/)) {
-                    code += ';\n';  // dirty fix for missing semicolon
                     code += readPEG(path, dirent);
                 } 
                 if (dirent.name.match(/\.js$/)) {

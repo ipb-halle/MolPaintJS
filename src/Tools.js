@@ -23,9 +23,8 @@
  * of the tool icons (i.e. change the icon CSS class).
  */
 
-"use strict";
-
 var molPaintJS = (function (molpaintjs) {
+    "use strict";
 
     molpaintjs.Tools = {
 

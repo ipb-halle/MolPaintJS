@@ -15,9 +15,8 @@
  * limitations under the License.
  *
  */
-"use strict";
-
 var molPaintJS = (function (molpaintjs) {
+    "use strict";
 
     /**
      * The SlideTool does not provide history as it does not affect

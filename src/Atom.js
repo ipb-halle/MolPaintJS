@@ -15,9 +15,8 @@
  * limitations under the License.
  *  
  */
-"use strict";
-
 var molPaintJS = (function (molpaintjs) {
+    "use strict";
 
     molpaintjs.Atom = function () {
 

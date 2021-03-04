@@ -15,9 +15,8 @@
  * limitations under the License.
  *  
  */
-"use strict";
-
 var molPaintJS = (function (molpaintjs) {
+    "use strict";
 
     molpaintjs.setElement = function (id, el) {
         var ctx = molPaintJS.getContext(id);

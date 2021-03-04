@@ -50,8 +50,8 @@ function readResource(path, dirent, header, encoding) {
 
 function readPEG(path, dirent) {
     return  '/* MolPaintJS generated PEGJS parser module */\n'
-        + '"use strict";\n'
         + 'var molPaintJS = (function (molpaintjs) {\n'
+        + '    "use strict";\n'
         + '    molpaintjs.MDLParser = '
 
         + peg.generate(
@@ -114,9 +114,14 @@ async function minifyCode(code) {
 
 async function compile(src, dest, compress) {
     var result = readCode(src);
-    var code = '/* MolPaintJS generated resources module */\n"use strict";\nvar molPaintJS = (function (molpaintjs) {\n    molpaintjs.Resources = {\n'
+    var code = '/* MolPaintJS generated resources module */\n'
+            + 'var molPaintJS = (function (molpaintjs) {\n'
+            + '    "use strict";\n'
+            + '    molpaintjs.Resources = {\n'
             + result[0] 
-            + '\n};\n    return molpaintjs;\n}(molPaintJS || {}));\n'
+            + '    };\n'
+            + '    return molpaintjs;\n'
+            + '}(molPaintJS || {}));\n'
             + result[1]
             + result[2];
 

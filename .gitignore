@@ -2,3 +2,4 @@ molpaintjs
 molpaintjs.tar.gz
 node_modules
 package-lock.json
+/nbproject/private/

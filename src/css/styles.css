@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- */
-
-/*
+ *
  * @author Frank Broda
  */
 
@@ -113,13 +111,13 @@
 }
 
 /* Show the dropdown menu on hover */
-.molPaintJS-leftDropdown:hover .leftDropdown-content {
+.molPaintJS-leftDropdown:hover .molPaintJS-leftDropdown-content {
     display: block;
     left: 0px;
 }
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.molPaintJS-leftDropdown:hover .dropbtn {
+.molPaintJS-leftDropdown:hover .molPaintJS-dropbtn {
     background-color: #f9f9f9;
 }
 
@@ -155,12 +153,12 @@
     background-color: #e0e0e0;
 }
 
-.molPaintJS-rightDropdown:hover .rightDropdown-content {
+.molPaintJS-rightDropdown:hover .molPaintJS-rightDropdown-content {
     display: block;
     right: 0px;
 }
 
-.molPaintJS-rightDropdown:hover .dropbtn {
+.molPaintJS-rightDropdown:hover .molPaintJS-dropbtn {
     background-color: #f9f9f9;
 }
 

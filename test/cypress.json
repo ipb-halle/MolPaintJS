@@ -1,0 +1,4 @@
+{
+    "baseURL": "http://localhost:16000/index.html",
+    "fileServerFolder": "../molpaintjs"
+}

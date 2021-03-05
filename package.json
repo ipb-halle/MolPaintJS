@@ -1,6 +1,6 @@
 {
   "name": "molpaintjs",
-  "version": "v0.3.1-alpha",
+  "version": "v0.3.4-alpha",
   "description": "Toolkit for drawing chemical structures",
   "browser": "molpaintjs/js/molpaint.js",
   "main": "molpaintjs/js/molpaint.js",
@@ -8,7 +8,7 @@
     "preinstall": "npx rimraf molpaintjs",
     "postinstall": "node build.js",
     "release": "node build.js --release",
-    "test": "npx mocha"
+    "test": "npx mocha --exclude cypress && npx cypress run -P test"
   },
   "keywords": [
     "MolPaintJS"
@@ -16,11 +16,15 @@
   "author": "Frank Broda (IPB Halle)",
   "license": "Apache-2.0",
   "devDependencies": {
+    "cypress": "^6.6.0",
     "mocha": "^8.2.1",
     "pegjs": "^0.10.0",
     "should": "^13.2.3",
     "tar": "^6.1.0",
     "terser": "^5.6.0-beta",
     "yargs": "^13.3.2"
+  },
+  "dependencies": {
+    "test": "^0.6.0"
   }
 }

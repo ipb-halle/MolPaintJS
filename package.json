@@ -1,6 +1,6 @@
 {
   "name": "molpaintjs",
-  "version": "v0.3.1-alpha",
+  "version": "v0.3.4-alpha",
   "description": "Toolkit for drawing chemical structures",
   "browser": "molpaintjs/js/molpaint.js",
   "main": "molpaintjs/js/molpaint.js",
@@ -22,5 +22,8 @@
     "tar": "^6.1.0",
     "terser": "^5.6.0-beta",
     "yargs": "^13.3.2"
+  },
+  "dependencies": {
+    "test": "^0.6.0"
   }
 }

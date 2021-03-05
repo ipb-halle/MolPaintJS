@@ -79,6 +79,29 @@ var molPaintJS = (function (molpaintjs) {
     },
 
     /**
+     * replace the content of a HTML element with id "dumpId"
+     * by the molecule in MDLv2000 format from the editor with
+     * context id "cid".
+     */
+    molpaintjs.dump = function (cid, dumpId) {
+        var o = document.getElementById(dumpId);
+        var format = arguments[2] || 'V2000';
+        var moltext = '';
+
+        switch(format) {
+            case 'V3000':
+                moltext = this.getMDLv3000(cid);
+                break;
+            case 'V2000':
+                moltext = this.getMDLv2000(cid);
+                break;
+            default :
+                moltext = "Unknown output format: " + format;
+        }
+        o.innerHTML = "<pre>" + moltext + "</pre>";
+    },
+
+    /**
      * return the context for a given context id
      */
     molpaintjs.getContext = function (cid) {
@@ -123,44 +146,11 @@ var molPaintJS = (function (molpaintjs) {
         return templates;
     },
 
-
     /**
-     * allows to configure the order of templates
-     * @param tp  array of template names
+     * @return version information
      */
-    molpaintjs.setTemplates = function (tp) { 
-        templates = [];
-        for(let t of tp) {
-            if (molPaintJS.Resources[t + '.png'] != null) {
-                // molecule might be delayed because of asynchronous load
-                templates.push(t);
-            } else {
-                console.log("Missing resources for template key: " + t);
-            }
-        }
-    },
-    
-    /**
-     * replace the content of a HTML element with id "dumpId" 
-     * by the molecule in MDLv2000 format from the editor with 
-     * context id "cid".
-     */
-    molpaintjs.dump = function (cid, dumpId) {
-        var o = document.getElementById(dumpId);
-        var format = arguments[2] || 'V2000';
-        var moltext = '';
-        
-        switch(format) {
-            case 'V3000':
-                moltext = this.getMDLv3000(cid);
-                break;
-            case 'V2000':
-                moltext = this.getMDLv2000(cid);
-                break;
-            default :
-                moltext = "Unknown output format: " + format;
-        }
-        o.innerHTML = "<pre>" + moltext + "</pre>";
+    molpaintjs.getVersion = function () {
+        return molPaintJS.Resources['version'];
     },
 
     /**
@@ -177,12 +167,29 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.registerContext = function (id, ctx) {
         contextRegistry[id] = ctx;
+    },
+
+
+    /**
+     * allows to configure the order of templates
+     * @param tp  array of template names
+     */
+    molpaintjs.setTemplates = function (tp) { 
+        templates = [];
+        for(let t of tp) {
+            if (molPaintJS.Resources[t + '.png'] != null) {
+                // molecule might be delayed because of asynchronous load
+                templates.push(t);
+            } else {
+                console.log("Missing resources for template key: " + t);
+            }
+        }
     }
 
     if (typeof module === "object" && module.exports) {
         module.exports = molPaintJS;
     }
-
+    
     return molpaintjs;
 }(molPaintJS || {}));
 

@@ -30,6 +30,9 @@ var tar = require('tar');
 var util = require('util');
 var peg = require("pegjs");
 var { minify } = require("terser");
+var pkgcfg = require("./package.json");
+
+// console.log(util.inspect(pkgcfg, {showHidden: false, depth: null}));
 
 const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/releases/latest/download';
 const BUILD_DIR = 'molpaintjs';
@@ -119,6 +122,7 @@ async function compile(src, dest, compress) {
             + '    "use strict";\n'
             + '    molpaintjs.Resources = {\n'
             + result[0] 
+            + '"version":"'  + pkgcfg.version + '"\n'
             + '    };\n'
             + '    return molpaintjs;\n'
             + '}(molPaintJS || {}));\n'

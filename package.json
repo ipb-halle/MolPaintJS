@@ -8,7 +8,7 @@
     "preinstall": "npx rimraf molpaintjs",
     "postinstall": "node build.js",
     "release": "node build.js --release",
-    "test": "npx mocha"
+    "test": "npx mocha --exclude cypress && npx cypress run -P test"
   },
   "keywords": [
     "MolPaintJS"
@@ -16,6 +16,7 @@
   "author": "Frank Broda (IPB Halle)",
   "license": "Apache-2.0",
   "devDependencies": {
+    "cypress": "^6.6.0",
     "mocha": "^8.2.1",
     "pegjs": "^0.10.0",
     "should": "^13.2.3",

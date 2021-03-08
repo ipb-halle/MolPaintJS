@@ -85,6 +85,7 @@ var molPaintJS = (function (molpaintjs) {
                         0                           // aamap
                     );
                 st = extendLine(st, writeAtomCharge(a));
+                st = extendLine(st, writeAtomRadical(a));
                 st = extendLine(st, writeAtomMass(a));
                 output += st + '\n';
             }
@@ -99,10 +100,17 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function writeAtomMass (atom) {
-            var iso = atom.getType().getIsotope().getIsotope();
-            if (iso != 0) {
-                return " MASS=" + iso;
+            var iso = atom.getType().getIsotope();
+            if (iso.getIsotope() != 0) {
+                return " MASS=" + iso.getMass();
             } 
+            return '';
+        }
+
+        function writeAtomRadical (atom) {
+            if (atom.getRadical() != 0) {
+                return " RAD=" + atom.getRadical();
+            }
             return '';
         }
 

@@ -390,7 +390,7 @@ var molPaintJS = (function (molpaintjs) {
                 + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn' "
                 + "onclick=\"molPaintJS.setCurrentBond('" + widgetId + "');\" >"
                 + item("currentBond", "single_bond", "", "molPaintJS-inactiveTool")
-                + "</a><div class='molPaintJS-leftDropdown-content'>"
+                + "</a><div id='" + widgetId + "_bondMenu' class='molPaintJS-leftDropdown-content'>"
                 + "<table><tr>"
                 + itemH("single_bond", "Single bond", "molPaintJS-inactiveTool")
                 + itemH("double_bond", "Double bond", "molPaintJS-inactiveTool")
@@ -419,7 +419,7 @@ var molPaintJS = (function (molpaintjs) {
                 + "<div class='molPaintJS-rightDropdown'>"
                 + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn'>"
                 + item("isotope", "isotope_up", "Isotope menu", "molPaintJS-inactiveTool")
-                + "</a><div class='molPaintJS-rightDropdown-content'>"
+                + "</a><div id='" + widgetId + "_isotopeMenu' class='molPaintJS-rightDropdown-content'>"
                 + "<table>"
                 + itemV("isotope_up", "Heavier isotope", "molPaintJS-inactiveTool")
                 + itemV("isotope_down", "Lighter isotope", "molPaintJS-inactiveTool")
@@ -446,7 +446,7 @@ var molPaintJS = (function (molpaintjs) {
                 + widgetId + "_pse' src='" + molPaintJS.Resources['pse.png']
                 + "' title='Periodic table' "
                 + "width='" + iconSize + "' class='molPaintJS-inactiveTool' /></a>"
-                + "  <div class='molPaintJS-rightDropdown-content'>"
+                + "  <div  id='" + widgetId + "_pseMenu' class='molPaintJS-rightDropdown-content'>"
                 + "  <table class='molPaintJS-elementTable'>";
 
             var footer = "</table>"
@@ -458,11 +458,11 @@ var molPaintJS = (function (molpaintjs) {
             var period = 1;
             var group = 1;
             for (var isotopes of molPaintJS.Elements.getAllElements()) {
-                if (isotopes.length == 0) {
+                var el = isotopes[0];
+                if (el.getAtomicNumber() == 0) {
                     // skip atomic number 0 (reserved for '*', 'R', ...)
                     continue;
                 }
-                var el = isotopes[0];
                 if (el.getPeriod() > period) {
                     period = el.getPeriod();
                     group = 1;
@@ -481,6 +481,7 @@ var molPaintJS = (function (molpaintjs) {
                     tbl += "<td colspan='" + colspan + "'></td>";
                 }
                 tbl += "<td><a href='javascript:void(0)' "
+                    + "id='" + widgetId + "_pse_" + el.getSymbol() + "' "
                     + "class='molPaintJS-elementLink' "
                     + "onclick=\"molPaintJS.setElement('"
                     + widgetId + "','" + el.getSymbol()
@@ -497,7 +498,7 @@ var molPaintJS = (function (molpaintjs) {
                 + "<div class='molPaintJS-rightDropdown'>"
                 + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn' >"
                 + item("radical", "radical", "Radicals menu", "molPaintJS-inactiveTool")
-                + "</a><div class='molPaintJS-rightDropdown-content'>"
+                + "</a><div id='" + widgetId + "_radicalMenu' class='molPaintJS-rightDropdown-content'>"
                 + "<table><tr>"
                 + itemH("no_radical", "no radical", "molPaintJS-inactiveTool")
                 + itemH("singlet", "Singlet", "molPaintJS-inactiveTool")
@@ -530,7 +531,7 @@ var molPaintJS = (function (molpaintjs) {
                 + "<div class='molPaintJS-leftDropdown'>"
                 + " <a href='javascript:void(0);' class='molPaintJS-dropbtn' >"
                 + item("template", currentTemplate, currentTemplate, "molPaintJS-inactiveTool")
-                + "</a><div class='molPaintJS-leftDropdown-content'>"
+                + "</a><div id='" + widgetId + "_templateMenu' class='molPaintJS-leftDropdown-content'>"
                 + "<table>";
 
             var body = "";

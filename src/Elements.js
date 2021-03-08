@@ -31,7 +31,9 @@ var molPaintJS = (function (molpaintjs) {
 
         function init() {
             // atomicNumber, period, group, symbol, mass, iso, massExact, color
-            elements = [[],
+            elements = [
+                [molPaintJS.Isotope(0, 0, 0, "R", 0, 0, 0.000, "#666666"),
+                    molPaintJS.Isotope(0, 0, 0, "*", 0, 0, 0.000, "#666666")],
                 [molPaintJS.Isotope(1, 1, 1, "H", 1, 0, 1.008, "#666666"),
                     molPaintJS.Isotope(1, 1, 1, "H", 1, 1, 1.00782503223, "#666666"),
                     molPaintJS.Isotope(1, 1, 1, "D", 2, 1, 2.01410177812, "#666666"),

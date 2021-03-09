@@ -774,20 +774,19 @@ v3LinkAtomLine
 
 /* ToDo collection block parsing */
 v3collectionBlock
-    = newline 'M  V30 BEGIN COLLECTION' entry:collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); 
+    = newline 'M  V30 BEGIN COLLECTION' newline entry:collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); 
 //          logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
 }
 
 collectionEntry
-    = newline 'M  V30 collectionName:DEFAULT' data:collectionContinuation* { return {name:collectionName, data:data}; }
-    / newline 'M  V30 ' collectionName:string data:collectionContinuation* { return {name:collectionName, data:data}; }
+    = 'M  V30 DEFAULT' data:collectionContinuation* { return {name:'DEFAULT', data:data}; }
+    / 'M  V30 ' (!'END COLLECTION') collectionName:string data:collectionContinuation* { return {name:collectionName, data:data}; }
 
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=(' count:uint atoms:uint* ')' cont:collectionContinuation { return {type:'ATOM', collection:flatten(cont, atoms)}; }
-    / ' '* 'BONDS=(' count:uint bonds:uint* ')' collectionContinuation { return flatten(cont, bonds); }
-    / ' '* 'BONDS=(' [^)]* ')' collectionContinuation
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { return {type:'ATOM', collection:flatten(cont, list) }; }
+    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { return {type:'BOND', collection:flatten(cont, list) }; }
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
@@ -800,6 +799,13 @@ collectionContinuation
  *
  *======================================================================
  */
+v3CountedUIntList
+    = whitespace* '(' count:uint uint:v3UIntList* whitespace* ')' { return {count:count, data:uint}; }
+
+v3UIntList
+    = uint:uint { return uint; }
+    / v3LineContinuation { }
+
 v3LineContinuation
     = whitespace* '-' newline 'M  V30'
 

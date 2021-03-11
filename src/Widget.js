@@ -79,6 +79,11 @@ var molPaintJS = (function (molpaintjs) {
             ctx.setCurrentTool(ctx.getTools().chargeIncTool);
         }
 
+        function actionCollection (evt) {
+            var ctx = molPaintJS.getContext(evt.target.id);
+            molPaintJS.CollectionHandler(ctx.contextId).render();
+        }
+
         function actionCopy (evt) {
             var ctx = molPaintJS.getContext(evt.target.id);
             var w = molPaintJS.MDLv2000Writer();
@@ -436,7 +441,8 @@ var molPaintJS = (function (molpaintjs) {
                 + itemV("chain", "Chain", "molPaintJS-inactiveTool")
                 + renderTemplateMenu()
                 + itemV("plus", "Increment charge", "molPaintJS-inactiveTool")
-                + itemV("minus", "Decrement charge", "molPaintJS-inactiveTool");
+                + itemV("minus", "Decrement charge", "molPaintJS-inactiveTool")
+                + itemV("collection", "Manage collections", "molPaintJS-inactiveTool");
         }
 
         function renderPeriodicTable () {
@@ -584,6 +590,7 @@ var molPaintJS = (function (molpaintjs) {
                 registerEvent(ctx, "click", "_chain", actionChain);
                 registerEvent(ctx, "click", "_minus", actionChargeDec);
                 registerEvent(ctx, "click", "_plus", actionChargeInc);
+                registerEvent(ctx, "click", "_collection", actionCollection);
                 registerEvent(ctx, "click", "_copy", actionCopy);
                 registerEvent(ctx, "click", "_clear", actionClear);
                 registerEvent(ctx, "click", "_double_bond", actionDoubleBond);
@@ -634,7 +641,9 @@ var molPaintJS = (function (molpaintjs) {
              */
             renderWidget : function () {
                 if (! viewer) {
-                    widgetObject.innerHTML = "<table><tr><td colspan=3><table>"
+                    widgetObject.innerHTML = "<div style='position: relative;'>"
+                        + "<div id='" + widgetId + "_modalDlg' class='molPaintJS-modalDlg'></div>"
+                        + "<table><tr><td colspan=3><table>"
                         + "<tr>" + renderTopMenu() + "</tr></table></td></tr>"
                         + "<tr>"
                         + "<td class='molPaintJS-leftMenubar'><table>" + renderLeftMenu() + "</table></td>"
@@ -644,6 +653,7 @@ var molPaintJS = (function (molpaintjs) {
                         + "<tr><td colspan=3><table>"
                         + "<tr>" + renderBottomMenu() + "</tr></table></td></tr>"
                         + "</table>"
+                        + "</div>"
                 } else {
                     widgetObject.innerHTML = renderCanvas();
                 }

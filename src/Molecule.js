@@ -28,11 +28,12 @@ var molPaintJS = (function (molpaintjs) {
 
         var atoms = {};
         var bonds = {};
+        var collections = [];
         var sgroups = {};
         var atomCount = 0;
         var bondCount = 0;
-        var atomObjCount = 0;	    // unique counter for atoms
-        var bondObjCount = 0;	    // unique counter for bonds
+        var atomObjCount = 0;       // unique counter for atoms
+        var bondObjCount = 0;       // unique counter for bonds
         var sgroupObjCount = 0;     // unique counter for sgroups
 
         return {
@@ -57,6 +58,23 @@ var molPaintJS = (function (molpaintjs) {
                 b.getAtomA().addBond(id);
                 b.getAtomB().addBond(id);
                 return id;
+            },
+
+            /**
+             * called by parser; collections may be defined incrementally
+             */
+            addCollection : function (collection) {
+                var merged = false;
+                for (var c of collections) {
+                    if (c.name == collection.name) {
+                        c.merge(collection);
+                        merged = true;
+                    }
+                }
+                if (merged) {
+                    return;
+                }
+                collections.push(collection);
             },
 
             addSGroup : function (sg, id) {
@@ -203,7 +221,7 @@ var molPaintJS = (function (molpaintjs) {
                 if (bondLength.length > 0) {
                     return Math.sqrt(bondLength[Math.floor(bondLength.length / 2)]);
                 }
-                return 1.5;	// default bond length
+                return 1.5;     // default bond length
             },
 
             /**
@@ -223,6 +241,19 @@ var molPaintJS = (function (molpaintjs) {
                 bond.getAtomA().delBond(idx);
                 bond.getAtomB().delBond(idx);
                 delete bonds[idx];
+            },
+
+            /**
+             * remove a collection from the list of collections
+             * @param name the name of the collection to be removed
+             */
+            delCollection : function (name) {
+                for (var i in collections) {
+                    if (collections[i].getName() == name) {
+                        collections.splice(i, 1);
+                        return;
+                    }
+                }
             },
 
             /**
@@ -278,6 +309,9 @@ var molPaintJS = (function (molpaintjs) {
                 return bonds;
             },
 
+            getCollections : function () {
+                return collections;
+            },
 
             getProperties : function () {
                 return properties;
@@ -452,6 +486,22 @@ var molPaintJS = (function (molpaintjs) {
 
                 }
                 return matches;
+            },
+
+            /**
+             * replace a Collection of this Molecule by the Collection
+             * given as an argument. If the Collection does not yet
+             * exist, append it to the list of Collections.
+             * @param collection the collection object with modified data
+             */
+            setCollection : function (collection) {
+                for (var i in collections) {
+                    if (collections[i].getName() == collection.getName()) {
+                        collections[i] = collection;
+                        return;
+                    }
+                }
+                collections.push(collection);
             },
 
             setProperty : function (propname, propval) {

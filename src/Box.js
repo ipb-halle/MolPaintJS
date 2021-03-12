@@ -139,6 +139,14 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            center : function () {
+                minX -= centerX;
+                maxX -= centerX;
+                minY -= centerY;
+                maxY -= centerY;
+                return this;
+            },
+
             contains : function (x, y) {
                 return (minX < x)
                     && (maxX > x)
@@ -170,6 +178,7 @@ var molPaintJS = (function (molpaintjs) {
                 maxY = (maxY > box.getMaxY()) ? maxY : box.getMaxY();
                 centerX = (minX + maxX) / 2.0;
                 centerY = (minY + maxY) / 2.0;
+                return this;
             },
 
             getCenterX : function() {
@@ -178,6 +187,14 @@ var molPaintJS = (function (molpaintjs) {
 
             getCenterY : function() {
                 return centerY;
+            },
+
+            getDeltaX : function() {
+                return maxX - minX;
+            },
+
+            getDeltaY : function()  {
+                return maxY - minY;
             },
 
             getMaxX : function() {

@@ -655,7 +655,8 @@ var molPaintJS = (function (molpaintjs) {
                         + "</table>"
                         + "</div>"
                 } else {
-                    widgetObject.innerHTML = renderCanvas();
+                    widgetObject.innerHTML = "<div id='" + widgetId + "_modalDlg' class='molPaintJS-modalDlg'></div>"
+                        + renderCanvas();
                 }
             }
         };

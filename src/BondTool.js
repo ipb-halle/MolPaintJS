@@ -111,7 +111,8 @@ var molPaintJS = (function (molpaintjs) {
             onMouseMove : function (x, y, evt) {
                 if (atomA == null) { return; }
 
-                var coord = this.context.getView().getCoordReverse(x, y);
+                var view = this.context.getView();
+                var coord = view.getCoordReverse(x, y);
 
                 this.context.getMolecule().delTemp();
                 var atomId = this.context.getMolecule().selectAtom(coord, distMax);
@@ -131,8 +132,8 @@ var molPaintJS = (function (molpaintjs) {
 
                     var i = Math.floor(w / 30.0);
                     atomB = molPaintJS.Atom();
-                    atomB.setX(atomA.getX() + this.context.getRasterX(i));
-                    atomB.setY(atomA.getY() + this.context.getRasterY(i));
+                    atomB.setX(atomA.getX() + view.getRasterX(i));
+                    atomB.setY(atomA.getY() + view.getRasterY(i));
                     atomB.setZ(0.0);
                     atomB.setTemp(1);
                     var at = molPaintJS.AtomType();

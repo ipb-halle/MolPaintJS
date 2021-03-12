@@ -58,7 +58,22 @@
 <div id="debug"></div>
 <table>
 <tr><th>Editor</th><th></th><th>Viewer</th></tr>
-<tr><td><div id="mol"></div></td><td><div style="padding:40px">&nbsp;</div></td><td><div id="viewer" style="padding-top:40px"></div></td></tr>
+<tr><td><div id="mol"></div></td><td><div style="padding:40px">&nbsp;</div></td><td><div id="viewer" style="padding-top:40px"></div>
+<div style="width:280px">By hovering over the text typed in bold, you can highlight the corresponding regions of the 
+<span style="font-weight:bold;" 
+onmouseover='molPaintJS.CollectionHandler("viewer").highlight("all atoms and bonds");'
+onmouseout='molPaintJS.CollectionHandler("viewer").highlight("");'>cholecalciferol</span> molecule: 
+<span style="font-weight:bold;"
+onmouseover='molPaintJS.CollectionHandler("viewer").highlight("Ring A");'
+onmouseout='molPaintJS.CollectionHandler("viewer").highlight("");'>Ring A</span>, 
+<span style="font-weight:bold;"
+onmouseover='molPaintJS.CollectionHandler("viewer").highlight("Ring C");'
+onmouseout='molPaintJS.CollectionHandler("viewer").highlight("");'>Ring C</span> or 
+<span style="font-weight:bold;"
+onmouseover='molPaintJS.CollectionHandler("viewer").highlight("Ring D");'
+onmouseout='molPaintJS.CollectionHandler("viewer").highlight("");'>Ring D</span>.
+</div>
+</td></tr>
 </table>
 <script type="text/javascript">
     molPaintJS.newContext("mol", {helpURL:"help/index.html", iconSize: 32, debugId: "debug"}).init().setMolecule("3-Acetylcoumarin\n  MolPaintJS\n\n 14 15  0  0  0  0  0  0  0  0999 V2000\n   -2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.1434   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289   -1.2375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9 10  2  0      \n 10  5  1  0      \n  9 11  1  0      \n 11 12  1  0      \n 11 13  2  0      \n  8 14  2  0      \nM  END\n").setChangeListener(changeListener);

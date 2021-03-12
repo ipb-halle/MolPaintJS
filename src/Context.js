@@ -29,10 +29,6 @@ var molPaintJS = (function (molpaintjs) {
         var currentElement = molPaintJS.Elements.getElement("C");
         var currentTemplate = mp.getTemplates()[0]; 
 
-        var medianBondLength = 1.5;
-        var rasterX = [];
-        var rasterY = [];
-
         var tools = null;
         var currentTool = null;
         var currentBondTool = null;
@@ -121,12 +117,6 @@ var molPaintJS = (function (molpaintjs) {
             getProperties : function () {
                 return properties;
             },
-            getRasterX : function(i) {
-                return rasterX[i];
-            },
-            getRasterY : function(i) {
-                return rasterY[i];
-            },
             getTools : function () {
                 return tools;
             },
@@ -155,23 +145,10 @@ var molPaintJS = (function (molpaintjs) {
                         ctx.setCurrentTool(ctx.getTools().pointerTool);
                         ctx.getWidget().initEvents(ctx);
                     }
-                    ctx.initRaster();
+                    ctx.getView().initRaster(molecule);
                 });
                 return this;
             },
-
-            /**
-             * compute median bond length and init raster of bond angles
-             */
-            initRaster : function() {
-                medianBondLength = molecule.computeBondLengths();
-
-                for(var i=0; i<15; i++) {
-                    rasterX[i] = Math.cos(i * Math.PI / 6.0) * medianBondLength;
-                    rasterY[i] = Math.sin(i * Math.PI / 6.0) * medianBondLength;
-                }
-            },
-
 
             /**
              * Paste a molecule (from clipboard) into the
@@ -215,7 +192,7 @@ var molPaintJS = (function (molpaintjs) {
                 }
                 history.appendAction(actionList);
             
-                this.initRaster();
+                view.initRaster(molecule);
                 this.draw();
                 return actionList;
             },
@@ -272,11 +249,9 @@ var molPaintJS = (function (molpaintjs) {
                     return;
                 }
 
-                molecule.center();
                 view.center();
-
-                this.initRaster();
-                view.setMolScale(properties.molScaleDefault / medianBondLength);
+                view.initRaster(molecule);
+                view.setDisplayScale(molecule, true);
                 this.draw();
                 return this;
             },

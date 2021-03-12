@@ -23,7 +23,11 @@ var molPaintJS = (function (molpaintjs) {
         var displayScale = 1.0;
         var fontFamily = prop.fontFamily;
         var fontSize = prop.fontSize;
-        var molScale = prop.molScaleDefault;
+        var medianBondLength = 1.5;
+        var molScaleDefault = prop.molScaleDefault;
+        var molScale = molScaleDefault / medianBondLength;
+        var rasterX = [];
+        var rasterY = [];
         var sizeX = prop.sizeX;
         var sizeY = prop.sizeY;
         var subscriptFactor = prop.subscriptFactor;
@@ -121,6 +125,14 @@ var molPaintJS = (function (molpaintjs) {
                 };
             },
 
+            getRasterX : function(i) {
+                return rasterX[i];
+            },
+
+            getRasterY : function(i) {
+                return rasterY[i];
+            },
+
             getSizeX : function () {
                 return sizeX;
             },
@@ -152,6 +164,19 @@ var molPaintJS = (function (molpaintjs) {
                 viewContext.font = fontSize + "px " + fontFamily;
             },
 
+            /**
+             * compute median bond length and init raster of bond angles
+             */
+            initRaster : function(mol) {
+                medianBondLength = mol.computeBondLengths();
+
+                for(var i=0; i<15; i++) {
+                    rasterX[i] = Math.cos(i * Math.PI / 6.0) * medianBondLength;
+                    rasterY[i] = Math.sin(i * Math.PI / 6.0) * medianBondLength;
+                }
+                molScale = molScaleDefault / medianBondLength;
+            },
+
             scaleDisplay : function (s) {
                 displayScale *= s;
             },
@@ -162,6 +187,33 @@ var molPaintJS = (function (molpaintjs) {
             scaleFontSize : function (fs) {
                 fontSize *= fs;
                 viewContext.font = fontSize + "px " + fontFamily;
+            },
+
+            /**
+             * set the display scaling factor
+             * @param mol the current molecule
+             * @param center true if molecule should be centered
+             */
+            setDisplayScale : function (mol, center) {
+
+                var molbox;
+                var x = sizeX - 40;     // leave some margin
+                var y = sizeY - 40;
+
+                if (center) {
+                    molbox = this.getBBox(mol.center());
+                } else {
+                    molbox = this.getBBox(mol.computeBBox(0));
+                }
+                displayScale = 1.0;
+
+                if (molbox.getDeltaX() > x) {
+                    displayScale = x / molbox.getDeltaX();
+                }
+                if (molbox.getDeltaY() > y) {
+                    var f = y / molbox.getDeltaY();
+                    displayScale = (f < displayScale) ? f : displayScale;
+                }
             },
 
             /**
@@ -177,13 +229,6 @@ var molPaintJS = (function (molpaintjs) {
             setFontSize : function (f) {
                 fontSize = f;
                 viewContext.font = f + "px " + fontFamily;
-            },
-
-            /**
-             * set the molecule scaling factor
-             */
-            setMolScale : function (s) {
-                molScale = s;
             },
 
             /**

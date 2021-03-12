@@ -89,7 +89,8 @@ var molPaintJS = (function (molpaintjs) {
 
                 this.context.getMolecule().delTemp();
 
-                var coord = this.context.getView().getCoordReverse(x, y);
+                var view = this.context.getView();
+                var coord = view.getCoordReverse(x, y);
                 var dx = coord.x - atomA.getX();
                 var dy = coord.y - atomA.getY();
                 var len = Math.sqrt((dx * dx) + (dy * dy));
@@ -117,8 +118,8 @@ var molPaintJS = (function (molpaintjs) {
                     var atom = molPaintJS.Atom();
                     var k = ((n % 2) == m) ? i : j;
                     n++;
-                    dx += this.context.getRasterX(k);
-                    dy += this.context.getRasterY(k);
+                    dx += view.getRasterX(k);
+                    dy += view.getRasterY(k);
                     atom.setX(atomA.getX() + dx);
                     atom.setY(atomA.getY() + dy);
                     atom.setZ(0.0);

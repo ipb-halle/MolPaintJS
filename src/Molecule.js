@@ -18,6 +18,10 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
+    /*
+     * ToDo: history for collections, removal and replacement of
+     * atoms and bonds in collections
+     */
     molpaintjs.Molecule = function() {
 
         var properties = {};
@@ -66,7 +70,7 @@ var molPaintJS = (function (molpaintjs) {
             addCollection : function (collection) {
                 var merged = false;
                 for (var c of collections) {
-                    if (c.name == collection.name) {
+                    if (c.getName() == collection.getName()) {
                         c.merge(collection);
                         merged = true;
                     }

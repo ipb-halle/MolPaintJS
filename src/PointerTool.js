@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
+ * Copyright 2017 - 2021 Leibniz-Institut f. Pflanzenbiochemie 
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ var molPaintJS = (function (molpaintjs) {
                 if(evt.shiftKey || evt.ctrlKey) {
                     context.getMolecule().clearSelection(1);
                 } else {
-                    context.getMolecule().clearSelection(3);
+                    context.getMolecule().clearSelection(7);
                 }
             } else {
                 // transform mode; prepare history

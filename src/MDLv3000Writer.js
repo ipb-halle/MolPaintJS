@@ -30,10 +30,9 @@ var molPaintJS = (function (molpaintjs) {
          * @return either concatenation (if combined length is smaller than 79) or st
          */
         function extendLine (line, st) {
-            var lenline = line.length;
             if ((line.length + st.length) > 78) {
-                output += line + '-';
-                return st;
+                output += line + "-\n";
+                return "M  V30 " + st;
             }
             return line + st;
         }
@@ -52,6 +51,10 @@ var molPaintJS = (function (molpaintjs) {
             }
 
             // SGroup
+
+            if (mol.getCollections().length > 0) {
+                writeCollectionBlock(mol);
+            }
 
             output += 'M  V30 END CTAB\n';
         }
@@ -114,6 +117,17 @@ var molPaintJS = (function (molpaintjs) {
             return '';
         }
 
+        function writeAtomList (mol, id, line, count, atoms) {
+            var st = " " + id + "=(";
+            st = extendLine(line, st);
+            st = extendLine(st, "" + count);
+            for (var a in atoms) {
+                st = extendLine(st, ' ' + mol.getAtom(a).getIndex());
+            }
+            st = extendLine(st, ")");
+            return st;
+        }
+
         function writeBondBlock (mol) {
             output += "M  V30 BEGIN BOND\n";
             for (var i in mol.getBonds()) {
@@ -131,11 +145,40 @@ var molPaintJS = (function (molpaintjs) {
             output += "M  V30 END BOND\n";
         }
 
+        function writeBondList (mol, id, line, count, bonds) {
+            var st = " " + id + "=(";
+            st = extendLine(line, st);
+            st = extendLine(st, "" + count); 
+            for (var b in bonds) {
+                st = extendLine(st, ' ' + mol.getBond(b).getIndex());
+            }
+            st = extendLine(st, ")");
+            return st;
+        }
+
         function writeBondStereo (bond) {
             if (bond.getStereo('v3') != 0) {
                 return " CFG=" + bond.getStereo('v3');
             }
             return '';
+        }
+
+        function writeCollectionBlock (mol) {
+            output += "M  V30 BEGIN COLLECTION\n";
+            for (var collection of mol.getCollections()) {
+                var st = "M  V30 "; 
+                st = extendLine(st, '"' + collection.getName() + '" ');
+                var count = Object.keys(collection.getAtoms()).length;
+                if (count > 0) {
+                    st = writeAtomList(mol, 'ATOMS', st, count, collection.getAtoms());
+                }
+                count = Object.keys(collection.getBonds()).length;
+                if (count > 0) {
+                    st = writeBondList(mol, 'BONDS', st, count, collection.getBonds());
+                }
+                output += st + '\n';
+            }
+            output += "M  V30 END COLLECTION\n";
         }
 
         return {

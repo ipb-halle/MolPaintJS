@@ -184,6 +184,9 @@ var molPaintJS = (function (molpaintjs) {
                 var mol;
                 try {
                     mol = molPaintJS.MDLParser.parse(st);
+                    if (mol.getCollections().length > 0) {
+                        console.log("collections not supported during paste");
+                    }
                 } catch(e) {
                     console.log("Parse error in Context.pasteMolecule(): " + e.message);
                     console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);

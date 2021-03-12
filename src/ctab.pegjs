@@ -774,8 +774,34 @@ v3LinkAtomLine
 
 /* ToDo collection block parsing */
 v3collectionBlock
-    = newline 'M  V30 BEGIN COLLECTION' newline entry:collectionEntry* 'M  V30 END COLLECTION' { logMessage(1, 'ignoring collection block'); 
-//          logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
+    = newline 'M  V30 BEGIN COLLECTION' newline entries:collectionEntry* 'M  V30 END COLLECTION' { 
+
+            entries.forEach(entry => { 
+//              logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
+                var collection = molPaintJS.Collection(entry.name);
+                var atoms = {};
+                var bonds = {};
+                for (var data of entry.data) {
+                    if (data['ATOM'] != null) {
+                        for( var a of data['ATOM'].data) {
+                            if (a != null) {
+                                atoms['Atom' + a] = 'Atom' + a;
+                            }
+                        }
+                    }
+                    if (data['BOND'] != null) {
+                        for( var b of data['BOND'].data) {
+                            if (b != null) {
+                                bonds['Bond' + b] = 'Bond' + b;
+                            }
+                        }
+                    }
+                }
+                collection.setAtoms(atoms);
+                collection.setBonds(bonds);
+                mdlParserData.molecule.addCollection(collection);
+            });
+            logMessage(1, 'parsed COLLECTION BLOCK');
 }
 
 collectionEntry
@@ -785,8 +811,8 @@ collectionEntry
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { return {type:'ATOM', collection:flatten(cont, list) }; }
-    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { return {type:'BOND', collection:flatten(cont, list) }; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { var c = cont || {}; c['ATOM'] = list; return c; }
+    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { var c = cont || {}; c['BOND'] = list; return c; } 
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
@@ -842,14 +868,21 @@ sign
     / '+' { return 1; }
 
 /* ToDo: quoted strings */
+
 string
-    = characters:[^ "'\t\n\r]+ { return characters.join(''); }
+    = '"' str:substring+ '"' { return str.join(''); }
+    / !('-' newline) characters:[^ "(\t\n\r]+ { return characters.join(''); }
+
+substring
+    = !('-' newline) characters:[^"\n\r]+ { return characters.join(''); }
+    / '""' { return '"'; }
+    / '-' newline { return ''; }
 
 string4
-    = characters:([^\n\r][^\n\r][^\n\r][^\n\r]) { return characters.join(''); }
+    = characters:(noNL noNL noNL noNL) { return characters.join(''); }
 
 string3
-    = characters:([^\n\r][^\n\r][^\n\r]) { return characters.join(''); }
+    = characters:(noNL noNL noNL) { return characters.join(''); }
 
 whitespaceNL
     = whitespace

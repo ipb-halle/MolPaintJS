@@ -211,7 +211,7 @@ var molPaintJS = (function (molpaintjs) {
                 //
                 //     aaabbblllfffcccsssxxxrrrpppiii999
                 //
-                st += sprintf("%3d%3d  0  0  0  0            999\n",
+                st += sprintf("%3d%3d  0  0  0  0            999 V2000\n",
                     mol.getAtomCount(),
                     mol.getBondCount());
 

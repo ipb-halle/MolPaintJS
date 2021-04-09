@@ -187,10 +187,11 @@ var molPaintJS = (function (molpaintjs) {
                 mol.reIndex();
 
                 output = mol.getProperty("NAME") + "\n";
-                output += mol.getProperty("HEADER2") + "\n";
+                //         IIPPPPPPPPMMDDYYHHMM
+                output += "  MolPaint" + molPaintJS.getMDLDateCode() + "\n";
                 output += mol.getProperty("COMMENT") + "\n";
                 //
-                //     aaabbblllfffcccsssxxxrrrpppiii999
+                //         aaabbblllfffcccsssxxxrrrpppiii999vvvvv
                 //
                 output += "  0  0  0  0  0  0            999 V3000\n";
                 writeCTAB(mol);

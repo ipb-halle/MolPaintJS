@@ -206,10 +206,11 @@ var molPaintJS = (function (molpaintjs) {
                 mol.reIndex();
 
                 st += mol.getProperty("NAME") + "\n";
-                st += mol.getProperty("HEADER2") + "\n";
+                //     IIPPPPPPPPMMDDYYHHMM
+                st += "  MolPaint" + molPaintJS.getMDLDateCode() + "\n";
                 st += mol.getProperty("COMMENT") + "\n";
                 //
-                //     aaabbblllfffcccsssxxxrrrpppiii999
+                //             aaabbblllfffcccsssxxxrrrpppiii999vvvvvv
                 //
                 st += sprintf("%3d%3d  0  0  0  0            999 V2000\n",
                     mol.getAtomCount(),

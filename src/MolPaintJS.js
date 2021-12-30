@@ -109,6 +109,24 @@ var molPaintJS = (function (molpaintjs) {
     },
 
     /**
+     * return the current date in MMDDYYhhmm format as specified for MDL header line
+     */
+    molpaintjs.getMDLDateCode = function () {
+        var date = new Date();
+        var part = date.getMonth() + 1;
+        var st = ((part < 10) ? "0" + part : "" + part);
+        part = date.getDate();
+        st += ((part < 10) ? "0" + part : "" + part);
+        part = date.getFullYear();
+        st += (part + "").substring(2);
+        part = date.getHours();
+        st += ((part < 10) ? "0" + part : "" + part);
+        part = date.getMinutes();
+        st += ((part < 10) ? "0" + part : "" + part);
+        return st;
+    },
+
+    /**
      * @return the molecule from context cid in MDLv2000 format
      */
     molpaintjs.getMDLv2000 = function (cid) { 

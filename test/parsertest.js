@@ -41,7 +41,8 @@ function readFile(name) {
 describe('Parser', function() {
     it('should parse the list of molecules', function() {
         for(var entry of testMolecules) {
-            var mol = molpaintjs.MDLParser.parse(readFile(entry.name)); 
+            console.log("PARSE: " + entry.name);
+            var mol = molpaintjs.MDLParser.parse(readFile(entry.name), { "logLevel":5 } );
 //          console.log(util.inspect(mol, {showHidden: false, depth: null}));
             assert(mol, 'Parse error for ' + entry.name);
             mol.reIndex();

@@ -25,6 +25,7 @@ var molPaintJS = (function (molpaintjs) {
          * in the CT-file document. Implementation is incomplete!
          * 
          */
+        var id = null;
         var type = t;
         var atoms = {};
         var bonds = {};
@@ -37,6 +38,16 @@ var molPaintJS = (function (molpaintjs) {
         var uniqueLabel = null;
 
         return {
+
+            setId : function(i) {
+                id = i;
+            },
+
+            /* set complex parsed sgroup data */
+            setSGroup : function(data) {
+                const util = require('util');
+                console.log(util.inspect(data, {showHidden: false, depth: null}));
+            },
 
             /* SAL sssn15 aaa ... */
             addAtom : function(idx) {

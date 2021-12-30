@@ -742,15 +742,138 @@ bondEndPoints
  * V3000 Properties
  */
 v3propertyBlocks
-    = v3SGROUP
+    = v3SGroupBlock
     / v3obj3dBlock
     / v3LinkAtomLine
     / v3collectionBlock
     / newline 'M  V30 END CTAB' 
 
-v3SGROUP
-    = newline 'M  V30 BEGIN SGROUP' (newline !'M  V30 END SGROUP' noNL+)+ newline 'M  V30 END SGROUP'
+/*
+ * V3000 SGroup Block
+ * 
+ * M  V30 BEGIN Sgroup
+ * [M V30 DEFAULT [CLASS=class] -]
+ * M V30 index type extindex -
+ * M  V30 [ATOMS=(natoms atom [atom ...])] -
+ * M  V30 [XBONDS=(nxbonds xbond [xbond ...])] -
+ * M  V30 [CBONDS=(ncbonds cbond [cbond ...])] -
+ * M  V30 [PATOMS=(npatoms patom [patom ...])] -
+ * M  V30 [SUBTYPE=subtype] [MULT=mult] -
+ * M  V30 [CONNECT=connect] [PARENT=parent] [COMPNO=compno] -
+ * M  V30 [XBHEAD=(nxbonds xbond [xbond ...])] -
+ * M  V30 [XBCORR=(nxbpairs xb1 xb2 [xb1 xb2 ...])] -
+ * M  V30 [LABEL=label] -
+ * M  V30 [BRKXYZ=(9 bx1 by1 bz1 bx2 by2 bz2 bx3 by3 bz3])* -
+ * M  V30 [ESTATE=estate] [CSTATE=(4 xbond cbvx cbvy cbvz)]* -
+ * M  V30 [FIELDNAME=fieldname] [FIELDINFO=fieldinfo] -
+ * M  V30 [FIELDDISP=fielddisp] -
+ * M  V30 [QUERYTYPE=querytype] [QUERYOP=queryop] -  
+ * M  V30 [FIELDDATA=fielddata] ... -
+ * M  V30 [CLASS=class] -
+ * M  V30 [SAP=(3 aidx lvidx id)]* -
+ * M  V30 [BRKTYP=bracketType] -
+ * ...
+ * M  V30 [SEQID=sequence_id] -
+ * M  V30 END Sgroup
+ */
+v3SGroupBlock
+    = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
+            sgroups.forEach(sgroup => { mdlParserData.molecule.addSGroup(sgroup, null); });
+            logMessage(1, 'parsed SGROUP BLOCK');
+        }
 
+/* ToDo: DEFAULT keyword not implemented ... */
+v3SGroup
+    = index:v3SGroupIndex cont:v3SGroupContinuation {
+            cont["index"] = index["index"];
+            cont["type"] = index["type"];
+            cont["extIndex"] = index["extIndex"];
+            var sgroup = molPaintJS.SGroup(index["type"]);
+            sgroup.setSGroup(cont);
+            return sgroup;
+        }
+    
+v3SGroupIndex
+    = 'M  V30 ' index:integer ' '* type:v3SGroupType extIndex:integer { return { "index":index, "type":type, "extIndex":extIndex }; }
+
+v3SGroupType
+    = 'SUP' nonWhitespace* { return 'SUP'; }
+    / 'MUL' nonWhitespace* { return 'MUL'; }
+    / 'SRU' nonWhitespace* { return 'SRU'; }
+    / 'MON' nonWhitespace* { return 'MON'; }
+    / 'COP' nonWhitespace* { return 'COP'; }
+    / 'CRO' nonWhitespace* { return 'CRO'; }
+    / 'MOD' nonWhitespace* { return 'MOD'; }
+    / 'GRA' nonWhitespace* { return 'GRA'; }
+    / 'COM' nonWhitespace* { return 'COM'; }
+    / 'MIX' nonWhitespace* { return 'MIX'; }
+    / 'FOR' nonWhitespace* { return 'FOR'; }
+    / 'DAT' nonWhitespace* { return 'DAT'; }
+    / 'ANY' nonWhitespace* { return 'ANY'; }
+    / 'GEN' nonWhitespace* { return 'GEN'; }
+
+v3SGroupContinuation
+    = v3LineContinuation cont:v3SGroupContinuation { return cont; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['ATOMS'] = list; return c; }
+    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XBONDS'] = list; return c; } 
+    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['CBONDS'] = list; return c; } 
+    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['PATOMS'] = list; return c; } 
+    / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { var c=cont || {}; c['SUBTYPE'] = subtype; return c; }
+    / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { var c=cont || {}; c['MULT'] = mult; return c; }
+    / ' '* 'CONNECT=' connect:uint cont:v3SGroupContinuation { var c=cont || {}; c['CONNECT'] = connect; return c; }
+    / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { var c=cont || {}; c['PARENT'] = connect; return c; }
+    / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { var c=cont || {}; c['COMPNO'] = connect; return c; }
+    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XHEAD'] = list; return c; } 
+    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XHEAD'] = list; return c; } 
+    / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { var c = cont || {}; c['LABEL'] = label; return c; } 
+    / ' '* 'BRKXYZ=' coords:v3SGroupBracketCoords cont:v3SGroupContinuation { var c = cont || {}; c['BRKXYZ'] = coords; return c; }
+    / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { var c = cont || {}; c['ESTATE'] = estate; return c; }
+    / ' '* 'CSTATE=' cstate:v3SGroupCSTATE cont:v3SGroupContinuation { var c = cont || {}; c['CSTATE'] = cstate; return c; }
+    / ' '* 'FIELDNAME=' fieldname:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDNAME'] = fieldname; return c; }
+    / ' '* 'FIELDINFO=' fieldinfo:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDINFO'] = fieldinfo; return c; }
+    / ' '* 'FIELDDISP=' fielddisp:v3SGroupDisposition cont:v3SGroupContinuation { var c = cont || {}; c['FIELDDISP'] = fielddisp; return c; }
+    / ' '* 'QUERYTYPE=' querytype:string cont:v3SGroupContinuation { var c = cont || {}; c['QUERYTYPE'] = querytype; return c; }
+    / ' '* 'QUERYOP=' queryop:string cont:v3SGroupContinuation { var c = cont || {}; c['QUERYOP'] = queryop; return c; }
+    / ' '* 'FIELDDATA=' fielddata:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDDATA'] = fielddata; return c; }
+    / ' '* 'CLASS=' sgroupClass:string cont:v3SGroupContinuation { var c = cont || {}; c['CLASS'] = sgroupClass; return c; }
+    / ' '* 'SAP=' sap:v3SGroupSAP cont:v3SGroupContinuation { var c = cont || {}; if (c['SAP'] === null) { c['SAP'] = []; } c['SAP'].push(sap); return c; }
+    / ' '* 'BRKTYP=' brktyp:v3SGroupBRKTYP cont:v3SGroupContinuation { var c = cont || {}; c['BRKTYP'] = brktyp; return c; }
+    / ' '* 'SEQID=' seqid:uint cont:v3SGroupContinuation { var c=cont || {}; c['SEQID'] = seqid; return c; }
+    / ' '* newline { }
+
+v3SGroupSubtype
+    = 'ALT' nonWhitespace* { return 'ALT'; }
+    / 'RAN' nonWhitespace* { return 'RAN'; }
+    / 'BLO' nonWhitespace* { return 'BLO'; }
+
+v3SGroupBracketCoords
+    = '(9' xa:float ya:float za:float xb:float yb:float zb:float xc:float yc:float zc:float ')' { 
+            return {
+                "bx1":xa, "by1":ya, "bz1":za, 
+                "bx2":xb, "by2":yb, "bz2":zb, 
+                "bx3":xc, "by3":yc, "bz3":zc
+            };
+        }
+
+v3SGroupCSTATE
+    = '(4' xbond:uint x:float y:float z:float ')' {
+            return { "xbond":xbond, "cvbx":x, "cvby":y, "cvbz":z };
+        } 
+
+v3SGroupDisposition
+    = string { return "FIELDDISP ToDo"; }
+
+/* M  V30 [SAP=(3 aidx lvidx id)]* - */
+v3SGroupSAP
+    = string { return "SAP ToDo"; }
+
+v3SGroupBRKTYP
+    = 'BRACKET' { return 'BRACKET'; }
+    / 'PAREN' { return 'PAREN'; }
+
+/*
+ * Obj3D
+ */
 v3obj3dBlock
     = newline 'M  V30 BEGIN OBJ3D' (newline !'M  V30 END OBJ3D' noNL+)+ newline 'M V30 END OBJ3D'
 
@@ -874,15 +997,19 @@ string
     / !('-' newline) characters:[^ "(\t\n\r]+ { return characters.join(''); }
 
 substring
-    = !('-' newline) characters:[^"\n\r]+ { return characters.join(''); }
+    = characters:[^"\-\n\r]+ { return characters.join(''); }
+    / '-' ! newline { return '-'; }
+    / '-' newline "M  V30" { return ''; }
     / '""' { return '"'; }
-    / '-' newline { return ''; }
 
 string4
     = characters:(noNL noNL noNL noNL) { return characters.join(''); }
 
 string3
     = characters:(noNL noNL noNL) { return characters.join(''); }
+
+nonWhitespace
+    = [^ \t\r\n]
 
 whitespaceNL
     = whitespace
@@ -892,8 +1019,9 @@ whitespace
     = [ \t] 
 
 newline
-    = '\n'
+    = '\n\r'
     / '\r\n'
+    / '\n'
     / '\r'
 
 noNL

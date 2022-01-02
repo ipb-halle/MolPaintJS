@@ -860,8 +860,10 @@ v3SGroupCSTATE
             return { "xbond":xbond, "cvbx":x, "cvby":y, "cvbz":z };
         } 
 
+/* string could be split among lines - need to parse 
+   externally */
 v3SGroupDisposition
-    = string { return "FIELDDISP ToDo"; }
+    = fielddisp:string { return fielddisp; }
 
 /* M  V30 [SAP=(3 aidx lvidx id)]* - */
 v3SGroupSAP

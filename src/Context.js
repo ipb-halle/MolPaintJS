@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ var molPaintJS = (function (molpaintjs) {
         var properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
         var changeListener = null;
         var currentElement = molPaintJS.Elements.getElement("C");
-        var currentTemplate = mp.getTemplates()[0]; 
+        var currentTemplate = mp.getTemplates()[0];
 
         var tools = null;
         var currentTool = null;
@@ -40,7 +40,7 @@ var molPaintJS = (function (molpaintjs) {
         var widget = molPaintJS.Widget(cid, properties, mp);
 
         /**
-         * depending on the value of properties.viewer, set up 
+         * depending on the value of properties.viewer, set up
          * the individual tools
          */
         function setupTools (ctx, properties) {
@@ -55,7 +55,7 @@ var molPaintJS = (function (molpaintjs) {
                   wavyBondTool: molPaintJS.BondTool(ctx, properties, 1, 2, "wavy_bond"),
                   hashedWedgeTool: molPaintJS.BondTool(ctx, properties, 1, 3, "hashed_wedge"),
                   isotopeTool: molPaintJS.IsotopeTool(ctx, properties),
-                  radicalTool: molPaintJS.RadicalTool(ctx, properties), 
+                  radicalTool: molPaintJS.RadicalTool(ctx, properties),
                   chainTool: molPaintJS.ChainTool(ctx, properties),
                   chargeIncTool: molPaintJS.ChargeIncTool(ctx, properties),
                   chargeDecTool: molPaintJS.ChargeDecTool(ctx, properties),
@@ -63,13 +63,13 @@ var molPaintJS = (function (molpaintjs) {
                   carbonAtomTool: molPaintJS.AtomTool(ctx, properties, "carbon"),
                   nitrogenAtomTool: molPaintJS.AtomTool(ctx, properties, "nitrogen"),
                   oxygenAtomTool: molPaintJS.AtomTool(ctx, properties, "oxygen"),
-                  customElementTool: molPaintJS.AtomTool(ctx, properties, "customElement"), 
+                  customElementTool: molPaintJS.AtomTool(ctx, properties, "customElement"),
                   templateTool: molPaintJS.TemplateTool(ctx, properties, "template") };
 
                 currentTool = tools.pointerTool;
                 currentBondTool = tools.singleBondTool;
                 tools.templateTool.setTemplate(
-                    currentTemplate, 
+                    currentTemplate,
                     molpaint.getTemplate(currentTemplate));
             } else {
                 tools = { nullTool : molPaintJS.NullTool(this) };
@@ -155,12 +155,12 @@ var molPaintJS = (function (molpaintjs) {
              * current molecule. Update the history accordingly.
              * @param st the molecule string (MDL mol, ...)
              * @param sel the selection bits to set for the pasted molecule
-             * @return the already appended (!) actionList 
+             * @return the already appended (!) actionList
              */
             pasteMolecule : function (st, sel) {
                 var mol;
                 try {
-                    mol = molPaintJS.MDLParser.parse(st);
+                    mol = molPaintJS.MDLParser.parse(st, {'logLevel': 5});
                     if (mol.getCollections().length > 0) {
                         console.log("collections not supported during paste");
                     }
@@ -190,8 +190,19 @@ var molPaintJS = (function (molpaintjs) {
                     molecule.addBond(b, null);
                     actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
                 }
+
+                // add sgroups
+                var sgroups = mol.getSGroups();
+                for (var i in sgroups) {
+                    var g = sgroups[i];
+                    molecule.addSGroup(g, null);
+//                    actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
+                }
+
+                // ToDo: Collections NOT IMPLEMENTED
+
                 history.appendAction(actionList);
-            
+
                 view.initRaster(molecule);
                 this.draw();
                 return actionList;
@@ -203,7 +214,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * set a changeListener which is called each time 
+             * set a changeListener which is called each time
              * the molecule is changed
              * @param listener the function to be executed on each change
              */
@@ -261,7 +272,7 @@ var molPaintJS = (function (molpaintjs) {
             }
 
         };  // return
-    }   // Context 
+    }   // Context
     return molpaintjs;
 }(molPaintJS || {}));
 

@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -35,11 +35,11 @@ var molPaintJS = (function (molpaintjs) {
                 if (a.getSelected()) {
                     drawAtomSelection(ctx, a);
                 }
-                if ((a.getType().getIsotope().getSymbol() != "C")
-                    || (a.getCharge() != 0)
-                    || (a.getRadical() != 0)
-                    || (a.getType().getIsotope().getIsotope() != 0)
-                    || (Object.keys(a.getBonds()).length == 0)) {
+                if ((a.getType().getIsotope().getSymbol() !== "C")
+                    || (a.getCharge() !== 0)
+                    || (a.getRadical() !== 0)
+                    || (a.getType().getIsotope().getIsotope() !== 0)
+                    || (Object.keys(a.getBonds()).length === 0)) {
                     drawSingleAtom(ctx, a);
                 } else {
                     a.setBBox(null);
@@ -86,6 +86,24 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
+        function drawSGroups (ctx) {
+            var sgroups = molecule.getSGroups();
+            for (var idx in sgroups) {
+                var sgroup = sgroups[idx];
+                if (sgroup.getType() === 'DAT') {
+                    var data = sgroup.getSGroup();
+                    var coord = data['FIELDDISP']['coord'];
+                    drawText(ctx, coord.x, coord.y, data['FIELDDATA']);
+                }
+            }
+        }
+
+        function drawText (ctx, x, y, text) {
+            var coord = view.getCoord2(x, y);
+            view.setFont();
+            ctx.fillStyle = "#000020";
+            ctx.fillText(text, coord.x, coord.y);
+        }
 
         function drawBondSelection (ctx, bond) {
 
@@ -186,7 +204,7 @@ var molPaintJS = (function (molpaintjs) {
                     atom.getBBox().join(bx);
 
                     if (hCount > 1) {
-                        hx = atom.getBBox().getMaxX(); 
+                        hx = atom.getBBox().getMaxX();
                         hy += (0.8 * symbolHeight);
                         drawHydrogenCount(ctx, atom, hx, hy, hCount, true);
                     }
@@ -257,11 +275,11 @@ var molPaintJS = (function (molpaintjs) {
             var dx = coord1.x - coord2.x;
             var dy = coord1.y - coord2.y;
 
-            if (atomA.getBBox() != null) {
+            if (atomA.getBBox() !== null) {
                 //atomA.getBBox().draw(ctx);
                 coord1 = atomA.getBBox().clip(coord1, dx, dy);
             }
-            if (atomB.getBBox() != null) {
+            if (atomB.getBBox() !== null) {
                 //atomB.getBBox().draw(ctx);
                 coord2 = atomB.getBBox().clip(coord2, -dx, -dy);
             }
@@ -270,7 +288,7 @@ var molPaintJS = (function (molpaintjs) {
             dy = coord1.y - coord2.y;
             var len = Math.sqrt(dx*dx + dy*dy);
             var scale = 0.5 / Math.sqrt(len);
-            var x3, x4, y3, y4; 
+            var x3, x4, y3, y4;
 
             ctx.moveTo(coord1.x, coord1.y);
             switch(bond.getStereo()) {
@@ -279,7 +297,7 @@ var molPaintJS = (function (molpaintjs) {
                     ctx.stroke();
                     break;
                 case 1: // up - solid wedge
-                    x3 = coord2.x - (dy * scale); 
+                    x3 = coord2.x - (dy * scale);
                     y3 = coord2.y + (dx * scale);
                     x4 = coord2.x + (dy * scale);
                     y4 = coord2.y - (dx * scale);
@@ -327,8 +345,8 @@ var molPaintJS = (function (molpaintjs) {
                         y3 = y4 - dy;
                         ctx.arcTo(x4+ddy, y4-ddx, x3+ddy, y3-ddx, 2);
                         l += 8;
-                    } while (l < (len - 6)); 
-                    ctx.lineTo(x3-ddy, y3+ddx); 
+                    } while (l < (len - 6));
+                    ctx.lineTo(x3-ddy, y3+ddx);
                     ctx.stroke();
                     break;
 
@@ -377,8 +395,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         /**
-         * compute the charge and radical label. Triplet radicals are 
-         * denoted as colon at the atom symbol; singlet radicals are 
+         * compute the charge and radical label. Triplet radicals are
+         * denoted as colon at the atom symbol; singlet radicals are
          * denoted as colon after the (possibly empty) charge label.
          * @return string with charge and radical symbol
          */
@@ -412,7 +430,7 @@ var molPaintJS = (function (molpaintjs) {
 
 
         /**
-         * check whether an atom has a bond from right: in this case the hydrogen 
+         * check whether an atom has a bond from right: in this case the hydrogen
          * label must be displayed on the left, if not bond from left is present
          */
         function getHydrogenLabelPositionRight (atom) {
@@ -433,7 +451,7 @@ var molPaintJS = (function (molpaintjs) {
                     } else {
                         leftFree = false;
                     }
-                } 
+                }
             }
             return rightFree || (! leftFree);
         }
@@ -483,6 +501,7 @@ var molPaintJS = (function (molpaintjs) {
                 ctx.lineWidth = 1;
                 drawAtoms(ctx);
                 drawBonds(ctx);
+                drawSGroups(ctx);
 
                 // begin a new path for subsequent drawing operations
                 ctx.beginPath();

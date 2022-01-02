@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -70,7 +70,7 @@ var molPaintJS = (function (molpaintjs) {
             addCollection : function (collection) {
                 var merged = false;
                 for (var c of collections) {
-                    if (c.getName() == collection.getName()) {
+                    if (c.getName() === collection.getName()) {
                         c.merge(collection);
                         merged = true;
                     }
@@ -83,7 +83,7 @@ var molPaintJS = (function (molpaintjs) {
 
             addSGroup : function (sg, id) {
                 sgroupObjCount++;
-                if (id == null) {
+                if (id === null) {
                     id = "SGroup" + sgroupObjCount;
                     sg.setId(id);
                 }
@@ -105,7 +105,7 @@ var molPaintJS = (function (molpaintjs) {
                         // order matters: first clear, then set
                         sel &= ~clear;
                         atoms[id].setSelected(sel | set);
-                    } 
+                    }
                 }
                 for (var id in bonds) {
                     var sel = bonds[id].getSelected();
@@ -128,12 +128,12 @@ var molPaintJS = (function (molpaintjs) {
                 var cy = -bbox.getCenterY();
 
                 for (var id in atoms) {
-                    atoms[id].addX(cx); 
+                    atoms[id].addX(cx);
                     atoms[id].addY(cy);
                     // ignore z
                 }
                 var b = molPaintJS.Box(
-                    bbox.getMinX() + cx, 
+                    bbox.getMinX() + cx,
                     bbox.getMinY() + cy,
                     bbox.getMaxX() + cx,
                     bbox.getMaxY() + cy);
@@ -142,7 +142,7 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * clear all selections
-             * @param val All selections with bit val will be cleared. 
+             * @param val All selections with bit val will be cleared.
              */
             clearSelection : function (val) {
                 for (var id in atoms) {
@@ -160,7 +160,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * compute update history and clear temp flag 
+             * compute update history and clear temp flag
              * @return actionList containing update history
              */
             clearTemp : function ()  {
@@ -183,7 +183,7 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * compute the bounding box coordinates of the current molecule
-             * @param sel select bits which must be set when computing the 
+             * @param sel select bits which must be set when computing the
              * bounding box; if sel = 0, everything is selected
              */
             computeBBox : function (sel) {
@@ -279,12 +279,12 @@ var molPaintJS = (function (molpaintjs) {
                     if(bonds[b].getTemp() != 0) {
                         bonds[b].getAtomA().delBond(b);
                         bonds[b].getAtomB().delBond(b);
-                        delete bonds[b]; 
+                        delete bonds[b];
                     }
                 }
                 for(var a in atoms) {
                     if(atoms[a].getTemp() != 0) {
-                        delete atoms[a]; 
+                        delete atoms[a];
                     }
                 }
             },
@@ -342,6 +342,14 @@ var molPaintJS = (function (molpaintjs) {
                     }
                 }
                 return result;
+            },
+
+            getSGroup : function (idx) {
+                return sgroups[idx];
+            },
+
+            getSGroups : function () {
+                return sgroups;
             },
 
             /**
@@ -407,7 +415,7 @@ var molPaintJS = (function (molpaintjs) {
             /**
              * select the first matching atom
              * @param coords the coordinates
-             * @param distmax maximum squared euclidian distance 
+             * @param distmax maximum squared euclidian distance
              * @return atomId
              */
             selectAtom : function (coords, distmax) {
@@ -427,7 +435,7 @@ var molPaintJS = (function (molpaintjs) {
              * which are enclosed by the given bounding box.
              * Enclosed atoms and bonds are marked as selected.
              * @param bbox bounding box in molecule coordinates
-             * @param val bit value to set on selected entities 
+             * @param val bit value to set on selected entities
              * @param cond bits which must not be set for selection of an entity
              * @return an object with properties "atoms" and "bonds"
              */
@@ -462,7 +470,7 @@ var molPaintJS = (function (molpaintjs) {
             /**
              * return a list of matching bonds
              * @param coords coordinates of action
-             * @param distmax maximum squared euclidian distance 
+             * @param distmax maximum squared euclidian distance
              * @param returns an array of matching bonds; array may be empty
              */
             selectBond : function (coords, distmax) {
@@ -516,8 +524,8 @@ var molPaintJS = (function (molpaintjs) {
              * 2d-transforms the coordinates of this molecule.
              * The z-coordinate is not affected!
              * @param matrix a 2x3 transformation matrix
-             * @param sel select bits to which the transformation should apply (set to 
-             * zero to apply transformation to all atoms) 
+             * @param sel select bits to which the transformation should apply (set to
+             * zero to apply transformation to all atoms)
              */
             transform : function (matrix, sel) {
                 for (var id in atoms) {

@@ -778,7 +778,10 @@ v3propertyBlocks
  */
 v3SGroupBlock
     = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
-            sgroups.forEach(sgroup => { mdlParserData.molecule.addSGroup(sgroup, null); });
+            sgroups.forEach(sgroup => { 
+                sgroup.parseJsonData(mdlParserData.molecule);
+                mdlParserData.molecule.addSGroup(sgroup, null); 
+            });
             logMessage(1, 'parsed SGROUP BLOCK');
         }
 
@@ -789,7 +792,7 @@ v3SGroup
             cont["type"] = index["type"];
             cont["extIndex"] = index["extIndex"];
             var sgroup = molPaintJS.SGroup(index["type"]);
-            sgroup.setSGroup(cont);
+            sgroup.setJsonData(cont);
             return sgroup;
         }
     
@@ -820,13 +823,13 @@ v3SGroupContinuation
     / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['PATOMS'] = list; return c; } 
     / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { var c=cont || {}; c['SUBTYPE'] = subtype; return c; }
     / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { var c=cont || {}; c['MULT'] = mult; return c; }
-    / ' '* 'CONNECT=' connect:uint cont:v3SGroupContinuation { var c=cont || {}; c['CONNECT'] = connect; return c; }
+    / ' '* 'CONNECT=' connect:sgroupConnectType cont:v3SGroupContinuation { var c=cont || {}; c['CONNECT'] = connect; return c; }
     / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { var c=cont || {}; c['PARENT'] = connect; return c; }
     / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { var c=cont || {}; c['COMPNO'] = connect; return c; }
     / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XHEAD'] = list; return c; } 
-    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XHEAD'] = list; return c; } 
+    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XBCORR'] = list; return c; } 
     / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { var c = cont || {}; c['LABEL'] = label; return c; } 
-    / ' '* 'BRKXYZ=' coords:v3SGroupBracketCoords cont:v3SGroupContinuation { var c = cont || {}; c['BRKXYZ'] = coords; return c; }
+    / ' '* 'BRKXYZ=' brkxyz:v3CountedFloatList cont:v3SGroupContinuation { var c = cont || {}; if (c['BRKXYZ'] === undefined) { c['BRKXYZ'] = []; } c['BRKXYZ'].push(brkxyz); return c; }
     / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { var c = cont || {}; c['ESTATE'] = estate; return c; }
     / ' '* 'CSTATE=' cstate:v3SGroupCSTATE cont:v3SGroupContinuation { var c = cont || {}; c['CSTATE'] = cstate; return c; }
     / ' '* 'FIELDNAME=' fieldname:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDNAME'] = fieldname; return c; }
@@ -846,15 +849,6 @@ v3SGroupSubtype
     / 'RAN' nonWhitespace* { return 'RAN'; }
     / 'BLO' nonWhitespace* { return 'BLO'; }
 
-v3SGroupBracketCoords
-    = '(9' xa:float ya:float za:float xb:float yb:float zb:float xc:float yc:float zc:float ')' { 
-            return {
-                "bx1":xa, "by1":ya, "bz1":za, 
-                "bx2":xb, "by2":yb, "bz2":zb, 
-                "bx3":xc, "by3":yc, "bz3":zc
-            };
-        }
-
 v3SGroupCSTATE
     = '(4' xbond:uint x:float y:float z:float ')' {
             return { "xbond":xbond, "cvbx":x, "cvby":y, "cvbz":z };
@@ -872,6 +866,11 @@ v3SGroupSAP
 v3SGroupBRKTYP
     = 'BRACKET' { return 'BRACKET'; }
     / 'PAREN' { return 'PAREN'; }
+
+sgroupConnectType 
+    = 'HH' { return 'HH'; }
+    / 'HT' { return 'HT'; }
+    / 'EU' { return 'EU'; }
 
 /*
  * Obj3D
@@ -950,6 +949,13 @@ collectionContinuation
  *
  *======================================================================
  */
+v3CountedFloatList
+    = whitespace* '(' count:uint float:v3FloatList* whitespace* ')' { return {count:count, data:float}; }
+
+v3FloatList
+    = float:float { return float; }
+    / v3LineContinuation { }
+
 v3CountedUIntList
     = whitespace* '(' count:uint uint:v3UIntList* whitespace* ')' { return {count:count, data:uint}; }
 

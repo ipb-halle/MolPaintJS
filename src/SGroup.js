@@ -27,119 +27,175 @@ var molPaintJS = (function (molpaintjs) {
          */
         var id = null;
         var type = t;
-        var atoms = {};
-        var bonds = {};
-        var bondVector = [];
+        var jsonData = {};
+
+        var atoms = [];
+        var cbonds = [];
+        var connect = 'EU';
+        var fieldData = '';
+        var fieldDisposition = '';
+        var label = '';
+        var patoms = [];
+        var xbonds = [];
+
+/* ToDo:
         var bracketCoordinates = [];
-        var data = [];
-        var dataBuffer = '';
-        var dataDisplay = [];
         var subscript = null;
+        var bondVector = [];
         var uniqueLabel = null;
-        var sgroupData = null;
+*/
 
-        /**
-        * M SDD sss xxxxx.xxxxyyyyy.yyyy eeefgh i jjjkkk ll m noo
-        * sss: Index of data Sgroup; parsed by parser
-        *
-        * @param str string with following fields (see also above)
-        * x,y: Coordinates (2F10.4)
-        * eee: (Reserved for future use)
-        * f: Data display, A = attached, D = detached
-        * g: Absolute, relative placement, A = absolute, R = relative
-        * h: Display units, blank = no units displayed, U = display units
-        * i: (Reserved for future use)
-        * jjj: Number of characters to display (1...999 or ALL)
-        * kkk: Number of lines to display (unused, always 1)
-        * ll: (Reserved for future use)
-        * m: Tag character for tagged detached display (if non-blank)
-        * n: Data display DASP position (1...9). (MACCS-II only)
-        * oo: (Reserved for future use)
-        *
-        * @return JSON object with parsed data
-        */
-        function parseFieldDisposition(str) {
-            var obj = {};
-            var x = parseFloat(str.substr(0,9));
-            var y = -1.0 * parseFloat(str.substr(10,19)); // flip on X axis
-            obj["coord"] = { 'x':x, 'y':y };
-
-            return obj;
-        }
 
         return {
 
-            setId : function(i) {
-                id = i;
+            /*
+             * add data to existing jsonDataObject
+             */
+            addJsonData : function(data) {
+                for (var t in [ 'ATOMS', 'BONDS', 'CBONDS', 'XBONDS', 'PATOMS', 'XHEAD' ]) {
+                    if (data[t] != null) {
+                        if (t == 'BONDS') {
+                            t = (type == 'DAT') ?  'CBONDS' : 'XBONDS';
+                        }
+                        addNumberedList(t, data[t]);
+                    }
+                }
             },
 
-            /* set complex parsed sgroup data */
-            setSGroup : function(data) {
-                console.log("SGroup implementation incomplete; must resolve atom and bond references");
-                sgroupData = data;
-                sgroupData['FIELDDISP'] = parseFieldDisposition(data['FIELDDISP']);
+
+            /**
+             * add / append a numbered list of type t to jsonData
+             */
+            addNumberedList : function(listType, data) {
+                if (jsonData[listType] == null) {
+                    jsonData[listType].count = data.length;
+                    jsonData[listType].data = data;
+                } else {
+                    for (var d of data[listType].data) {
+                        jsonData[listType].count++;
+                        jsonData[listType].data.push(d);
+                    }
+                }
             },
 
-            /* SAL sssn15 aaa ... */
-            addAtom : function(idx) {
-                atoms[idx] =  idx;
+            getFieldData : function() {
+                return fieldData;
             },
 
-            /* SBL sssn15 bbb ... */
-            addBond : function(idx) {
-                bonds[idx] = idx;
+            /**
+            * M SDD sss xxxxx.xxxxyyyyy.yyyy eeefgh i jjjkkk ll m noo
+            * sss: Index of data Sgroup; parsed by parser
+            *
+            * @param str string with following fields (see also above)
+            * x,y: Coordinates (2F10.4)
+            * eee: (Reserved for future use)
+            * f: Data display, A = attached, D = detached
+            * g: Absolute, relative placement, A = absolute, R = relative
+            * h: Display units, blank = no units displayed, U = display units
+            * i: (Reserved for future use)
+            * jjj: Number of characters to display (1...999 or ALL)
+            * kkk: Number of lines to display (unused, always 1)
+            * ll: (Reserved for future use)
+            * m: Tag character for tagged detached display (if non-blank)
+            * n: Data display DASP position (1...9). (MACCS-II only)
+            * oo: (Reserved for future use)
+            *
+            * @return JSON object with parsed data
+            */
+            getFieldDispositionCoordinates : function() {
+                var x = parseFloat(fieldDisposition.substr(0,9));
+                var y = -1.0 * parseFloat(fieldDisposition.substr(10,19)); // flip on X axis
+                return { 'x':x, 'y':y };
             },
 
-            /* SBV sss bb1 x1 y1 */
-            setBondVector : function(idx, x, y) {
-                bondVector = { 'idx' : idx, 'x' : x, 'y' : y };
-            },
-
-            /* SDI sssnn4 x1 y1 x2 y2 */
-            setBracketCoordinates : function(x1, y1, x2, y2) {
-                /*
-                 * * need to check whether left becomes before right?
-                 *   --> necessity to swap brackets?
-                 * * brackets always horizontally? Inclined, vertical?
-                 *   --> necessity to determine direction of bracket lines
-                 */
-                bracketCoordinates.push([x1, y1, x2, y2]);
-            },
-
-            /* SCD sss d...  */
-            addData : function(d) {
-                buffer += d;
-            },
-
-            getSGroup : function() {
-                return sgroupData;
+            getJsonData : function() {
+                return jsonData;
             },
 
             getType : function() {
                 return type;
             },
 
-            /* SED sss d...  */
-            setData : function(d) {
-                b = buffer + d;
-                buffer = '';
-                data.push(b.substr(0,200));
+            parseJsonAtoms : function(molecule) {
+                if (jsonData['ATOMS'] != null) {
+                    for (var idx of jsonData['ATOMS'].data) {
+                        var atom = molecule.getAtom('Atom' + idx);
+                        atoms.push(atom); 
+                        atom.addSGroup(this);
+                    }
+                }
             },
 
-            /* SDD sss xxxxx.xxxxyyyyy.yyyy eeefgh i jjjkkk ll m noo */
-            setDataDisplay : function(d) {
-                dataDisplay.push(d);
+            parseJsonCBonds : function(molecule) {
+                if (jsonData['CBONDS'] != null) {
+                    for (var idx of jsonData['CBONDS'].data) {
+                        var cbond = molecule.getBond('Bond' + idx);
+                        cbonds.push(cbond);
+                        cbond.addSGroup(this);
+                    }
+                }
             },
 
-            /* SMT sss m... */
-            setSubscript : function(m) {
-                subscript = m;
+            parseJsonFieldData : function() {
+                if (jsonData['FIELDDATA'] != null) {
+                    fieldData = jsonData['FIELDDATA'];
+                }
             },
 
-            /* SLBnn8 sss vvv ... */
-            setUniqueLabel : function(l) {
-                uniqueLabel = l;
+            parseJsonFieldDisposition : function() {
+                if (jsonData['FIELDDISP'] != null) {
+                    // ToDo: more elaborated parsing of FIELDDISP
+                    fieldDisposition = jsonData['FIELDDISP'];
+                }
             },
+
+            parseJsonLabel : function() {
+                if (jsonData['LABEL'] != null) {
+                    label = jsonData['LABEL'];
+                }
+            },
+
+            parseJsonPAtoms : function(molecule) {
+                if (jsonData['PATOMS'] != null) {
+                    for (var idx of jsonData['PATOMS'].data) {
+                        var atom = molecule.getAtom('Atom' + idx);
+                        patoms.push(atom);
+                        atom.addSGroup(this);
+                    }
+                }
+            },
+
+            parseJsonXBonds : function(molecule) {
+                if (jsonData['XBONDS'] != null) {
+                    for (var idx of jsonData['XBONDS'].data) {
+                        var xbond = molecule.getBond('Bond' + idx);
+                        xbonds.push(xbond);
+                        xbond.addSGroup(this);
+                    }
+                }
+            },
+
+            parseJsonData : function(molecule) {
+                console.log("parseJsonData");
+                this.parseJsonAtoms(molecule);
+                this.parseJsonCBonds(molecule);
+                this.parseJsonFieldData();
+                this.parseJsonFieldDisposition();
+                this.parseJsonLabel();
+                this.parseJsonPAtoms(molecule);
+                this.parseJsonXBonds(molecule);
+            },
+
+            setId : function(i) {
+                id = i;
+            },
+
+            /* set complex parsed sgroup data */
+            setJsonData : function(data) {
+                console.log("SGroup implementation incomplete; must resolve atom and bond references");
+                jsonData = data;
+            }
+
         };
     }
     return molpaintjs;

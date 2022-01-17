@@ -29,6 +29,7 @@ var molPaintJS = (function (molpaintjs) {
   
         var atomA;
         var atomB;
+        var sgroups = {};
         var color;
         var id;                 // unique id (i.e. for undo / redo)
         var index;              // numeric index
@@ -38,6 +39,10 @@ var molPaintJS = (function (molpaintjs) {
         var type = null;
 
         return {
+
+            addSGroup : function (idx) {
+                sgroups[idx] = idx;
+            },
 
             /**
              * make a copy (clone) of this Bond with
@@ -55,7 +60,20 @@ var molPaintJS = (function (molpaintjs) {
                 b.setTemp(temp);
                 b.setType(type);
                 b.setStereo(stereo);
+                b.setSGroups(copySGroups());
                 return b;
+            },
+
+            copySGroups : function () {
+                var s = {};
+                for (var i in sgroups) {
+                    s[i] = i;
+                }
+                return s;
+            },
+
+            delSGroup : function (idx) {
+                delete sgroups[idx];
             },
 
             getAtomA : function () {
@@ -76,6 +94,10 @@ var molPaintJS = (function (molpaintjs) {
 
             getIndex : function () {
                 return index;
+            },
+
+            getSGroups : function () {
+                return sgroups;
             },
 
             getSelected : function () {
@@ -115,6 +137,10 @@ var molPaintJS = (function (molpaintjs) {
 
             setIndex : function (i) {
                 index = i;
+            },
+
+            setSGroups : function (s) {
+                sgroups = s;
             },
 
             setSelected : function (s) {

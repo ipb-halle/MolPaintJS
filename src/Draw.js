@@ -91,9 +91,9 @@ var molPaintJS = (function (molpaintjs) {
             for (var idx in sgroups) {
                 var sgroup = sgroups[idx];
                 if (sgroup.getType() === 'DAT') {
-                    var data = sgroup.getSGroup();
-                    var coord = data['FIELDDISP']['coord'];
-                    drawText(ctx, coord.x, coord.y, data['FIELDDATA']);
+                    console.log("DAT --> FIELDDATA");
+                    var coord = sgroup.getFieldDispositionCoordinates();
+                    drawText(ctx, coord.x, coord.y, sgroup.getFieldData());
                 }
             }
         }
@@ -275,11 +275,11 @@ var molPaintJS = (function (molpaintjs) {
             var dx = coord1.x - coord2.x;
             var dy = coord1.y - coord2.y;
 
-            if (atomA.getBBox() !== null) {
+            if (atomA.getBBox() != null) {
                 //atomA.getBBox().draw(ctx);
                 coord1 = atomA.getBBox().clip(coord1, dx, dy);
             }
-            if (atomB.getBBox() !== null) {
+            if (atomB.getBBox() != null) {
                 //atomB.getBBox().draw(ctx);
                 coord2 = atomB.getBBox().clip(coord2, -dx, -dy);
             }

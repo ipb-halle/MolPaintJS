@@ -23,6 +23,7 @@ var molPaintJS = (function (molpaintjs) {
 
         var bbox = null;        // bounding box for the atom label
         var bonds = {};
+        var sgroups = {};
         var coordX = 0.0;
         var coordY = 0.0;
         var coordZ = 0.0;
@@ -91,6 +92,10 @@ var molPaintJS = (function (molpaintjs) {
                 bonds[idx] = idx;
             },
 
+            addSGroup : function (idx) {
+                sgroups[idx] = idx;
+            },
+
             /**
              * make a copy (clone) of this Atom
              * @return a new Atom with identical properties
@@ -110,6 +115,7 @@ var molPaintJS = (function (molpaintjs) {
                 a.setTemp(temp);
                 a.setType(type);
                 a.setBonds(this.copyBonds());
+                a.setSGroups(this.copySGroups());
                 return a;
             },
 
@@ -121,11 +127,23 @@ var molPaintJS = (function (molpaintjs) {
                 return b;
             },
 
+            copySGroups : function () {
+                var s = {};
+                for (var i in sgroups) {
+                    s[i] = i;
+                }
+                return s;
+            },
+
             /**
              * delete a specific bond from this atom
              */
             delBond : function (idx) {
                 delete bonds[idx];
+            },
+
+            delSGroups : function (idx) {
+                delete sgroups[idx];
             },
 
             getBBox : function () {
@@ -182,6 +200,10 @@ var molPaintJS = (function (molpaintjs) {
                 return radical;
             },
 
+            getSGroups : function () {
+                return sgroups;
+            },
+
             getSelected : function () {
                 return selected;
             },
@@ -232,6 +254,10 @@ var molPaintJS = (function (molpaintjs) {
 
             setRadical : function (r) {
                 radical = r;
+            },
+
+            setSGroups : function (s) {
+                sgroups = s;
             },
 
             setSelected : function (s) {

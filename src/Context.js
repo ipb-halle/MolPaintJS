@@ -196,7 +196,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (var i in sgroups) {
                     var g = sgroups[i];
                     molecule.addSGroup(g, null);
-//                    actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
+                    // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
                 }
 
                 // ToDo: Collections NOT IMPLEMENTED

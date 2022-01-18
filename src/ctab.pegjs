@@ -82,6 +82,19 @@
     }
 
     /**
+     * filter undefined values from array
+     */
+    function filterUndefined(arr) {
+        var temp = [];
+        for(let i of arr) {
+            if (i !== undefined) {
+                temp.push(i);
+            }
+        }
+        return temp;
+    }
+
+    /**
      * flatten nested property blocks which occur during parsing
      */
     function flatten(collection, obj) {
@@ -950,14 +963,14 @@ collectionContinuation
  *======================================================================
  */
 v3CountedFloatList
-    = whitespace* '(' count:uint float:v3FloatList* whitespace* ')' { return {count:count, data:float}; }
+    = whitespace* '(' count:uint float:v3FloatList* whitespace* ')' { return {count:count, data:filterUndefined(float) } } 
 
 v3FloatList
     = float:float { return float; }
     / v3LineContinuation { }
 
 v3CountedUIntList
-    = whitespace* '(' count:uint uint:v3UIntList* whitespace* ')' { return {count:count, data:uint}; }
+    = whitespace* '(' count:uint uint:v3UIntList* whitespace* ')' { return {count:count, data:filterUndefined(uint) } }
 
 v3UIntList
     = uint:uint { return uint; }

@@ -30,6 +30,7 @@ var molPaintJS = (function (molpaintjs) {
         var jsonData = {};
 
         var atoms = [];
+        var brkxyz = [];
         var cbonds = [];
         var connect = 'EU';
         var fieldData = '';
@@ -38,11 +39,13 @@ var molPaintJS = (function (molpaintjs) {
         var patoms = [];
         var xbonds = [];
 
-/* ToDo:
-        var bracketCoordinates = [];
+/* 
+    ToDo:
         var subscript = null;
         var bondVector = [];
         var uniqueLabel = null;
+
+        and much more ...
 */
 
 
@@ -76,6 +79,10 @@ var molPaintJS = (function (molpaintjs) {
                         jsonData[listType].data.push(d);
                     }
                 }
+            },
+
+            getBRKXYZ : function() {
+                return brkxyz;
             },
 
             getFieldData : function() {
@@ -122,6 +129,17 @@ var molPaintJS = (function (molpaintjs) {
                         var atom = molecule.getAtom('Atom' + idx);
                         atoms.push(atom); 
                         atom.addSGroup(this);
+                    }
+                }
+            },
+
+            parseJsonBRKXYZ : function() {
+                brkxyz = jsonData['BRKXYZ'];
+                // invert Y coordinates
+                for (var i in brkxyz) {
+                    if (brkxyz[i].data !== undefined) {
+                        brkxyz[i].data[1] *= -1.0;
+                        brkxyz[i].data[4] *= -1.0;
                     }
                 }
             },
@@ -178,6 +196,7 @@ var molPaintJS = (function (molpaintjs) {
             parseJsonData : function(molecule) {
                 console.log("parseJsonData");
                 this.parseJsonAtoms(molecule);
+                this.parseJsonBRKXYZ();
                 this.parseJsonCBonds(molecule);
                 this.parseJsonFieldData();
                 this.parseJsonFieldDisposition();

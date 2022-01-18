@@ -86,23 +86,69 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
+        function drawBracket (ctx, coords, other) {
+            var x1 = coords[0];
+            var y1 = coords[1];
+            var x2 = coords[3];
+            var y2 = coords[4];
+            var x3 = 0.0;
+            var y3 = 0.0;
+
+            if (other !== undefined) {
+                x3 = (coords[0] + coords[3]) / 2.0;
+                y3 = (coords[1] + coords[4]) / 2.0;
+            }
+
+            // we make no assumptions - compute the direction of the bracket fins
+            var dx = 0.1 * (y1 - y2);
+            var dy = 0.1 * (x1 - x2);
+            var ddx = (x3 - x1 - dx);
+            var ddy = (y3 - y1 - dy);
+            var d = (ddx * ddx) + (ddy * ddy);
+            ddx = (x3 - x1);
+            ddy = (y3 - y1);
+            if (d < ((ddx * ddx) + (ddy * ddy))) {
+                dx *= -1.0;
+                dy *= -1.0;
+            }
+
+            ctx.save();
+            // ctx.lineWidth = 4;
+            // setStrokeStyle(ctx, bond.getSelected());
+            ctx.moveTo(view.getCoordX(x1 + dx), view.getCoordY(y1 + dy));
+            ctx.lineTo(view.getCoordX(x1), view.getCoordY(y1));
+            ctx.lineTo(view.getCoordX(x2), view.getCoordY(y2));
+            ctx.lineTo(view.getCoordX(x2 + dx), view.getCoordY(y2 + dy));
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawBrackets (ctx, sgroup) {
+            var coords = sgroup.getBRKXYZ();
+            drawBracket(ctx, coords[0].data, coords[1].data);
+            if (coords[1] !== undefined) {
+                drawBracket(ctx, coords[1].data, coords[0].data);
+            }
+        }
+
         function drawSGroups (ctx) {
             var sgroups = molecule.getSGroups();
             for (var idx in sgroups) {
                 var sgroup = sgroups[idx];
                 if (sgroup.getType() === 'DAT') {
-                    console.log("DAT --> FIELDDATA");
                     var coord = sgroup.getFieldDispositionCoordinates();
                     drawText(ctx, coord.x, coord.y, sgroup.getFieldData());
+                }
+                if (sgroup.getBRKXYZ() != null) {
+                    drawBrackets (ctx, sgroup);
                 }
             }
         }
 
         function drawText (ctx, x, y, text) {
-            var coord = view.getCoord2(x, y);
             view.setFont();
             ctx.fillStyle = "#000020";
-            ctx.fillText(text, coord.x, coord.y);
+            ctx.fillText(text, view.getCoordX(x), view.getCoordY(y));
         }
 
         function drawBondSelection (ctx, bond) {

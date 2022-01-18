@@ -86,17 +86,18 @@ var molPaintJS = (function (molpaintjs) {
                 };
             },
 
-            /**
-             * return transformed coordinates
-             * @param {type} canvasX
-             * @param {type} canvasY
-             * @returns coordinate object
+            /*
+             * @return tranformed X coordinate
              */
-            getCoord2 : function (x, y) {
-                return {
-                    x: (centerX + (x * molScale * displayScale)),
-                    y: (centerY + (y * molScale * displayScale))
-                };
+            getCoordX : function (x) {
+                return centerX + (x * molScale * displayScale);
+            },
+
+            /**
+             * @return transformed Y coordinate
+             */
+            getCoordY : function (y) {
+                return centerY + (y * molScale * displayScale);
             },
 
             /**

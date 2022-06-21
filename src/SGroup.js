@@ -37,6 +37,7 @@ var molPaintJS = (function (molpaintjs) {
         var fieldDisposition = '';
         var label = '';
         var patoms = [];
+        var selected = 0;
         var xbonds = [];
 
 /* 

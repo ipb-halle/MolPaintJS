@@ -385,6 +385,11 @@ var molPaintJS = (function (molpaintjs) {
             e.addEventListener(evt, a, false);
         }
 
+        function renderAdvancedMenu () {
+            // ToDo: include sgroup / polymer / reaction / ... 
+            return itemV("collection", "Manage collections", "molPaintJS-inactiveTool");
+        }
+
         function renderBottomMenu () {
             return "";
         }
@@ -442,7 +447,7 @@ var molPaintJS = (function (molpaintjs) {
                 + renderTemplateMenu()
                 + itemV("plus", "Increment charge", "molPaintJS-inactiveTool")
                 + itemV("minus", "Decrement charge", "molPaintJS-inactiveTool")
-                + itemV("collection", "Manage collections", "molPaintJS-inactiveTool");
+                + renderAdvancedMenu();
         }
 
         function renderPeriodicTable () {

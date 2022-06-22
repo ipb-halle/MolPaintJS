@@ -54,10 +54,10 @@ var molPaintJS = (function (molpaintjs) {
             var coord = view.getCoord(atom);
             var r = view.getFontSize() * 0.6;
             ctx.save();
-            ctx.lineWidth = 4;
-            setStrokeStyle(ctx, atom.getSelected());
+            setAtomStyle(ctx, atom.getSelected());
             ctx.moveTo(coord.x + r, coord.y);
             ctx.arc(coord.x, coord.y, r, 0, 2.0 * Math.PI);
+            ctx.fill();
             ctx.stroke();
             ctx.restore();
             ctx.beginPath();
@@ -67,9 +67,6 @@ var molPaintJS = (function (molpaintjs) {
             var bonds = molecule.getBonds();
             for (var i in bonds) {
                 var b = bonds[i];
-                if (b.getSelected()) {
-                    drawBondSelection(ctx, b);
-                }
                 switch (b.getType()) {
                     case 1 :
                         drawSingleBond(ctx, b);
@@ -149,32 +146,6 @@ var molPaintJS = (function (molpaintjs) {
             view.setFont();
             ctx.fillStyle = "#000020";
             ctx.fillText(text, view.getCoordX(x), view.getCoordY(y));
-        }
-
-        function drawBondSelection (ctx, bond) {
-
-            var atomA = bond.getAtomA();
-            var atomB = bond.getAtomB();
-            var coord1 = view.getCoord(atomA);
-            var coord2 = view.getCoord(atomB);
-            var dx = coord1.x - coord2.x;
-            var dy = coord1.y - coord2.y;
-
-            if (atomA.getBBox() != null) {
-                coord1 = atomA.getBBox().clip(coord1, dx, dy);
-            }
-            if (atomB.getBBox() != null) {
-                coord2 = atomB.getBBox().clip(coord2, -dx, -dy);
-            }
-
-            ctx.save();
-            ctx.lineWidth = 4;
-            setStrokeStyle(ctx, bond.getSelected());
-            ctx.moveTo(coord1.x, coord1.y);
-            ctx.lineTo(coord2.x, coord2.y);
-            ctx.stroke();
-            ctx.restore();
-            ctx.beginPath();
         }
 
         /**
@@ -304,12 +275,17 @@ var molPaintJS = (function (molpaintjs) {
                 coord4 = atomB.getBBox().clip(coord4, -dx, -dy);
             }
 
+            ctx.save();
+            if (bond.getSelected()) {
+                setBondStyle(ctx, bond.getSelected());
+            }
             ctx.moveTo(coord1.x, coord1.y);
             ctx.lineTo(coord2.x, coord2.y);
             ctx.moveTo(coord3.x, coord3.y);
             ctx.lineTo(coord4.x, coord4.y);
             ctx.stroke();
             ctx.beginPath();
+            ctx.restore();
         }
 
         function drawSingleBond (ctx, bond) {
@@ -336,7 +312,11 @@ var molPaintJS = (function (molpaintjs) {
             var scale = 0.5 / Math.sqrt(len);
             var x3, x4, y3, y4;
 
+            ctx.save()
             ctx.moveTo(coord1.x, coord1.y);
+            if (bond.getSelected()) {
+                setBondStyle(ctx, bond.getSelected());
+            }
             switch(bond.getStereo()) {
                 case 0: // not stereo
                     ctx.lineTo(coord2.x, coord2.y);
@@ -401,6 +381,7 @@ var molPaintJS = (function (molpaintjs) {
                     ctx.stroke();
                     break;
             }
+            ctx.restore();
             ctx.beginPath();
         }
 
@@ -430,6 +411,10 @@ var molPaintJS = (function (molpaintjs) {
                 coord6 = atomB.getBBox().clip(coord6, -dx, -dy);
             }
 
+            ctx.save();
+            if (bond.getSelected()) {
+                setBondStyle(ctx, bond.getSelected());
+            }
             ctx.moveTo(coord1.x, coord1.y);
             ctx.lineTo(coord2.x, coord2.y);
             ctx.moveTo(coord3.x, coord3.y);
@@ -437,6 +422,7 @@ var molPaintJS = (function (molpaintjs) {
             ctx.moveTo(coord5.x, coord5.y);
             ctx.lineTo(coord6.x, coord6.y);
             ctx.stroke();
+            ctx.restore();
             ctx.beginPath();
         }
 
@@ -502,20 +488,45 @@ var molPaintJS = (function (molpaintjs) {
             return rightFree || (! leftFree);
         }
 
-        function setStrokeStyle(ctx, sel) {
+        function setAtomStyle(ctx, sel) {
+            if ((sel & 2) != 0) {
+                // selected
+                ctx.strokeStyle = "#aaffaa";
+                ctx.fillStyle = "#aaffaa";
+                return;
+            }
+            if ((sel & 1) != 0) {
+                // temp selected
+                ctx.strokeStyle = "#ffaaaa";
+                ctx.fillStyle = "#ffaaaa";
+                return;
+            }
+            if ((sel & 4) != 0) {
+                // highligted
+                ctx.strokeStyle = "#aaaaff";
+                ctx.fillStyle = "#aaaaff";
+                return;
+            }
+        }
+
+
+        function setBondStyle(ctx, sel) {
             if ((sel & 2) != 0) {
                 // selected
                 ctx.strokeStyle = "#22ff22";
+                ctx.fillStyle = "#22ff22";
                 return;
             }
             if ((sel & 1) != 0) {
                 // temp selected
                 ctx.strokeStyle = "#ff2222";
+                ctx.fillStyle = "#ff2222";
                 return;
             }
             if ((sel & 4) != 0) {
                 // highligted
                 ctx.strokeStyle = "#2222ff";
+                ctx.fillStyle = "#2222ff";
                 return;
             }
         }

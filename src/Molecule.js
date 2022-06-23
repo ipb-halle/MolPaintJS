@@ -94,8 +94,8 @@ var molPaintJS = (function (molpaintjs) {
             /**
              * adjust selections
              * @param match match all atoms and bonds where any of the given bits are set
-             * @param clear clear given bits on all matching atoms and bonds
-             * @param set Set the given bits on all matching atoms and bonds
+             * @param clear clear given bits on all matching atoms, bonds and sgroups
+             * @param set Set the given bits on all matching atoms, bonds and sgroups
              */
             adjustSelection : function (match, clear, set) {
                 for (var id in atoms) {
@@ -112,6 +112,13 @@ var molPaintJS = (function (molpaintjs) {
                     if(sel & match) {
                         sel &= ~clear;
                         bonds[id].setSelected(sel | set);
+                    }
+                }
+                for (var id in sgroups) {
+                    var sel = sgroups[id].getSelected();
+                    if(sel & match) {
+                        sel &= ~clear;
+                        sgroups[id].setSelected(sel | set);
                     }
                 }
             },
@@ -155,6 +162,12 @@ var molPaintJS = (function (molpaintjs) {
                     var sel = bonds[id].getSelected();
                     if(sel & val) {
                         bonds[id].setSelected(sel & ~val);
+                    }
+                }
+                for (var id in sgroups) {
+                    var sel = sgroups[id].getSelected();
+                    if (sel & val) {
+                        sgroups[id].setSelected(sel & ~val);
                     }
                 }
             },

@@ -88,44 +88,45 @@ var molPaintJS = (function (molpaintjs) {
             var y1 = coords[1];
             var x2 = coords[3];
             var y2 = coords[4];
-            var x3 = 0.0;
-            var y3 = 0.0;
+            var otherCentroidX = 0.0;
+            var otherCentroidY = 0.0;
 
             if (other !== undefined) {
-                x3 = (coords[0] + coords[3]) / 2.0;
-                y3 = (coords[1] + coords[4]) / 2.0;
+                otherCentroidX = (other[0] + other[3]) / 2.0;
+                otherCentroidY = (other[1] + other[4]) / 2.0;
             }
 
             // we make no assumptions - compute the direction of the bracket fins
-            var dx = 0.1 * (y1 - y2);
-            var dy = 0.1 * (x1 - x2);
-            var ddx = (x3 - x1 - dx);
-            var ddy = (y3 - y1 - dy);
-            var d = (ddx * ddx) + (ddy * ddy);
-            ddx = (x3 - x1);
-            ddy = (y3 - y1);
-            if (d < ((ddx * ddx) + (ddy * ddy))) {
-                dx *= -1.0;
-                dy *= -1.0;
+            var centroidX = (x1 + x2) / 2.0;
+            var centroidY = (y1 + y2) / 2.0;
+            var tickX = 0.1 * (y1 - y2);
+            var tickY = 0.1 * (x1 - x2);
+            var dx = otherCentroidX - centroidX;
+            var dy = otherCentroidY - centroidY;
+            if (((tickX * dx) + (tickY * dy)) < 0.0) {
+                tickX *= -1.0;
+                tickY *= -1.0;
             }
 
-            ctx.save();
-            // ctx.lineWidth = 4;
-            // setStrokeStyle(ctx, bond.getSelected());
-            ctx.moveTo(view.getCoordX(x1 + dx), view.getCoordY(y1 + dy));
+            ctx.moveTo(view.getCoordX(x1 + tickX), view.getCoordY(y1 - tickY));
             ctx.lineTo(view.getCoordX(x1), view.getCoordY(y1));
             ctx.lineTo(view.getCoordX(x2), view.getCoordY(y2));
-            ctx.lineTo(view.getCoordX(x2 + dx), view.getCoordY(y2 + dy));
+            ctx.lineTo(view.getCoordX(x2 + tickX), view.getCoordY(y2 - tickY));
             ctx.stroke();
-            ctx.restore();
+            ctx.beginPath();
         }
 
         function drawBrackets (ctx, sgroup) {
             var coords = sgroup.getBRKXYZ();
+            ctx.save();
+            if (sgroup.getSelected()) {
+                setBondStyle(ctx, sgroup.getSelected());
+            }
             drawBracket(ctx, coords[0].data, coords[1].data);
             if (coords[1] !== undefined) {
                 drawBracket(ctx, coords[1].data, coords[0].data);
             }
+            ctx.restore();
         }
 
         function drawSGroups (ctx) {
@@ -284,8 +285,8 @@ var molPaintJS = (function (molpaintjs) {
             ctx.moveTo(coord3.x, coord3.y);
             ctx.lineTo(coord4.x, coord4.y);
             ctx.stroke();
-            ctx.beginPath();
             ctx.restore();
+            ctx.beginPath();
         }
 
         function drawSingleBond (ctx, bond) {
@@ -491,20 +492,20 @@ var molPaintJS = (function (molpaintjs) {
         function setAtomStyle(ctx, sel) {
             if ((sel & 2) != 0) {
                 // selected
-                ctx.strokeStyle = "#aaffaa";
-                ctx.fillStyle = "#aaffaa";
+                ctx.strokeStyle = "#bbffbb";
+                ctx.fillStyle = "#bbffbb";
                 return;
             }
             if ((sel & 1) != 0) {
                 // temp selected
-                ctx.strokeStyle = "#ffaaaa";
-                ctx.fillStyle = "#ffaaaa";
+                ctx.strokeStyle = "#ffbbbb";
+                ctx.fillStyle = "#ffbbbb";
                 return;
             }
             if ((sel & 4) != 0) {
                 // highligted
-                ctx.strokeStyle = "#aaaaff";
-                ctx.fillStyle = "#aaaaff";
+                ctx.strokeStyle = "#bbbbff";
+                ctx.fillStyle = "#bbbbff";
                 return;
             }
         }

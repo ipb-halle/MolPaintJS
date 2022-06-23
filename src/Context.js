@@ -195,6 +195,7 @@ var molPaintJS = (function (molpaintjs) {
                 var sgroups = mol.getSGroups();
                 for (var i in sgroups) {
                     var g = sgroups[i];
+                    g.setSelected(sel);
                     molecule.addSGroup(g, null);
                     // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
                 }

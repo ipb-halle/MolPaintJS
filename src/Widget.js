@@ -386,8 +386,20 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderAdvancedMenu () {
-            // ToDo: include sgroup / polymer / reaction / ... 
-            return itemV("collection", "Manage collections", "molPaintJS-inactiveTool");
+            return "<tr><td>"
+                + "<div class='molPaintJS-leftDropdown'>"
+                + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn'>"
+                + item("advanced", "advanced", "Advanced functions", "molPaintJS-inactiveTool")
+                + "</a><div id='" + widgetId + "_advancedMenu' class='molPaintJS-leftDropdown-content'>"
+                + "<table><tr>"
+
+                + itemH("label", "Label tool", "molPaintJS-inactiveTool")
+                + itemH("polymer", "Polymer tool", "molPaintJS-inactiveTool")
+                + itemH("collection", "Manage collections", "molPaintJS-inactiveTool")
+
+                + "</tr></table>"
+                + "</div></div>"
+                + "</td></tr>";
         }
 
         function renderBottomMenu () {

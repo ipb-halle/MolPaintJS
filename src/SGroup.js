@@ -120,6 +120,10 @@ var molPaintJS = (function (molpaintjs) {
                 return jsonData;
             },
 
+            getSelected : function() {
+                return selected;
+            },
+
             getType : function() {
                 return type;
             },
@@ -214,6 +218,10 @@ var molPaintJS = (function (molpaintjs) {
             setJsonData : function(data) {
                 console.log("SGroup implementation incomplete; must resolve atom and bond references");
                 jsonData = data;
+            },
+
+            setSelected : function(s) {
+                selected = s;
             }
 
         };

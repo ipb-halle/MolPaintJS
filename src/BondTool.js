@@ -20,13 +20,13 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.BondTool = function(ctx, prop, bt, st, i) {
 
-        var context = ctx;
-        var distMax = prop.distMax;
-        var bondType = bt;
-        var stereoType = st;
+        let context = ctx;
+        let distMax = prop.distMax;
+        let bondType = bt;
+        let stereoType = st;
 
-        var atomA = null;
-        var actionList;
+        let atomA = null;
+        let actionList;
 
 
         return {

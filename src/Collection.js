@@ -20,9 +20,9 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Collection = function (n) {
 
-        var name = n;
-        var atoms = {};
-        var bonds = {};
+        let name = n;
+        let atoms = {};
+        let bonds = {};
 
         return {
             getAtoms: function () {

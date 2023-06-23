@@ -20,8 +20,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Draw = function (v, mol) {
 
-        var view = v;
-        var molecule = mol;
+        let view = v;
+        let molecule = mol;
 
         /**
          * draw all atoms which

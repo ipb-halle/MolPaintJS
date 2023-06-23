@@ -38,10 +38,10 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             merge: function(col) {
-                for (var a in col.getAtoms()) {
+                for (let a in col.getAtoms()) {
                     atoms[a] = a;
                 }
-                for (var b in col.getBonds()) {
+                for (let b in col.getBonds()) {
                     bonds[b] = b;
                 }
             },

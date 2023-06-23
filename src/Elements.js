@@ -225,8 +225,8 @@ var molPaintJS = (function (molpaintjs) {
             elementsByName["D"] = elements[0][2];
             elementsByName["T"] = elements[0][3];
 
-            for (var i = 1; i < elements.length; i++) {
-                var iso = elements[i][0];
+            for (let i = 1; i < elements.length; i++) {
+                let iso = elements[i][0];
                 elementsByName[iso.getSymbol()] = iso;
             }
         }

@@ -27,10 +27,10 @@ var molPaintJS = (function (molpaintjs) {
          * erase a single atom and all of its bonds
          */
         function eraseAtom (context, id) {
-            var actionList = molPaintJS.ActionList();
-            var atom = context.getMolecule().getAtom(id);
-            for (var b in atom.getBonds()) {
-                var bond = context.getMolecule().getBond(b);
+            let actionList = molPaintJS.ActionList();
+            let atom = context.getMolecule().getAtom(id);
+            for (let b in atom.getBonds()) {
+                let bond = context.getMolecule().getBond(b);
                 actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
                 context.getMolecule().delBond(bond);
             }
@@ -45,10 +45,10 @@ var molPaintJS = (function (molpaintjs) {
          * have no more bonds left they're erased as well.
          */
         function eraseBond (context, id) {
-            var actionList = molPaintJS.ActionList();
-            var bond = context.getMolecule().getBond(id);
-            var atomA = bond.getAtomA();
-            var atomB = bond.getAtomB();
+            let actionList = molPaintJS.ActionList();
+            let bond = context.getMolecule().getBond(id);
+            let atomA = bond.getAtomA();
+            let atomB = bond.getAtomB();
             actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
             context.getMolecule().delBond(bond);
             if (Object.keys(atomA.getBonds()).length == 0) {
@@ -72,13 +72,13 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             onClick : function (x, y, evt) {
-                var coord = this.context.getView().getCoordReverse(x, y);
-                var bonds = this.context.getMolecule().selectBond(coord, distMax);
+                let coord = this.context.getView().getCoordReverse(x, y);
+                let bonds = this.context.getMolecule().selectBond(coord, distMax);
                 if (bonds.length == 1) {
                     eraseBond(this.context, bonds[0]);
                     // alert("Erase bond: id=" + bonds[0]);
                 } else {
-                    var atom = this.context.getMolecule().selectAtom(coord, distMax);
+                    let atom = this.context.getMolecule().selectAtom(coord, distMax);
                     if (atom != null) {
                         eraseAtom(this.context, atom);
                         // alert("Erase atom: id=" + atom);

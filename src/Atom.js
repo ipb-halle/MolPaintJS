@@ -57,13 +57,13 @@ var molPaintJS = (function (molpaintjs) {
              * @param dir direction 1=up, -1=down
              */
             changeIsotope : function (dir) {
-                var idx = type.getIsotope().getAtomicNumber();
-                var massExact = type.getIsotope().getMassExact();
-                var newIsotope = null;
-                var oldDelta = 100.0;
+                let idx = type.getIsotope().getAtomicNumber();
+                let massExact = type.getIsotope().getMassExact();
+                let newIsotope = null;
+                let oldDelta = 100.0;
 
-                for (var iso of molPaintJS.Elements.getIsotopes(idx)) {
-                    var delta = (iso.getMassExact() - massExact) * dir;
+                for (let iso of molPaintJS.Elements.getIsotopes(idx)) {
+                    let delta = (iso.getMassExact() - massExact) * dir;
                     if ((delta > 0.0) && (delta < oldDelta)) {
                         oldDelta = delta;
                         newIsotope = iso;
@@ -71,7 +71,7 @@ var molPaintJS = (function (molpaintjs) {
                 }
                     
                 if (newIsotope != null) {
-                    var at = molPaintJS.AtomType();
+                    let at = molPaintJS.AtomType();
                     at.setIsotope(newIsotope); 
                     at.setColor(newIsotope.getColor()); 
                     type = at;
@@ -102,7 +102,7 @@ var molPaintJS = (function (molpaintjs) {
              * including the bond list
              */
             copy : function () {
-                var a = molPaintJS.Atom();
+                let a = molPaintJS.Atom();
                 a.setX(coordX);
                 a.setY(coordY);
                 a.setZ(coordZ);
@@ -120,16 +120,16 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             copyBonds : function () {
-                var b = {};
-                for (var i in bonds) {
+                let b = {};
+                for (let i in bonds) {
                     b[i] = i;
                 }
                 return b;
             },
 
             copySGroups : function () {
-                var s = {};
-                for (var i in sgroups) {
+                let s = {};
+                for (let i in sgroups) {
                     s[i] = i;
                 }
                 return s;
@@ -164,10 +164,10 @@ var molPaintJS = (function (molpaintjs) {
              * explicit hydrogens!
              */
             getHydrogenCount : function(molecule) {
-                var cnt = 0;
+                let cnt = 0;
 
                 // evaluate bond order
-                for(var b in bonds) {
+                for(let b in bonds) {
                     switch(molecule.getBond(b).getType()) {
                         case 1 : cnt -= 1;
                                 break;

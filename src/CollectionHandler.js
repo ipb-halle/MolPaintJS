@@ -23,12 +23,12 @@ var molPaintJS = (function (molpaintjs) {
         var contextId = cid;
 
         function applySelection(collection, selection) {
-            var atoms = {};
-            var bonds = {};
-            for (var atom of selection.atoms) {
+            let atoms = {};
+            let bonds = {};
+            for (let atom of selection.atoms) {
                 atoms[atom] = atom;
             }
-            for (var bond of selection.bonds) {
+            for (let bond of selection.bonds) {
                 bonds[bond] = bond;
             }
             collection.setAtoms(atoms);
@@ -36,7 +36,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function getCollection(mol, name) {
-            for (var collection of mol.getCollections()) {
+            for (let collection of mol.getCollections()) {
                 if (collection.getName() == name) {
                     return collection;
                 }
@@ -45,9 +45,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function highlightAtoms(mol, atoms) {
-            for (var a in mol.getAtoms()) {
-                var atom = mol.getAtom(a);
-                var sel = atom.getSelected();
+            for (let a in mol.getAtoms()) {
+                let atom = mol.getAtom(a);
+                let sel = atom.getSelected();
                 if (atoms[atom.getId()] != null) {
                     atom.setSelected(sel | 4);
                 } else {
@@ -57,9 +57,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function highlightBonds(mol, bonds) {
-            for (var b in mol.getBonds()) {
-                var bond = mol.getBond(b);
-                var sel = bond.getSelected();
+            for (let b in mol.getBonds()) {
+                let bond = mol.getBond(b);
+                let sel = bond.getSelected();
                 if (bonds[bond.getId()] != null) {
                     bond.setSelected(sel | 4);
                 } else {
@@ -69,8 +69,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderInput (dlgId) {
-            var html = "";
-            var selection = molPaintJS.getContext(contextId).getMolecule().getSelected(2);
+            let html = "";
+            let selection = molPaintJS.getContext(contextId).getMolecule().getSelected(2);
             if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                 html = "Collection name:<br/><center style='margin:10px;'>"
                     + "<input id='" + dlgId + "_input' type='text'/>"
@@ -82,14 +82,14 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderList () {
-            var html = "Currently known collections:<br/>";
-            var collections = molPaintJS.getContext(contextId).getMolecule().getCollections();
+            let html = "Currently known collections:<br/>";
+            let collections = molPaintJS.getContext(contextId).getMolecule().getCollections();
             if (collections.length === 0) {
                 return html;
             }
 
             html += "<ul>";
-            for (var c of collections) {
+            for (let c of collections) {
                 const name = c.getName();
                 html += "<li>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\">"
@@ -105,10 +105,10 @@ var molPaintJS = (function (molpaintjs) {
         return {
 
             highlight: function (name) {
-                var dlgId = contextId + "_modalDlg";
-                var context = molPaintJS.getContext(contextId);
-                var mol = context.getMolecule();
-                var collection = getCollection(mol, name);
+                let dlgId = contextId + "_modalDlg";
+                let context = molPaintJS.getContext(contextId);
+                let mol = context.getMolecule();
+                let collection = getCollection(mol, name);
                 highlightAtoms(mol, collection.getAtoms());
                 highlightBonds(mol, collection.getBonds());
                 document.getElementById(dlgId).style.display = 'none';
@@ -116,7 +116,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             deleteCollection : function (name) {
-                var dlgId = contextId + "_modalDlg";
+                let dlgId = contextId + "_modalDlg";
                 molPaintJS.getContext(contextId).getMolecule().delCollection(name);
                 this.highlight('');
                 if (molPaintJS.getContext(contextId).getMolecule().getCollections().length > 0) {
@@ -127,8 +127,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             render: function() {
-                var dlgId = contextId + "_modalDlg";
-                var e = document.getElementById(dlgId);
+                let dlgId = contextId + "_modalDlg";
+                let e = document.getElementById(dlgId);
                 e.innerHTML = "<div class='molPaintJS-modalDlgContent'>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight(''); "
                     + "document.getElementById('" + dlgId
@@ -140,15 +140,15 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setCollection: function() {
-                var dlgId = contextId + "_modalDlg";
-                var context = molPaintJS.getContext(contextId);
-                var name = document.getElementById(dlgId + "_input").value;
+                let dlgId = contextId + "_modalDlg";
+                let context = molPaintJS.getContext(contextId);
+                let name = document.getElementById(dlgId + "_input").value;
 
                 // check for invalid name
                 if (name.match("[A-Za-z][A-Za-z #$+-;@]*")) {
-                    var collection = molPaintJS.Collection(name);
-                    var molecule = context.getMolecule();
-                    var selection = molecule.getSelected(2);
+                    let collection = molPaintJS.Collection(name);
+                    let molecule = context.getMolecule();
+                    let selection = molecule.getSelected(2);
 
                     // only create non-empty collections
                     if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {

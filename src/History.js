@@ -113,7 +113,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             updateIcons : function () {
-                var e = document.getElementById(contextId + "_redo");
+                let e = document.getElementById(contextId + "_redo");
                 if (actionPtr < (actions.length - 1)) {
                     e.src = molPaintJS.Resources['redo.png'];
                 } else {
@@ -133,10 +133,10 @@ var molPaintJS = (function (molpaintjs) {
                     return;
                 }
                 actionPtr++;
-                var al = actions[actionPtr];	// ActionList
+                let al = actions[actionPtr];	// ActionList
 
-                for (var i = al.getActions().length; i-- > 0;) {	// loop actionList backwards in redo 
-                    var action = al.getActions()[i];
+                for (let i = al.getActions().length; i-- > 0;) {	// loop actionList backwards in redo
+                    let action = al.getActions()[i];
                     switch (action.actionType) {
                         case "ADD" :
                             redoAdd(ctx, action);
@@ -158,9 +158,9 @@ var molPaintJS = (function (molpaintjs) {
                 if (actionPtr < 0) {
                     return;
                 }
-                var al = actions[actionPtr];    // ActionList
+                let al = actions[actionPtr];    // ActionList
 
-                for (var action of al.getActions()) {
+                for (let action of al.getActions()) {
                     switch (action.actionType) {
                         case "ADD" :
                             undoAdd(ctx, action);

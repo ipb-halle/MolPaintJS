@@ -29,9 +29,9 @@ var molPaintJS = (function (molpaintjs) {
          * - have no bonds to other atoms
          */
         function drawAtoms (ctx) {
-            var atoms = molecule.getAtoms();
-            for (var i in atoms) {
-                var a = atoms[i];
+            let atoms = molecule.getAtoms();
+            for (let i in atoms) {
+                let a = atoms[i];
                 if (a.getSelected()) {
                     drawAtomSelection(ctx, a);
                 }
@@ -51,8 +51,8 @@ var molPaintJS = (function (molpaintjs) {
          * draw a circle around selected atoms
          */
         function drawAtomSelection (ctx, atom) {
-            var coord = view.getCoord(atom);
-            var r = view.getFontSize() * 0.6;
+            let coord = view.getCoord(atom);
+            let r = view.getFontSize() * 0.6;
             ctx.save();
             setAtomStyle(ctx, atom.getSelected());
             ctx.moveTo(coord.x + r, coord.y);
@@ -64,9 +64,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawBonds (ctx) {
-            var bonds = molecule.getBonds();
-            for (var i in bonds) {
-                var b = bonds[i];
+            let bonds = molecule.getBonds();
+            for (let i in bonds) {
+                let b = bonds[i];
                 switch (b.getType()) {
                     case 1 :
                         drawSingleBond(ctx, b);
@@ -84,12 +84,12 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawBracket (ctx, coords, other) {
-            var x1 = coords[0];
-            var y1 = coords[1];
-            var x2 = coords[3];
-            var y2 = coords[4];
-            var otherCentroidX = 0.0;
-            var otherCentroidY = 0.0;
+            let x1 = coords[0];
+            let y1 = coords[1];
+            let x2 = coords[3];
+            let y2 = coords[4];
+            let otherCentroidX = 0.0;
+            let otherCentroidY = 0.0;
 
             if (other !== undefined) {
                 otherCentroidX = (other[0] + other[3]) / 2.0;
@@ -97,12 +97,12 @@ var molPaintJS = (function (molpaintjs) {
             }
 
             // we make no assumptions - compute the direction of the bracket fins
-            var centroidX = (x1 + x2) / 2.0;
-            var centroidY = (y1 + y2) / 2.0;
-            var tickX = 0.1 * (y1 - y2);
-            var tickY = 0.1 * (x1 - x2);
-            var dx = otherCentroidX - centroidX;
-            var dy = otherCentroidY - centroidY;
+            let centroidX = (x1 + x2) / 2.0;
+            let centroidY = (y1 + y2) / 2.0;
+            let tickX = 0.1 * (y1 - y2);
+            let tickY = 0.1 * (x1 - x2);
+            let dx = otherCentroidX - centroidX;
+            let dy = otherCentroidY - centroidY;
             if (((tickX * dx) + (tickY * dy)) < 0.0) {
                 tickX *= -1.0;
                 tickY *= -1.0;
@@ -117,7 +117,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawBrackets (ctx, sgroup) {
-            var coords = sgroup.getBRKXYZ();
+            let coords = sgroup.getBRKXYZ();
             ctx.save();
             if (sgroup.getSelected()) {
                 setBondStyle(ctx, sgroup.getSelected());
@@ -130,11 +130,11 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawSGroups (ctx) {
-            var sgroups = molecule.getSGroups();
-            for (var idx in sgroups) {
-                var sgroup = sgroups[idx];
+            let sgroups = molecule.getSGroups();
+            for (let idx in sgroups) {
+                let sgroup = sgroups[idx];
                 if (sgroup.getType() === 'DAT') {
-                    var coord = sgroup.getFieldDispositionCoordinates();
+                    let coord = sgroup.getFieldDispositionCoordinates();
                     drawText(ctx, coord.x, coord.y, sgroup.getFieldData());
                 }
                 if (sgroup.getBRKXYZ() != null) {
@@ -153,14 +153,14 @@ var molPaintJS = (function (molpaintjs) {
          * draw a single atom
          */
         function drawSingleAtom (ctx, atom) {
-            var sym = atom.getType().getIsotope().getSymbol();
+            let sym = atom.getType().getIsotope().getSymbol();
 
             view.setFont();
-            var symbolWidth = ctx.measureText(sym).width;
-            var symbolHeight = view.getFontSize();
-            var coord = view.getCoord(atom);
-            var x = coord.x - (symbolWidth / 2);
-            var y = coord.y;
+            let symbolWidth = ctx.measureText(sym).width;
+            let symbolHeight = view.getFontSize();
+            let coord = view.getCoord(atom);
+            let x = coord.x - (symbolWidth / 2);
+            let y = coord.y;
 
             atom.setBBox(molPaintJS.Box(x - 1, y - (symbolHeight / 2), x + symbolWidth + 1, y + (symbolHeight / 2) + 1));
             ctx.fillStyle = atom.getType().getColor();
@@ -174,17 +174,17 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawChargeRadical (ctx, atom, symbolHeight) {
-            var charge = atom.getCharge();
-            var radical = atom.getRadical();
+            let charge = atom.getCharge();
+            let radical = atom.getRadical();
             if ((charge != 0) || (radical != 0)) {
-                var chargeX = atom.getBBox().getMaxX();
-                var chargeY =  view.getCoord(atom).y - (0.2 * symbolHeight);
+                let chargeX = atom.getBBox().getMaxX();
+                let chargeY =  view.getCoord(atom).y - (0.2 * symbolHeight);
                 view.setSubscript();
-                var label = getChargeLabel(charge, radical);
-                var chargeWidth = ctx.measureText(label).width;
-                var chargeHeight = view.getSubscriptSize();
+                let label = getChargeLabel(charge, radical);
+                let chargeWidth = ctx.measureText(label).width;
+                let chargeHeight = view.getSubscriptSize();
 
-                var bx = molPaintJS.Box(chargeX, chargeY, chargeX + chargeWidth + 1, chargeY - chargeHeight - 1);
+                let bx = molPaintJS.Box(chargeX, chargeY, chargeX + chargeWidth + 1, chargeY - chargeHeight - 1);
                 atom.getBBox().join(bx);
 
                 ctx.fillText(label, chargeX, chargeY);
@@ -194,14 +194,14 @@ var molPaintJS = (function (molpaintjs) {
         function drawIsotopeMass (ctx, atom, symbolHeight) {
             if (atom.getType().getIsotope().getIsotope() > 0) {
                 view.setSubscript();
-                var label = atom.getType().getIsotope().getMass();
+                let label = atom.getType().getIsotope().getMass();
 
-                var isoWidth = ctx.measureText(label).width;
-                var isoHeight = view.getSubscriptSize();
-                var isoX = atom.getBBox().getMinX() - isoWidth;
-                var isoY = view.getCoord(atom).y - (0.2 * symbolHeight);
+                let isoWidth = ctx.measureText(label).width;
+                let isoHeight = view.getSubscriptSize();
+                let isoX = atom.getBBox().getMinX() - isoWidth;
+                let isoY = view.getCoord(atom).y - (0.2 * symbolHeight);
 
-                var bx = molPaintJS.Box(isoX, isoY, isoX + isoWidth + 1, isoY - isoHeight - 1);
+                let bx = molPaintJS.Box(isoX, isoY, isoX + isoWidth + 1, isoY - isoHeight - 1);
                 atom.getBBox().join(bx);
 
                 ctx.fillText(label, isoX, isoY);
@@ -209,16 +209,16 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawHydrogen (ctx, atom, symbolHeight) {
-            var hCount = atom.getHydrogenCount(molecule);
+            let hCount = atom.getHydrogenCount(molecule);
             if (hCount > 0) {
-                var hWidth = ctx.measureText("H").width;
-                var hx = atom.getBBox().getMaxX();
-                var hy = view.getCoord(atom).y;
+                let hWidth = ctx.measureText("H").width;
+                let hx = atom.getBBox().getMaxX();
+                let hy = view.getCoord(atom).y;
                 if (getHydrogenLabelPositionRight(atom)) {
                     view.setFont();
 
                     ctx.fillText("H", hx, (hy + (symbolHeight / 2) - 2));
-                    var bx = molPaintJS.Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
+                    let bx = molPaintJS.Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
                     atom.getBBox().join(bx);
 
                     if (hCount > 1) {
@@ -236,7 +236,7 @@ var molPaintJS = (function (molpaintjs) {
                     hy = view.getCoord(atom).y;
                     view.setFont();
                     ctx.fillText("H", hx, (hy + (symbolHeight / 2) - 2));
-                    var bx = molPaintJS.Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
+                    let bx = molPaintJS.Box(hx, hy, hx + hWidth + 1, hy - symbolHeight - 1);
                     atom.getBBox().join(bx);
                 }
             }
@@ -244,28 +244,28 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawHydrogenCount (ctx, atom, x, y, hCount, isRight) {
             view.setSubscript();
-            var label = hCount + " ";
-            var lWidth = ctx.measureText(label).width;
-            var lHeight = view.getSubscriptSize();
-            var lx = isRight ? x : x - lWidth;
-            var bx = molPaintJS.Box(lx, y, lx + lWidth, y - lHeight - 1);
+            let label = hCount + " ";
+            let lWidth = ctx.measureText(label).width;
+            let lHeight = view.getSubscriptSize();
+            let lx = isRight ? x : x - lWidth;
+            let bx = molPaintJS.Box(lx, y, lx + lWidth, y - lHeight - 1);
             atom.getBBox().join(bx)
             ctx.fillText(label, lx, y);
         }
 
         function drawDoubleBond (ctx, bond) {
 
-            var atomA = bond.getAtomA();
-            var atomB = bond.getAtomB();
-            var coord1 = view.getCoord(atomA);
-            var coord2 = view.getCoord(atomB);
-            var dx = coord1.x - coord2.x;
-            var dy = coord1.y - coord2.y;
+            let atomA = bond.getAtomA();
+            let atomB = bond.getAtomB();
+            let coord1 = view.getCoord(atomA);
+            let coord2 = view.getCoord(atomB);
+            let dx = coord1.x - coord2.x;
+            let dy = coord1.y - coord2.y;
 
-            var scale = view.getMolScale() / (8 * Math.sqrt(dx*dx + dy*dy));
+            let scale = view.getMolScale() / (8 * Math.sqrt(dx*dx + dy*dy));
 
-            var coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
-            var coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
+            let coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
+            let coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
 
             if (atomA.getBBox() != null) {
                 coord1 = atomA.getBBox().clip(coord1, dx, dy);
@@ -291,12 +291,12 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawSingleBond (ctx, bond) {
 
-            var atomA = bond.getAtomA();
-            var atomB = bond.getAtomB();
-            var coord1 = view.getCoord(atomA);
-            var coord2 = view.getCoord(atomB);
-            var dx = coord1.x - coord2.x;
-            var dy = coord1.y - coord2.y;
+            let atomA = bond.getAtomA();
+            let atomB = bond.getAtomB();
+            let coord1 = view.getCoord(atomA);
+            let coord2 = view.getCoord(atomB);
+            let dx = coord1.x - coord2.x;
+            let dy = coord1.y - coord2.y;
 
             if (atomA.getBBox() != null) {
                 //atomA.getBBox().draw(ctx);
@@ -309,9 +309,9 @@ var molPaintJS = (function (molpaintjs) {
 
             dx = coord1.x - coord2.x;
             dy = coord1.y - coord2.y;
-            var len = Math.sqrt(dx*dx + dy*dy);
-            var scale = 0.5 / Math.sqrt(len);
-            var x3, x4, y3, y4;
+            let len = Math.sqrt(dx*dx + dy*dy);
+            let scale = 0.5 / Math.sqrt(len);
+            let x3, x4, y3, y4;
 
             ctx.save()
             ctx.moveTo(coord1.x, coord1.y);
@@ -357,13 +357,13 @@ var molPaintJS = (function (molpaintjs) {
                     break;
 
                 case 2: // either (wavy)
-                    var l = 0;
+                    let l = 0;
                     x3 = coord1.x;
                     y3 = coord1.y;
                     dx = 4 * dx / len;
                     dy = 4 * dy / len;
-                    var ddx = 0.5 * dx;
-                    var ddy = 0.5 * dy;
+                    let ddx = 0.5 * dx;
+                    let ddy = 0.5 * dy;
                     do {
                         x4 = x3 - dx;
                         y4 = y3 - dy;
@@ -387,19 +387,19 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawTripleBond (ctx, bond) {
-            var atomA = bond.getAtomA();
-            var atomB = bond.getAtomB();
-            var coord1 = view.getCoord(atomA);
-            var coord2 = view.getCoord(atomB);
-            var dx = coord1.x - coord2.x;
-            var dy = coord1.y - coord2.y;
+            let atomA = bond.getAtomA();
+            let atomB = bond.getAtomB();
+            let coord1 = view.getCoord(atomA);
+            let coord2 = view.getCoord(atomB);
+            let dx = coord1.x - coord2.x;
+            let dy = coord1.y - coord2.y;
 
-            var scale = view.getMolScale() / (8 * Math.sqrt(dx*dx + dy*dy));
+            let scale = view.getMolScale() / (8 * Math.sqrt(dx*dx + dy*dy));
 
-            var coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
-            var coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
-            var coord5 = {x: (coord1.x + (scale * (dy - dx))), y: (coord1.y - (scale * (dx + dy)))};
-            var coord6 = {x: (coord2.x + (scale * (dy + dx))), y: (coord2.y - (scale * (dx - dy)))};
+            let coord3 = {x: (coord1.x - (scale * (dy + dx))), y: (coord1.y + (scale * (dx - dy)))};
+            let coord4 = {x: (coord2.x - (scale * (dy - dx))), y: (coord2.y + (scale * (dx + dy)))};
+            let coord5 = {x: (coord1.x + (scale * (dy - dx))), y: (coord1.y - (scale * (dx + dy)))};
+            let coord6 = {x: (coord2.x + (scale * (dy + dx))), y: (coord2.y - (scale * (dx - dy)))};
 
             if (atomA.getBBox() != null) {
                 coord1 = atomA.getBBox().clip(coord1, dx, dy);
@@ -434,7 +434,7 @@ var molPaintJS = (function (molpaintjs) {
          * @return string with charge and radical symbol
          */
         function getChargeLabel (chg, rad) {
-            var st = "";
+            let st = "";
             switch (chg) {
                 case 1 :
                     st = "+";
@@ -467,17 +467,17 @@ var molPaintJS = (function (molpaintjs) {
          * label must be displayed on the left, if not bond from left is present
          */
         function getHydrogenLabelPositionRight (atom) {
-            var rightFree = true;
-            var leftFree = true;
-            for(var id in atom.getBonds()) {
-                var bond = molecule.getBond(id);
-                var neighbourAtom = bond.getAtomA();
+            let rightFree = true;
+            let leftFree = true;
+            for(let id in atom.getBonds()) {
+                let bond = molecule.getBond(id);
+                let neighbourAtom = bond.getAtomA();
                 if (neighbourAtom.getId() == atom.getId()) {
                     neighbourAtom = bond.getAtomB();
                 }
-                var dx = atom.getX() - neighbourAtom.getX();
-                var dy = atom.getY() - neighbourAtom.getY();
-                var lenSq = dx*dx + dy*dy;
+                let dx = atom.getX() - neighbourAtom.getX();
+                let dy = atom.getY() - neighbourAtom.getY();
+                let lenSq = dx*dx + dy*dy;
                 if ((dy * dy / lenSq) < 0.8) {
                     if (dx < 0) {
                         rightFree = false;
@@ -536,7 +536,7 @@ var molPaintJS = (function (molpaintjs) {
          * @return a triangular clipping path according to the given coordinates
          */
         function wedgeClipping (x1, y1, x2, y2, x3, y3) {
-            var path = new Path2D();
+            let path = new Path2D();
             path.moveTo(x1,y1);
             path.lineTo(x2,y2);
             path.lineTo(x3,y3);
@@ -551,7 +551,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             draw : function () {
                 view.init();
-                var ctx = view.getViewContext();
+                let ctx = view.getViewContext();
                 ctx.clearRect(0, 0, view.getSizeX(), view.getSizeY());
                 ctx.beginPath();
                 ctx.fillStyle = "#000000";

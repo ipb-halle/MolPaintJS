@@ -83,13 +83,13 @@ var molPaintJS = (function (molpaintjs) {
 
             debug : function (msg) {
                 if(properties.debugId != null) {
-                    var e = document.getElementById(properties.debugId);
+                    let e = document.getElementById(properties.debugId);
                     e.innerHTML = msg;
                 }
             },
 
             draw : function () {
-                var d = molPaintJS.Draw(view, molecule);
+                let d = molPaintJS.Draw(view, molecule);
                 d.draw();
                 if (changeListener != null) {
                     changeListener.call(this);
@@ -131,9 +131,9 @@ var molPaintJS = (function (molpaintjs) {
              * asynchronous initialization of the mol editor
              */
             init : function () {
-                var ctx = this;
+                let ctx = this;
                 setupTools(ctx, properties);
-                var p = new Promise(function (resolve, reject) {
+                let p = new Promise(function (resolve, reject) {
                     window.setTimeout(function () {
                         resolve(ctx);
                     }, 120);
@@ -158,7 +158,7 @@ var molPaintJS = (function (molpaintjs) {
              * @return the already appended (!) actionList
              */
             pasteMolecule : function (st, sel) {
-                var mol;
+                let mol;
                 try {
                     mol = molPaintJS.MDLParser.parse(st, {'logLevel': 5});
                     if (mol.getCollections().length > 0) {
@@ -170,12 +170,12 @@ var molPaintJS = (function (molpaintjs) {
                     console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
-                var actionList = molPaintJS.ActionList();
+                let actionList = molPaintJS.ActionList();
 
                 // add atoms
-                var atoms = mol.getAtoms();
-                for (var i in atoms) {
-                    var a = atoms[i];
+                let atoms = mol.getAtoms();
+                for (let i in atoms) {
+                    let a = atoms[i];
                     a.setBonds({});
                     a.setSelected(sel);
                     a.setId(molecule.addAtom(a, null));
@@ -183,18 +183,18 @@ var molPaintJS = (function (molpaintjs) {
                 }
 
                 // add bonds
-                var bonds = mol.getBonds();
-                for (var i in bonds) {
-                    var b = bonds[i];
+                let bonds = mol.getBonds();
+                for (let i in bonds) {
+                    let b = bonds[i];
                     b.setSelected(sel);
                     molecule.addBond(b, null);
                     actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
                 }
 
                 // add sgroups
-                var sgroups = mol.getSGroups();
-                for (var i in sgroups) {
-                    var g = sgroups[i];
+                let sgroups = mol.getSGroups();
+                for (let i in sgroups) {
+                    let g = sgroups[i];
                     g.setSelected(sel);
                     molecule.addSGroup(g, null);
                     // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));

@@ -37,13 +37,13 @@ var molPaintJS = (function (molpaintjs) {
              * an existing atom
              */
             onClick : function (x, y, evt) {
-                var coord = this.context.getView().getCoordReverse(x, y);
-                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
-                var at = molPaintJS.AtomType();
+                let coord = this.context.getView().getCoordReverse(x, y);
+                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let at = molPaintJS.AtomType();
                 at.setIsotope(this.context.getCurrentElement());
                 at.setColor(this.context.getCurrentElement().getColor());
-                var actionList = molPaintJS.ActionList();
-                var oldAtom = null;
+                let actionList = molPaintJS.ActionList();
+                let oldAtom = null;
 
                 if (atomId == null) {
                     atom = molPaintJS.Atom();
@@ -74,9 +74,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var iconId = this.context.contextId + "_customElement";
-                var e = document.getElementById(iconId);
-                var sym = this.context.getCurrentElement().getSymbol();
+                let iconId = this.context.contextId + "_customElement";
+                let e = document.getElementById(iconId);
+                let sym = this.context.getCurrentElement().getSymbol();
                 switch (sym) {
                     case "H":
                     case "C":

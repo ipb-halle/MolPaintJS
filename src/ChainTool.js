@@ -51,8 +51,8 @@ var molPaintJS = (function (molpaintjs) {
              * handle mouse click, i.e. define starting position of chain
              */
             onMouseDown : function (x, y, evt) {
-                var coord = this.context.getView().getCoordReverse(x, y);
-                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let coord = this.context.getView().getCoordReverse(x, y);
+                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
                 actionList = molPaintJS.ActionList();
 
                 if (atomId == null) {
@@ -65,7 +65,7 @@ var molPaintJS = (function (molpaintjs) {
                      * and not be temporary (it will be placed in the same 
                      * history action though)
                      */
-                    var at = molPaintJS.AtomType();
+                    let at = molPaintJS.AtomType();
                     at.setIsotope(molPaintJS.Elements.getElement("C"));
                     at.setColor(molPaintJS.Elements.getElement("C").getColor());
                     atomA.setType(at);
@@ -89,34 +89,34 @@ var molPaintJS = (function (molpaintjs) {
 
                 this.context.getMolecule().delTemp();
 
-                var view = this.context.getView();
-                var coord = view.getCoordReverse(x, y);
-                var dx = coord.x - atomA.getX();
-                var dy = coord.y - atomA.getY();
-                var len = Math.sqrt((dx * dx) + (dy * dy));
+                let view = this.context.getView();
+                let coord = view.getCoordReverse(x, y);
+                let dx = coord.x - atomA.getX();
+                let dy = coord.y - atomA.getY();
+                let len = Math.sqrt((dx * dx) + (dy * dy));
                 len = (len < 0.01) ? 1.0 : len;         // avoid division by zero
-                var v = 180.0 * Math.asin(-dy / len) / Math.PI;
-                var w = 180.0 * Math.acos(dx / len) / Math.PI;
+                let v = 180.0 * Math.asin(-dy / len) / Math.PI;
+                let w = 180.0 * Math.acos(dx / len) / Math.PI;
 
                 w = (v < 0) ? w : 360.0 - w;    // angle
 
-                var i = Math.floor(w / 30.0);   // index in raster
-                var j = Math.ceil(w / 30.0);    // index in raster
-                var dw = (w / 30.0) - i;         
+                let i = Math.floor(w / 30.0);   // index in raster
+                let j = Math.ceil(w / 30.0);    // index in raster
+                let dw = (w / 30.0) - i;
                 if(i == j) {
                     j += 2;
                 } else {
                     j++;
                 }
 
-                var n = 0;
-                var m = (dw > 0.5) ? 1 : 0;     // which raster to start with
+                let n = 0;
+                let m = (dw > 0.5) ? 1 : 0;     // which raster to start with
                 dx = 0.0;
                 dy = 0.0;
-                var atomB = atomA;
+                let atomB = atomA;
                 do { 
-                    var atom = molPaintJS.Atom();
-                    var k = ((n % 2) == m) ? i : j;
+                    let atom = molPaintJS.Atom();
+                    let k = ((n % 2) == m) ? i : j;
                     n++;
                     dx += view.getRasterX(k);
                     dy += view.getRasterY(k);
@@ -124,13 +124,13 @@ var molPaintJS = (function (molpaintjs) {
                     atom.setY(atomA.getY() + dy);
                     atom.setZ(0.0);
                     atom.setTemp(1);
-                    var at = molPaintJS.AtomType();
+                    let at = molPaintJS.AtomType();
                     at.setIsotope(molPaintJS.Elements.getElement("C"));
                     at.setColor(molPaintJS.Elements.getElement("C").getColor());
                     atom.setType(at);
                     this.context.getMolecule().addAtom(atom, null);
 
-                    var bond = molPaintJS.Bond();
+                    let bond = molPaintJS.Bond();
                     bond.setAtomA(atomB);
                     bond.setAtomB(atom);
                     bond.setType(1);

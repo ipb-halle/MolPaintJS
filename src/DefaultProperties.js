@@ -39,7 +39,7 @@ var molPaintJS = (function (molpaintjs) {
          */
         function setProp(p) {
             if (p != null) {
-                for (var i in p) {
+                for (let i in p) {
                     properties[i] = p[i];
                 }
             }

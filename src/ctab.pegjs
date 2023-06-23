@@ -49,10 +49,10 @@
      * a mass difference (V2000) or an absolute mass (V2000 'M  ISO' or V3000)
      */
     function getAtomType(sym, massDiff, absMass) {
-        var atomType = molPaintJS.AtomType();
-        var stdIsotope = molPaintJS.Elements.getElement(sym);
-        var atomicNumber = stdIsotope.getAtomicNumber();
-        var targetMass = stdIsotope.getMass();
+        let atomType = molPaintJS.AtomType();
+        let stdIsotope = molPaintJS.Elements.getElement(sym);
+        let atomicNumber = stdIsotope.getAtomicNumber();
+        let targetMass = stdIsotope.getMass();
 
         if (absMass != null) {
             targetMass = absMass;
@@ -64,7 +64,7 @@
             }
         }
 
-        for(var iso of molPaintJS.Elements.getIsotopes(atomicNumber)) {
+        for(let iso of molPaintJS.Elements.getIsotopes(atomicNumber)) {
             if ((iso.getIsotope() > 0) && (iso.getMass() == targetMass)) {
                 return(getAtomTypeFromIsotope(iso));
             }
@@ -75,7 +75,7 @@
     }
 
     function getAtomTypeFromIsotope(iso) {
-        var atomType = molPaintJS.AtomType();
+        let atomType = molPaintJS.AtomType();
         atomType.setIsotope(iso);
         atomType.setColor(iso.getColor());
         return atomType;
@@ -85,7 +85,7 @@
      * filter undefined values from array
      */
     function filterUndefined(arr) {
-        var temp = [];
+        let temp = [];
         for(let i of arr) {
             if (i !== undefined) {
                 temp.push(i);
@@ -109,7 +109,7 @@
      * make a number string from sign, integral and fractional values
      */
     function makeNumberString (sign, integral, fraction) {
-        var numberString = ((sign != null) ? sign : '');
+        let numberString = ((sign != null) ? sign : '');
         numberString += integral[0];
         if (integral[1] != null) {
             numberString += integral[1].join('');
@@ -129,8 +129,8 @@
      */
     function resetCharges () {
         if (mdlParserData.resetCharges) {
-            for (var a in mdlParserData.molecule.getAtoms()) {
-                var atom = mdlParserData.molecule.getAtom(a);
+            for (let a in mdlParserData.molecule.getAtoms()) {
+                let atom = mdlParserData.molecule.getAtom(a);
                 atom.setCharge(0);
                 atom.setRadical(0);
             }
@@ -144,8 +144,8 @@
      */
     function resetIsotopes () {
         if (mdlParserData.resetIsotopes) {
-            for (var a in mdlParserData.molecule.getAtoms()) {
-                var atom = mdlParserData.molecule.getAtom(a);
+            for (let a in mdlParserData.molecule.getAtoms()) {
+                let atom = mdlParserData.molecule.getAtom(a);
                 if (atom.getType().getIsotope().getIsotope() > 0) {
 
                     // does not reset Deuterium and Tritium!
@@ -281,7 +281,7 @@ v2atomLine
             }
             return false;
         } {
-            var a = molPaintJS.Atom();
+            let a = molPaintJS.Atom();
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -322,7 +322,7 @@ v2bondLine
             }
             return false;
         } {
-            var b = molPaintJS.Bond();
+            let b = molPaintJS.Bond();
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);
@@ -385,8 +385,8 @@ v2propIsis
  */
 v2propAtomValuePairs
     = propType:v2propAtomValuePairsHeader props:v2propAtomValuePair+ {
-            for(var prop of props) {
-                var atom = mdlParserData.molecule.getAtom("Atom" + prop.atom);
+            for(let prop of props) {
+                let atom = mdlParserData.molecule.getAtom("Atom" + prop.atom);
                 switch(propType) {
                     case 'CHG' :
                         atom.setCharge(prop.value);
@@ -468,7 +468,7 @@ v2propLinkAtomEntry
             }
             return false;
         } {
-            return {'atom':atom, 'value':value, 'sub1':sub1, 'sub2':sub2, }; 
+            return {'atom':atom, 'value':value, 'sub1':sub1, 'sub2':sub2, };
         }
 
 v2propAtomList
@@ -477,7 +477,7 @@ v2propAtomList
 v2propAtomListHeader
     = newline 'M  ALS ' uint3 propcnt:uint3 ' ' [TF] ' ' {
             mdlParserData.propertyCount = propcnt;
-            mdlParserData.currentProperty = 0; 
+            mdlParserData.currentProperty = 0;
         }
 
 v2propAtomListEntry
@@ -587,7 +587,7 @@ atomEntry
       atomZ:float atomAtomMap:uint atomCont:atomContinuation {
 
 
-            var a = molPaintJS.Atom();
+            let a = molPaintJS.Atom();
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -668,9 +668,9 @@ atomAttachPoints
     = 'ATTCHPT=' attchpt:integer { return {'attchpt':attchpt, }; }
 
 atomAttachmentOrder
-    = 'ATTCHORD=(' [^)]* ')' { 
+    = 'ATTCHORD=(' [^)]* ')' {
             logMessage(1, 'ATTCHORD currently not supported');
-            return { 'attchord':'present', }; 
+            return { 'attchord':'present', };
         }
 
 atomTemplateClass
@@ -710,7 +710,7 @@ v3bondBlock
 bondEntry
     = 'M  V30' bondIndex:uint bondType:uint atom1:uint atom2:uint bondCont:bondContinuation {
 
-            var b = molPaintJS.Bond();
+            let b = molPaintJS.Bond();
             b.setAtomA(mdlParserData.molecule.getAtom("Atom" + atom1));
             b.setAtomB(mdlParserData.molecule.getAtom("Atom" + atom2));
             b.setType(bondType);
@@ -759,11 +759,11 @@ v3propertyBlocks
     / v3obj3dBlock
     / v3LinkAtomLine
     / v3collectionBlock
-    / newline 'M  V30 END CTAB' 
+    / newline 'M  V30 END CTAB'
 
 /*
  * V3000 SGroup Block
- * 
+ *
  * M  V30 BEGIN Sgroup
  * [M V30 DEFAULT [CLASS=class] -]
  * M V30 index type extindex -
@@ -780,7 +780,7 @@ v3propertyBlocks
  * M  V30 [ESTATE=estate] [CSTATE=(4 xbond cbvx cbvy cbvz)]* -
  * M  V30 [FIELDNAME=fieldname] [FIELDINFO=fieldinfo] -
  * M  V30 [FIELDDISP=fielddisp] -
- * M  V30 [QUERYTYPE=querytype] [QUERYOP=queryop] -  
+ * M  V30 [QUERYTYPE=querytype] [QUERYOP=queryop] -
  * M  V30 [FIELDDATA=fielddata] ... -
  * M  V30 [CLASS=class] -
  * M  V30 [SAP=(3 aidx lvidx id)]* -
@@ -791,9 +791,9 @@ v3propertyBlocks
  */
 v3SGroupBlock
     = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
-            sgroups.forEach(sgroup => { 
+            sgroups.forEach(sgroup => {
                 sgroup.parseJsonData(mdlParserData.molecule);
-                mdlParserData.molecule.addSGroup(sgroup, null); 
+                mdlParserData.molecule.addSGroup(sgroup, null);
             });
             logMessage(1, 'parsed SGROUP BLOCK');
         }
@@ -804,11 +804,11 @@ v3SGroup
             cont["index"] = index["index"];
             cont["type"] = index["type"];
             cont["extIndex"] = index["extIndex"];
-            var sgroup = molPaintJS.SGroup(index["type"]);
+            let sgroup = molPaintJS.SGroup(index["type"]);
             sgroup.setJsonData(cont);
             return sgroup;
         }
-    
+
 v3SGroupIndex
     = 'M  V30 ' index:integer ' '* type:v3SGroupType extIndex:integer { return { "index":index, "type":type, "extIndex":extIndex }; }
 
@@ -830,31 +830,31 @@ v3SGroupType
 
 v3SGroupContinuation
     = v3LineContinuation cont:v3SGroupContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['ATOMS'] = list; return c; }
-    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XBONDS'] = list; return c; } 
-    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['CBONDS'] = list; return c; } 
-    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['PATOMS'] = list; return c; } 
-    / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { var c=cont || {}; c['SUBTYPE'] = subtype; return c; }
-    / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { var c=cont || {}; c['MULT'] = mult; return c; }
-    / ' '* 'CONNECT=' connect:sgroupConnectType cont:v3SGroupContinuation { var c=cont || {}; c['CONNECT'] = connect; return c; }
-    / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { var c=cont || {}; c['PARENT'] = connect; return c; }
-    / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { var c=cont || {}; c['COMPNO'] = connect; return c; }
-    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XHEAD'] = list; return c; } 
-    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { var c = cont || {}; c['XBCORR'] = list; return c; } 
-    / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { var c = cont || {}; c['LABEL'] = label; return c; } 
-    / ' '* 'BRKXYZ=' brkxyz:v3CountedFloatList cont:v3SGroupContinuation { var c = cont || {}; if (c['BRKXYZ'] === undefined) { c['BRKXYZ'] = []; } c['BRKXYZ'].push(brkxyz); return c; }
-    / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { var c = cont || {}; c['ESTATE'] = estate; return c; }
-    / ' '* 'CSTATE=' cstate:v3SGroupCSTATE cont:v3SGroupContinuation { var c = cont || {}; c['CSTATE'] = cstate; return c; }
-    / ' '* 'FIELDNAME=' fieldname:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDNAME'] = fieldname; return c; }
-    / ' '* 'FIELDINFO=' fieldinfo:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDINFO'] = fieldinfo; return c; }
-    / ' '* 'FIELDDISP=' fielddisp:v3SGroupDisposition cont:v3SGroupContinuation { var c = cont || {}; c['FIELDDISP'] = fielddisp; return c; }
-    / ' '* 'QUERYTYPE=' querytype:string cont:v3SGroupContinuation { var c = cont || {}; c['QUERYTYPE'] = querytype; return c; }
-    / ' '* 'QUERYOP=' queryop:string cont:v3SGroupContinuation { var c = cont || {}; c['QUERYOP'] = queryop; return c; }
-    / ' '* 'FIELDDATA=' fielddata:string cont:v3SGroupContinuation { var c = cont || {}; c['FIELDDATA'] = fielddata; return c; }
-    / ' '* 'CLASS=' sgroupClass:string cont:v3SGroupContinuation { var c = cont || {}; c['CLASS'] = sgroupClass; return c; }
-    / ' '* 'SAP=' sap:v3SGroupSAP cont:v3SGroupContinuation { var c = cont || {}; if (c['SAP'] === null) { c['SAP'] = []; } c['SAP'].push(sap); return c; }
-    / ' '* 'BRKTYP=' brktyp:v3SGroupBRKTYP cont:v3SGroupContinuation { var c = cont || {}; c['BRKTYP'] = brktyp; return c; }
-    / ' '* 'SEQID=' seqid:uint cont:v3SGroupContinuation { var c=cont || {}; c['SEQID'] = seqid; return c; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['ATOMS'] = list; return c; }
+    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBONDS'] = list; return c; }
+    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['CBONDS'] = list; return c; }
+    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['PATOMS'] = list; return c; }
+    / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { let c=cont || {}; c['SUBTYPE'] = subtype; return c; }
+    / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { let c=cont || {}; c['MULT'] = mult; return c; }
+    / ' '* 'CONNECT=' connect:sgroupConnectType cont:v3SGroupContinuation { let c=cont || {}; c['CONNECT'] = connect; return c; }
+    / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { let c=cont || {}; c['PARENT'] = connect; return c; }
+    / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { let c=cont || {}; c['COMPNO'] = connect; return c; }
+    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XHEAD'] = list; return c; }
+    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBCORR'] = list; return c; }
+    / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { let c = cont || {}; c['LABEL'] = label; return c; }
+    / ' '* 'BRKXYZ=' brkxyz:v3CountedFloatList cont:v3SGroupContinuation { let c = cont || {}; if (c['BRKXYZ'] === undefined) { c['BRKXYZ'] = []; } c['BRKXYZ'].push(brkxyz); return c; }
+    / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { let c = cont || {}; c['ESTATE'] = estate; return c; }
+    / ' '* 'CSTATE=' cstate:v3SGroupCSTATE cont:v3SGroupContinuation { let c = cont || {}; c['CSTATE'] = cstate; return c; }
+    / ' '* 'FIELDNAME=' fieldname:string cont:v3SGroupContinuation { let c = cont || {}; c['FIELDNAME'] = fieldname; return c; }
+    / ' '* 'FIELDINFO=' fieldinfo:string cont:v3SGroupContinuation { let c = cont || {}; c['FIELDINFO'] = fieldinfo; return c; }
+    / ' '* 'FIELDDISP=' fielddisp:v3SGroupDisposition cont:v3SGroupContinuation { let c = cont || {}; c['FIELDDISP'] = fielddisp; return c; }
+    / ' '* 'QUERYTYPE=' querytype:string cont:v3SGroupContinuation { let c = cont || {}; c['QUERYTYPE'] = querytype; return c; }
+    / ' '* 'QUERYOP=' queryop:string cont:v3SGroupContinuation { let c = cont || {}; c['QUERYOP'] = queryop; return c; }
+    / ' '* 'FIELDDATA=' fielddata:string cont:v3SGroupContinuation { let c = cont || {}; c['FIELDDATA'] = fielddata; return c; }
+    / ' '* 'CLASS=' sgroupClass:string cont:v3SGroupContinuation { let c = cont || {}; c['CLASS'] = sgroupClass; return c; }
+    / ' '* 'SAP=' sap:v3SGroupSAP cont:v3SGroupContinuation { let c = cont || {}; if (c['SAP'] === null) { c['SAP'] = []; } c['SAP'].push(sap); return c; }
+    / ' '* 'BRKTYP=' brktyp:v3SGroupBRKTYP cont:v3SGroupContinuation { let c = cont || {}; c['BRKTYP'] = brktyp; return c; }
+    / ' '* 'SEQID=' seqid:uint cont:v3SGroupContinuation { let c=cont || {}; c['SEQID'] = seqid; return c; }
     / ' '* newline { }
 
 v3SGroupSubtype
@@ -865,9 +865,9 @@ v3SGroupSubtype
 v3SGroupCSTATE
     = '(4' xbond:uint x:float y:float z:float ')' {
             return { "xbond":xbond, "cvbx":x, "cvby":y, "cvbz":z };
-        } 
+        }
 
-/* string could be split among lines - need to parse 
+/* string could be split among lines - need to parse
    externally */
 v3SGroupDisposition
     = fielddisp:string { return fielddisp; }
@@ -880,7 +880,7 @@ v3SGroupBRKTYP
     = 'BRACKET' { return 'BRACKET'; }
     / 'PAREN' { return 'PAREN'; }
 
-sgroupConnectType 
+sgroupConnectType
     = 'HH' { return 'HH'; }
     / 'HT' { return 'HT'; }
     / 'EU' { return 'EU'; }
@@ -911,23 +911,23 @@ v3LinkAtomLine
 
 /* ToDo collection block parsing */
 v3collectionBlock
-    = newline 'M  V30 BEGIN COLLECTION' newline entries:collectionEntry* 'M  V30 END COLLECTION' { 
+    = newline 'M  V30 BEGIN COLLECTION' newline entries:collectionEntry* 'M  V30 END COLLECTION' {
 
-            entries.forEach(entry => { 
+            entries.forEach(entry => {
 //              logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
-                var collection = molPaintJS.Collection(entry.name);
-                var atoms = {};
-                var bonds = {};
-                for (var data of entry.data) {
+                let collection = molPaintJS.Collection(entry.name);
+                let atoms = {};
+                let bonds = {};
+                for (let data of entry.data) {
                     if (data['ATOM'] != null) {
-                        for( var a of data['ATOM'].data) {
+                        for( let a of data['ATOM'].data) {
                             if (a != null) {
                                 atoms['Atom' + a] = 'Atom' + a;
                             }
                         }
                     }
                     if (data['BOND'] != null) {
-                        for( var b of data['BOND'].data) {
+                        for( let b of data['BOND'].data) {
                             if (b != null) {
                                 bonds['Bond' + b] = 'Bond' + b;
                             }
@@ -948,8 +948,8 @@ collectionEntry
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { var c = cont || {}; c['ATOM'] = list; return c; }
-    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { var c = cont || {}; c['BOND'] = list; return c; } 
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['ATOM'] = list; return c; }
+    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['BOND'] = list; return c; }
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
@@ -963,7 +963,7 @@ collectionContinuation
  *======================================================================
  */
 v3CountedFloatList
-    = whitespace* '(' count:uint float:v3FloatList* whitespace* ')' { return {count:count, data:filterUndefined(float) } } 
+    = whitespace* '(' count:uint float:v3FloatList* whitespace* ')' { return {count:count, data:filterUndefined(float) } }
 
 v3FloatList
     = float:float { return float; }
@@ -1034,10 +1034,10 @@ nonWhitespace
 
 whitespaceNL
     = whitespace
-    / newline 
+    / newline
 
 whitespace
-    = [ \t] 
+    = [ \t]
 
 newline
     = '\n\r'

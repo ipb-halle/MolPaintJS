@@ -46,14 +46,14 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function writeAtomTable (mol) {
-            var st = "";
-            for (var i in mol.getAtoms()) {
-                var a = mol.getAtom(i);
+            let st = "";
+            for (let i in mol.getAtoms()) {
+                let a = mol.getAtom(i);
                 //
                 //      xx.xx yy.yy zz.zz XxxddcccssshhhbbbvvvHHHrrriiimmmnnneee
                 //	(must be flipped on X-axis)
                 //
-                var sym = a.getType().getIsotope().getSymbol() + "  ";
+                let sym = a.getType().getIsotope().getSymbol() + "  ";
                 st += sprintf("%10.4f%10.4f%10.4f %3s%2d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d%3d\n",
                     a.getX(), -1.0 * a.getY(), a.getZ(),
                     sym.substring(0, 3),		// symbol
@@ -65,9 +65,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function writeBondTable (mol) {
-            var st = "";
-            for (var i in mol.getBonds()) {
-                var b = mol.getBond(i);
+            let st = "";
+            for (let i in mol.getBonds()) {
+                let b = mol.getBond(i);
                 st += sprintf("%3d%3d%3d%3d\n",
                     b.getAtomA().getIndex(),
                     b.getAtomB().getIndex(),
@@ -83,20 +83,20 @@ var molPaintJS = (function (molpaintjs) {
          * @return the string
          */
         function writeCharges (mol) {
-            var st = "";
-            var atomNumbers = [];
-            var charges = [];
+            let st = "";
+            let atomNumbers = [];
+            let charges = [];
 
-            for (var idx in mol.getAtoms()) {
-                var atom = mol.getAtom(idx);
+            for (let idx in mol.getAtoms()) {
+                let atom = mol.getAtom(idx);
                 if (atom.getCharge() != 0) {
                     atomNumbers.push(atom.getIndex());
                     charges.push(atom.getCharge()); 
                 }
             }
 
-            var j;
-            for (var i=0; i<atomNumbers.length; i++) {
+            let j;
+            for (let i=0; i<atomNumbers.length; i++) {
                 if ((i % 8) == 0) {
                     if (i > 0) {
                         st += "\n";
@@ -119,20 +119,20 @@ var molPaintJS = (function (molpaintjs) {
          * @return the string
          */
         function writeIsotopes (mol) {
-            var st = "";
-            var atomNumbers = [];
-            var masses = [];
+            let st = "";
+            let atomNumbers = [];
+            let masses = [];
 
-            for (var idx in mol.getAtoms()) {
-                var atom = mol.getAtom(idx);
+            for (let idx in mol.getAtoms()) {
+                let atom = mol.getAtom(idx);
                 if (atom.getType().getIsotope().getIsotope() > 0) {
                     atomNumbers.push(atom.getIndex());
                     masses.push(atom.getType().getIsotope().getMass());
                 }
             }
 
-            var j;
-            for (var i=0; i<atomNumbers.length; i++) {
+            let j;
+            for (let i=0; i<atomNumbers.length; i++) {
                 if ((i % 8) == 0) {
                     if (i > 0) {
                         st += "\n";
@@ -155,7 +155,7 @@ var molPaintJS = (function (molpaintjs) {
          * @return a string containing the properties block
          */
         function writeProperties (mol) {
-            var st = "";
+            let st = "";
             st += writeCharges(mol);
             st += writeRadicals(mol);
             st += writeIsotopes(mol);
@@ -168,20 +168,20 @@ var molPaintJS = (function (molpaintjs) {
          * @return the string
          */
         function writeRadicals (mol) {
-            var st = "";
-            var atomNumbers = [];
-            var radicals = [];
+            let st = "";
+            let atomNumbers = [];
+            let radicals = [];
 
-            for (var idx in mol.getAtoms()) {
-                var atom = mol.getAtom(idx);
+            for (let idx in mol.getAtoms()) {
+                let atom = mol.getAtom(idx);
                 if (atom.getRadical() != 0) {
                     atomNumbers.push(atom.getIndex());
                     radicals.push(atom.getRadical()); 
                 }
             }
 
-            var j;
-            for (var i=0; i<atomNumbers.length; i++) {
+            let j;
+            for (let i=0; i<atomNumbers.length; i++) {
                 if ((i % 8) == 0) {
                     if (i > 0) {
                         st += "\n";
@@ -201,7 +201,7 @@ var molPaintJS = (function (molpaintjs) {
         return {
             write : function (mol) {
 
-                var st = "";
+                let st = "";
 
                 mol.reIndex();
 

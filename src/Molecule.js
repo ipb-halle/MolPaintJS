@@ -68,8 +68,8 @@ var molPaintJS = (function (molpaintjs) {
              * called by parser; collections may be defined incrementally
              */
             addCollection : function (collection) {
-                var merged = false;
-                for (var c of collections) {
+                let merged = false;
+                for (let c of collections) {
                     if (c.getName() === collection.getName()) {
                         c.merge(collection);
                         merged = true;
@@ -98,8 +98,8 @@ var molPaintJS = (function (molpaintjs) {
              * @param set Set the given bits on all matching atoms, bonds and sgroups
              */
             adjustSelection : function (match, clear, set) {
-                for (var id in atoms) {
-                    var sel = atoms[id].getSelected();
+                for (let id in atoms) {
+                    let sel = atoms[id].getSelected();
                     if(sel & match) {
 
                         // order matters: first clear, then set
@@ -107,15 +107,15 @@ var molPaintJS = (function (molpaintjs) {
                         atoms[id].setSelected(sel | set);
                     }
                 }
-                for (var id in bonds) {
-                    var sel = bonds[id].getSelected();
+                for (let id in bonds) {
+                    let sel = bonds[id].getSelected();
                     if(sel & match) {
                         sel &= ~clear;
                         bonds[id].setSelected(sel | set);
                     }
                 }
-                for (var id in sgroups) {
-                    var sel = sgroups[id].getSelected();
+                for (let id in sgroups) {
+                    let sel = sgroups[id].getSelected();
                     if(sel & match) {
                         sel &= ~clear;
                         sgroups[id].setSelected(sel | set);
@@ -129,17 +129,17 @@ var molPaintJS = (function (molpaintjs) {
              * @return the updated bounding box
              */
             center : function () {
-                var bbox = this.computeBBox(0);
+                let bbox = this.computeBBox(0);
 
-                var cx = -bbox.getCenterX();
-                var cy = -bbox.getCenterY();
+                let cx = -bbox.getCenterX();
+                let cy = -bbox.getCenterY();
 
-                for (var id in atoms) {
+                for (let id in atoms) {
                     atoms[id].addX(cx);
                     atoms[id].addY(cy);
                     // ignore z
                 }
-                var b = molPaintJS.Box(
+                let b = molPaintJS.Box(
                     bbox.getMinX() + cx,
                     bbox.getMinY() + cy,
                     bbox.getMaxX() + cx,
@@ -152,20 +152,20 @@ var molPaintJS = (function (molpaintjs) {
              * @param val All selections with bit val will be cleared.
              */
             clearSelection : function (val) {
-                for (var id in atoms) {
-                    var sel = atoms[id].getSelected();
+                for (let id in atoms) {
+                    let sel = atoms[id].getSelected();
                     if(sel & val) {
                         atoms[id].setSelected(sel & ~val);
                     }
                 }
-                for (var id in bonds) {
-                    var sel = bonds[id].getSelected();
+                for (let id in bonds) {
+                    let sel = bonds[id].getSelected();
                     if(sel & val) {
                         bonds[id].setSelected(sel & ~val);
                     }
                 }
-                for (var id in sgroups) {
-                    var sel = sgroups[id].getSelected();
+                for (let id in sgroups) {
+                    let sel = sgroups[id].getSelected();
                     if (sel & val) {
                         sgroups[id].setSelected(sel & ~val);
                     }
@@ -177,15 +177,15 @@ var molPaintJS = (function (molpaintjs) {
              * @return actionList containing update history
              */
             clearTemp : function ()  {
-                var actionList = molPaintJS.ActionList();
+                let actionList = molPaintJS.ActionList();
 
-                for (var id in atoms) {
+                for (let id in atoms) {
                     if(atoms[id].getTemp() != 0) {
                         atoms[id].setTemp(0);
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atoms[id], null));
                     }
                 }
-                for (var id in bonds) {
+                for (let id in bonds) {
                     if(bonds[id].getTemp() != 0) {
                         bonds[id].setTemp(0);
                         actionList.addAction(molPaintJS.Action("ADD", "BOND", bonds[id], null));
@@ -200,15 +200,15 @@ var molPaintJS = (function (molpaintjs) {
              * bounding box; if sel = 0, everything is selected
              */
             computeBBox : function (sel) {
-                var bbox;
-                var first = 0;
+                let bbox;
+                let first = 0;
 
-                for (var i in atoms) {
-                    var a = atoms[i];
+                for (let i in atoms) {
+                    let a = atoms[i];
                     if ((sel === 0) || ((a.getSelected() & sel) != 0)) {
-                        var x = a.getX();
-                        var y = a.getY();
-                        var z = a.getZ();
+                        let x = a.getX();
+                        let y = a.getY();
+                        let z = a.getZ();
                         if (first == 0) {
                             bbox = molPaintJS.Box(x, y, x, y);
                             first = 1;
@@ -224,12 +224,12 @@ var molPaintJS = (function (molpaintjs) {
              * computes the median bond length in this molecule
              */
             computeBondLengths : function () {
-                var bondLength = [];
-                for (var i in bonds) {
-                    var b = bonds[i];
-                    var dx = b.getAtomA().getX() - b.getAtomB().getX();
-                    var dy = b.getAtomA().getY() - b.getAtomB().getY();
-                    var lensq = (dx * dx) + (dy * dy);
+                let bondLength = [];
+                for (let i in bonds) {
+                    let b = bonds[i];
+                    let dx = b.getAtomA().getX() - b.getAtomB().getX();
+                    let dy = b.getAtomA().getY() - b.getAtomB().getY();
+                    let lensq = (dx * dx) + (dy * dy);
                     bondLength.push(lensq);
                 }
                 bondLength.sort(function (a, b) {
@@ -248,13 +248,13 @@ var molPaintJS = (function (molpaintjs) {
              * molecule
              */
             delAtom : function (a) {
-                var idx = a.getId();
+                let idx = a.getId();
                 delete atoms[idx];
             },
 
             delBond : function (b) {
-                var idx = b.getId();
-                var bond = bonds[idx];
+                let idx = b.getId();
+                let bond = bonds[idx];
                 bond.getAtomA().delBond(idx);
                 bond.getAtomB().delBond(idx);
                 delete bonds[idx];
@@ -265,7 +265,7 @@ var molPaintJS = (function (molpaintjs) {
              * @param name the name of the collection to be removed
              */
             delCollection : function (name) {
-                for (var i in collections) {
+                for (let i in collections) {
                     if (collections[i].getName() == name) {
                         collections.splice(i, 1);
                         return;
@@ -277,7 +277,7 @@ var molPaintJS = (function (molpaintjs) {
              * delete a SGroup
              */
             delSGroup : function (sg) {
-                var idx = sg.getId();
+                let idx = sg.getId();
                 /*
                  * ToDo: remove sgroup from atoms and bonds
                  */
@@ -288,14 +288,14 @@ var molPaintJS = (function (molpaintjs) {
              * delete all temporary bonds and atoms from the molecule
              */
             delTemp : function() {
-                for(var b in bonds) {
+                for(let b in bonds) {
                     if(bonds[b].getTemp() != 0) {
                         bonds[b].getAtomA().delBond(b);
                         bonds[b].getAtomB().delBond(b);
                         delete bonds[b];
                     }
                 }
-                for(var a in atoms) {
+                for(let a in atoms) {
                     if(atoms[a].getTemp() != 0) {
                         delete atoms[a];
                     }
@@ -343,13 +343,13 @@ var molPaintJS = (function (molpaintjs) {
              * @return the atoms and bonds which match the given selection bits
              */
             getSelected : function (sel) {
-                var result = {atoms: [], bonds: []};
-                for (var id in atoms) {
+                let result = {atoms: [], bonds: []};
+                for (let id in atoms) {
                     if ((atoms[id].getSelected() & sel) != 0) {
                         result.atoms.push(id);
                     }
                 }
-                for (var id in bonds) {
+                for (let id in bonds) {
                     if ((bonds[id].getSelected() & sel) != 0) {
                         result.bonds.push(id);
                     }
@@ -369,17 +369,17 @@ var molPaintJS = (function (molpaintjs) {
              * assign a numeric index to all atoms and bonds
              */
             reIndex : function () {
-                var i = 1;
-                for (var id in atoms) {
-                    var a = atoms [id];
+                let i = 1;
+                for (let id in atoms) {
+                    let a = atoms [id];
                     a.setIndex(i);
                     i++;
                 }
                 atomCount = i - 1;
 
                 i = 1;
-                for (var id in bonds) {
-                    var b = bonds[id];
+                for (let id in bonds) {
+                    let b = bonds[id];
                     b.setIndex(i);
                     i++;
                 }
@@ -392,14 +392,14 @@ var molPaintJS = (function (molpaintjs) {
              * @param a atom
              */
             replaceAtom : function (a) {
-                var id = a.getId();
-                var o = atoms[id];
+                let id = a.getId();
+                let o = atoms[id];
                 if (o == null) {
                     alert("Molecule.replaceAtom() called for non-existing atom.");
                     return;
                 }
-                for (var i in a.getBonds()) {
-                    var b = bonds[i];
+                for (let i in a.getBonds()) {
+                    let b = bonds[i];
                     if (b.getAtomA().getId() == id) {
                         b.setAtomA(a);
                     } else {
@@ -416,8 +416,8 @@ var molPaintJS = (function (molpaintjs) {
              * only bond IDs.
              */
             replaceBond : function (b) {
-                var id = b.getId();
-                var o = bonds[id];
+                let id = b.getId();
+                let o = bonds[id];
                 if (o == null) {
                     alert("Molecule.replaceBond() called for non-existing bond.");
                     return;
@@ -432,10 +432,10 @@ var molPaintJS = (function (molpaintjs) {
              * @return atomId
              */
             selectAtom : function (coords, distmax) {
-                for (var id in atoms) {
-                    var a = atoms[id];
-                    var dx = a.getX() - coords.x;
-                    var dy = a.getY() - coords.y;
+                for (let id in atoms) {
+                    let a = atoms[id];
+                    let dx = a.getX() - coords.x;
+                    let dy = a.getY() - coords.y;
                     if (distmax > ((dx * dx) + (dy * dy))) {
                         return id;
                     }
@@ -453,10 +453,10 @@ var molPaintJS = (function (molpaintjs) {
              * @return an object with properties "atoms" and "bonds"
              */
             selectBBox : function (bbox, val, cond) {
-                var result = {atoms: [], bonds: []};
-                for (var id in atoms) {
-                    var atom = atoms[id];
-                    var sel = atom.getSelected();
+                let result = {atoms: [], bonds: []};
+                for (let id in atoms) {
+                    let atom = atoms[id];
+                    let sel = atom.getSelected();
                     if ((sel & cond) === 0) {
                         if (bbox.contains(atom.getX(), atom.getY())) {
                             atom.setSelected(sel | val);
@@ -464,12 +464,12 @@ var molPaintJS = (function (molpaintjs) {
                         }
                     }
                 }
-                for (var id in bonds) {
-                    var bond = bonds[id];
-                    var sel = bond.getSelected();
+                for (let id in bonds) {
+                    let bond = bonds[id];
+                    let sel = bond.getSelected();
                     if ((sel & cond) === 0) {
-                        var atomA = bond.getAtomA();
-                        var atomB = bond.getAtomB();
+                        let atomA = bond.getAtomA();
+                        let atomB = bond.getAtomB();
                         if (bbox.contains(atomA.getX(), atomA.getY()) &&
                             bbox.contains(atomB.getX(), atomB.getY())) {
                             bond.setSelected(sel | val);
@@ -487,23 +487,23 @@ var molPaintJS = (function (molpaintjs) {
              * @param returns an array of matching bonds; array may be empty
              */
             selectBond : function (coords, distmax) {
-                var matches = [];
-                for (var id in bonds) {
-                    var b = bonds[id];
-                    var dx = b.getAtomA().getX() - b.getAtomB().getX();
-                    var dy = b.getAtomA().getY() - b.getAtomB().getY();
-                    var l = Math.sqrt(dx * dx + dy * dy);
+                let matches = [];
+                for (let id in bonds) {
+                    let b = bonds[id];
+                    let dx = b.getAtomA().getX() - b.getAtomB().getX();
+                    let dy = b.getAtomA().getY() - b.getAtomB().getY();
+                    let l = Math.sqrt(dx * dx + dy * dy);
 
                     l = (l < 0.01) ? 1.0 : l;   // guard against division by zero
 
-                    var bx = coords.x - b.getAtomB().getX();
-                    var by = coords.y - b.getAtomB().getY();
+                    let bx = coords.x - b.getAtomB().getX();
+                    let by = coords.y - b.getAtomB().getY();
 
-                    var sin = dy / l;
-                    var cos = dx / l;
+                    let sin = dy / l;
+                    let cos = dx / l;
 
-                    var rx = bx * cos + by * sin;
-                    var ry = -bx * sin + by * cos
+                    let rx = bx * cos + by * sin;
+                    let ry = -bx * sin + by * cos
 
                     if ((rx > 0) && (rx < l) && ((ry * ry) < distmax)) {
                         matches.push(id);
@@ -520,7 +520,7 @@ var molPaintJS = (function (molpaintjs) {
              * @param collection the collection object with modified data
              */
             setCollection : function (collection) {
-                for (var i in collections) {
+                for (let i in collections) {
                     if (collections[i].getName() == collection.getName()) {
                         collections[i] = collection;
                         return;
@@ -541,11 +541,11 @@ var molPaintJS = (function (molpaintjs) {
              * zero to apply transformation to all atoms)
              */
             transform : function (matrix, sel) {
-                for (var id in atoms) {
-                    var atom = atoms[id];
+                for (let id in atoms) {
+                    let atom = atoms[id];
                     if ( (sel === 0) || ((atom.getSelected() & sel) != 0)) {
-                        var x = atom.getX();
-                        var y = atom.getY();
+                        let x = atom.getX();
+                        let y = atom.getY();
                         atom.setX(matrix[0][0] * x + matrix[0][1] * y + matrix[0][2]);
                         atom.setY(matrix[1][0] * x + matrix[1][1] * y + matrix[1][2]);
                     }

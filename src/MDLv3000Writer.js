@@ -23,7 +23,7 @@ var molPaintJS = (function (molpaintjs) {
         var output = "";
 
         /**
-         * check if the concatenation of line and st would exceed the 80 characters 
+         * check if the concatenation of line and st would exceed the 80 characters
          * per line limit of MDL v3000 files and make a line continuation
          * @param line the current line containing data
          * @param st additional data for the current line
@@ -73,17 +73,17 @@ var molPaintJS = (function (molpaintjs) {
 
         function writeAtomBlock (mol) {
             output += "M  V30 BEGIN ATOM\n";
-            for (var i in mol.getAtoms()) {
-                var st = "";
-                var a = mol.getAtom(i);
-                //  
+            for (let i in mol.getAtoms()) {
+                let st = "";
+                let a = mol.getAtom(i);
+                //
                 //	coordinates must be flipped on X-axis!
                 //
-                st += sprintf("M  V30 %d %s %.4f %.4f %.4f %d", 
+                st += sprintf("M  V30 %d %s %.4f %.4f %.4f %d",
                         a.getIndex(),
                         a.getType().getIsotope().getSymbol(),
                         a.getX(),
-                        a.getY() * -1.0, 
+                        a.getY() * -1.0,
                         a.getZ(),
                         0                           // aamap
                     );
@@ -98,15 +98,15 @@ var molPaintJS = (function (molpaintjs) {
         function writeAtomCharge (atom) {
             if (atom.getCharge() != 0) {
                 return " CHG=" + atom.getCharge();
-            } 
+            }
             return '';
         }
 
         function writeAtomMass (atom) {
-            var iso = atom.getType().getIsotope();
+            let iso = atom.getType().getIsotope();
             if (iso.getIsotope() != 0) {
                 return " MASS=" + iso.getMass();
-            } 
+            }
             return '';
         }
 
@@ -118,10 +118,10 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function writeAtomList (mol, id, line, count, atoms) {
-            var st = " " + id + "=(";
+            let st = " " + id + "=(";
             st = extendLine(line, st);
             st = extendLine(st, "" + count);
-            for (var a in atoms) {
+            for (let a in atoms) {
                 st = extendLine(st, ' ' + mol.getAtom(a).getIndex());
             }
             st = extendLine(st, ")");
@@ -130,9 +130,9 @@ var molPaintJS = (function (molpaintjs) {
 
         function writeBondBlock (mol) {
             output += "M  V30 BEGIN BOND\n";
-            for (var i in mol.getBonds()) {
-                var st = "";
-                var b = mol.getBond(i);
+            for (let i in mol.getBonds()) {
+                let st = "";
+                let b = mol.getBond(i);
                 st += sprintf("M  V30 %d %d %d %d",
                     b.getIndex(),
                     b.getType(),
@@ -146,10 +146,10 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function writeBondList (mol, id, line, count, bonds) {
-            var st = " " + id + "=(";
+            let st = " " + id + "=(";
             st = extendLine(line, st);
-            st = extendLine(st, "" + count); 
-            for (var b in bonds) {
+            st = extendLine(st, "" + count);
+            for (let b in bonds) {
                 st = extendLine(st, ' ' + mol.getBond(b).getIndex());
             }
             st = extendLine(st, ")");
@@ -165,10 +165,10 @@ var molPaintJS = (function (molpaintjs) {
 
         function writeCollectionBlock (mol) {
             output += "M  V30 BEGIN COLLECTION\n";
-            for (var collection of mol.getCollections()) {
-                var st = "M  V30 "; 
+            for (let collection of mol.getCollections()) {
+                let st = "M  V30 ";
                 st = extendLine(st, '"' + collection.getName() + '" ');
-                var count = Object.keys(collection.getAtoms()).length;
+                let count = Object.keys(collection.getAtoms()).length;
                 if (count > 0) {
                     st = writeAtomList(mol, 'ATOMS', st, count, collection.getAtoms());
                 }

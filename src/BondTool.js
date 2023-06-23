@@ -36,7 +36,7 @@ var molPaintJS = (function (molpaintjs) {
             abort : function () {
                 molPaintJS.Tools.abort(this);
 
-                var iconId = this.context.contextId + "_currentBond";
+                let iconId = this.context.contextId + "_currentBond";
                 document.getElementById(iconId).className = "molPaintJS-inactiveTool";
 
                 atomA = null;
@@ -57,18 +57,18 @@ var molPaintJS = (function (molpaintjs) {
              * this determines the first atom of the new bond
              */
             onMouseDown : function (x, y, evt) {
-                var coord = this.context.getView().getCoordReverse(x, y);
+                let coord = this.context.getView().getCoordReverse(x, y);
 
-                var bonds = this.context.getMolecule().selectBond(coord, distMax);
-                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let bonds = this.context.getMolecule().selectBond(coord, distMax);
+                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
 
                 actionList = molPaintJS.ActionList();
 
                 if (atomId == null) {
                     if (bonds.length > 0) {
-                        var b = this.context.getMolecule().getBonds()[bonds[0]];
-                        var old = b.copy();
-                        var changed = false;
+                        let b = this.context.getMolecule().getBonds()[bonds[0]];
+                        let old = b.copy();
+                        let changed = false;
                         if((b.getType() != bondType) || (b.getStereo() != stereoType)) { 
                             b.setType(bondType);
                             b.setStereo(stereoType);
@@ -89,7 +89,7 @@ var molPaintJS = (function (molpaintjs) {
                         atomA.setX(coord.x);
                         atomA.setY(coord.y);
                         atomA.setZ(0.0);
-                        var at = molPaintJS.AtomType();
+                        let at = molPaintJS.AtomType();
                         at.setIsotope(this.context.getCurrentElement());
                         at.setColor(this.context.getCurrentElement().getColor());
                         atomA.setType(at);
@@ -111,32 +111,32 @@ var molPaintJS = (function (molpaintjs) {
             onMouseMove : function (x, y, evt) {
                 if (atomA == null) { return; }
 
-                var view = this.context.getView();
-                var coord = view.getCoordReverse(x, y);
+                let view = this.context.getView();
+                let coord = view.getCoordReverse(x, y);
 
                 this.context.getMolecule().delTemp();
-                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
-                var atomB;
+                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let atomB;
 
                 // no atom found in proximity?
                 if((atomId == null) || (atomId == atomA.getId())) {
 
-                    var dx = coord.x - atomA.getX();
-                    var dy = coord.y - atomA.getY();
-                    var len = Math.sqrt((dx * dx) + (dy * dy));
+                    let dx = coord.x - atomA.getX();
+                    let dy = coord.y - atomA.getY();
+                    let len = Math.sqrt((dx * dx) + (dy * dy));
                     len = (len < 0.01) ? 1.0 : len;         // avoid division by zero
-                    var v = 180.0 * Math.asin(-dy / len) / Math.PI;
-                    var w = 180.0 * Math.acos(dx / len) / Math.PI;
+                    let v = 180.0 * Math.asin(-dy / len) / Math.PI;
+                    let w = 180.0 * Math.acos(dx / len) / Math.PI;
 
                     w = (v < 0) ? w : 360.0 - w;
 
-                    var i = Math.floor(w / 30.0);
+                    let i = Math.floor(w / 30.0);
                     atomB = molPaintJS.Atom();
                     atomB.setX(atomA.getX() + view.getRasterX(i));
                     atomB.setY(atomA.getY() + view.getRasterY(i));
                     atomB.setZ(0.0);
                     atomB.setTemp(1);
-                    var at = molPaintJS.AtomType();
+                    let at = molPaintJS.AtomType();
                     at.setIsotope(this.context.getCurrentElement());
                     at.setColor(this.context.getCurrentElement().getColor());
                     atomB.setType(at);
@@ -145,7 +145,7 @@ var molPaintJS = (function (molpaintjs) {
                 } else {
                     atomB = this.context.getMolecule().getAtom(atomId);
                 }
-                var bond = molPaintJS.Bond();
+                let bond = molPaintJS.Bond();
                 bond.setAtomA(atomA);
                 bond.setAtomB(atomB);
                 bond.setType(bondType);
@@ -156,8 +156,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var destIconId = this.context.contextId + "_currentBond";
-                var icon = document.getElementById(destIconId);
+                let destIconId = this.context.contextId + "_currentBond";
+                let icon = document.getElementById(destIconId);
                 icon.src = molPaintJS.Resources[this.id + ".png"];
                 icon.className = "molPaintJS-activeTool";
                 this.context.currentBondTool = this;

@@ -34,10 +34,10 @@ var molPaintJS = (function (molpaintjs) {
          * clip in quadrant I
          */
         function clip1 (coord, dx, dy) {
-            var cx = coord.x - minX
-            var cy = coord.y - minY;
-            var d = dx / dy;
-            var c = cx / cy;
+            let cx = coord.x - minX
+            let cy = coord.y - minY;
+            let d = dx / dy;
+            let c = cx / cy;
             if (d < c) {
                 return {x: (coord.x - (d * cy)), y: minY};
             }
@@ -48,10 +48,10 @@ var molPaintJS = (function (molpaintjs) {
          * clip in quadrant II
          */
         function clip2 (coord, dx, dy) {
-            var cx = maxX - coord.x;
-            var cy = coord.y - minY;
-            var d = -dx / dy;
-            var c = cx / cy;
+            let cx = maxX - coord.x;
+            let cy = coord.y - minY;
+            let d = -dx / dy;
+            let c = cx / cy;
             if (d < c) {
                 return {x: (coord.x + (d * cy)), y: minY};
             }
@@ -62,10 +62,10 @@ var molPaintJS = (function (molpaintjs) {
          * clip in quadrant III
          */
         function clip3 (coord, dx, dy) {
-            var cx = maxX - coord.x;
-            var cy = maxY - coord.y;
-            var d = dx / dy;
-            var c = cx / cy;
+            let cx = maxX - coord.x;
+            let cy = maxY - coord.y;
+            let d = dx / dy;
+            let c = cx / cy;
             if (d < c) {
                 return {x: (coord.x + (d * cy)), y: maxY};
             }
@@ -76,10 +76,10 @@ var molPaintJS = (function (molpaintjs) {
          * clip in quadrant IV
          */
         function clip4 (coord, dx, dy) {
-            var cx = coord.x - minX;
-            var cy = maxY - coord.y;
-            var d = -dx / dy;
-            var c = cx / cy;
+            let cx = coord.x - minX;
+            let cy = maxY - coord.y;
+            let d = -dx / dy;
+            let c = cx / cy;
             if (d < c) {
                 return {x: (coord.x - (d * cy)), y: maxY};
             }
@@ -94,7 +94,7 @@ var molPaintJS = (function (molpaintjs) {
              * outcome will be undefined.
              */
             clip : function (coord, dx, dy) {
-                var t = 0;
+                let t = 0;
                 t += (dx > 0) ? 1 : 0;
                 t += (dx == 0) ? 2 : 0;
                 t += (dx < 0) ? 4 : 0;

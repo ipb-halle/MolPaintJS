@@ -41,7 +41,7 @@ var molPaintJS = (function (molpaintjs) {
              * @param al the ActionList object to append
              */
             addActionList : function (al) {
-                for(var a of al.getActions()) {
+                for(let a of al.getActions()) {
                     actions.push(a);
                 }
             },

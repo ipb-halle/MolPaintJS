@@ -50,7 +50,7 @@ var molPaintJS = (function (molpaintjs) {
              * @return the new (cloned) bond object
              */
             copy : function () {
-                var b = molPaintJS.Bond();
+                let b = molPaintJS.Bond();
                 b.setAtomA(atomA);
                 b.setAtomB(atomB);
                 b.setColor(color);
@@ -65,8 +65,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             copySGroups : function () {
-                var s = {};
-                for (var i in sgroups) {
+                let s = {};
+                for (let i in sgroups) {
                     s[i] = i;
                 }
                 return s;

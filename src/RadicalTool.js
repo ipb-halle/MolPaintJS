@@ -20,8 +20,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.RadicalTool = function(ctx, prop) {
 
-        var distMax = prop.distMax;
-        var type = "radical";
+        let distMax = prop.distMax;
+        let type = "radical";
 
         return {
             id : "radical",
@@ -36,13 +36,13 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             onClick : function (x, y, evt) {
-                var coord = this.context.getView().getCoordReverse(x, y);
-                var atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let coord = this.context.getView().getCoordReverse(x, y);
+                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
                 if (atomId != null) {
 
-                    var actionList = molPaintJS.ActionList();
-                    var atom = this.context.getMolecule().getAtom(atomId);
-                    var oldAtom = atom.copy();
+                    let actionList = molPaintJS.ActionList();
+                    let atom = this.context.getMolecule().getAtom(atomId);
+                    let oldAtom = atom.copy();
 
                     switch (type) {
                         case "singlet" :
@@ -77,8 +77,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var destIconId = this.context.contextId + "_radical";
-                var icon = document.getElementById(destIconId);
+                let destIconId = this.context.contextId + "_radical";
+                let icon = document.getElementById(destIconId);
                 icon.src = molPaintJS.Resources[type + ".png"]; 
             }
         };

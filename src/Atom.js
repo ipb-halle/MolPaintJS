@@ -21,22 +21,22 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Atom = function () {
 
 
-        var bbox = null;        // bounding box for the atom label
-        var bonds = {};
-        var sgroups = {};
-        var coordX = 0.0;
-        var coordY = 0.0;
-        var coordZ = 0.0;
+        let bbox = null;        // bounding box for the atom label
+        let bonds = {};
+        let sgroups = {};
+        let coordX = 0.0;
+        let coordY = 0.0;
+        let coordZ = 0.0;
 
-        var charge = 0;         // formal charge of the atom
-        var radical = 0;        // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
+        let charge = 0;         // formal charge of the atom
+        let radical = 0;        // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
 
-        var id = null;          // unique id (i.e. for undo / redo)
-        var index = null;       // numeric index in list of atoms
-        var selected = 0;       // non zero, if the atom is currently selected
-        var stereo = 0;
-        var temp = 0;           // non zero if the atom is transient (temporary)
-        var type = null;        // atom type / element / isotope
+        let id = null;          // unique id (i.e. for undo / redo)
+        let index = null;       // numeric index in list of atoms
+        let selected = 0;       // non zero, if the atom is currently selected
+        let stereo = 0;
+        let temp = 0;           // non zero if the atom is transient (temporary)
+        let type = null;        // atom type / element / isotope
 
 
         return {

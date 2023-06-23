@@ -20,24 +20,24 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Context = function(cid, prop, mp) {
 
-        var molpaint = mp;
+        let molpaint = mp;
         molpaint.createCSS();
         molpaint.createHelpWidget();
 
-        var properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
-        var changeListener = null;
-        var currentElement = molPaintJS.Elements.getElement("C");
-        var currentTemplate = mp.getTemplates()[0];
+        let properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
+        let changeListener = null;
+        let currentElement = molPaintJS.Elements.getElement("C");
+        let currentTemplate = mp.getTemplates()[0];
 
-        var tools = null;
-        var currentTool = null;
-        var currentBondTool = null;
+        let tools = null;
+        let currentTool = null;
+        let currentBondTool = null;
 
-        var history = molPaintJS.History(cid);
-        var molecule = molPaintJS.Molecule();
+        let history = molPaintJS.History(cid);
+        let molecule = molPaintJS.Molecule();
 
-        var view = molPaintJS.View(cid, properties);
-        var widget = molPaintJS.Widget(cid, properties, mp);
+        let view = molPaintJS.View(cid, properties);
+        let widget = molPaintJS.Widget(cid, properties, mp);
 
         /**
          * depending on the value of properties.viewer, set up

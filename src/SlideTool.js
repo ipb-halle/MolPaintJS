@@ -24,7 +24,7 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.SlideTool = function(ctx) {
 
-        var origin = null;
+        let origin = null;
 
         return {
             id : "slide",
@@ -45,8 +45,8 @@ var molPaintJS = (function (molpaintjs) {
 
             onMouseMove : function (x, y, evt) {
                 if (origin != null) {
-                    var dx = x - origin.x;
-                    var dy = y - origin.y;
+                    let dx = x - origin.x;
+                    let dy = y - origin.y;
                     origin = { 'x' : x, 'y' : y };
                     this.context.getView().slide(dx, dy);
                     this.context.draw();

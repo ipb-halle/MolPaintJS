@@ -20,14 +20,14 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Isotope = function (n, p, g, s, m, i, me, c) {
 
-        var atomicNumber = n;
-        var color = c;
-        var group = g;
-        var isotope = i;
-        var mass = m;
-        var massExact = me;
-        var period = p;
-        var symbol = s;
+        let atomicNumber = n;
+        let color = c;
+        let group = g;
+        let isotope = i;
+        let mass = m;
+        let massExact = me;
+        let period = p;
+        let symbol = s;
 
         return {
 

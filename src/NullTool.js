@@ -20,9 +20,9 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.NullTool = function(ctx) {
 
-        var imgData = null;
-        var originX = null;
-        var originY = null;
+        let imgData = null;
+        let originX = null;
+        let originY = null;
 
         return {
             id : "nullTool",

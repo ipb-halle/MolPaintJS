@@ -26,8 +26,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Elements = function() {
 
-        var elements = [];
-        var elementsByName = {};
+        let elements = [];
+        let elementsByName = {};
 
         function init() {
             // atomicNumber, period, group, symbol, mass, iso, massExact, color

@@ -20,11 +20,11 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.PointerTool = function(ctx, prop) {
 
-        var distMax = prop.distMax;
-        var origin;
+        let distMax = prop.distMax;
+        let origin;
 
-        var mode = 0;              // 0 = select, 1 = move / rotate
-        var actionList;
+        let mode = 0;              // 0 = select, 1 = move / rotate
+        let actionList;
 
         function click (context, x, y, evt) {
             origin = null;
@@ -36,8 +36,8 @@ var molPaintJS = (function (molpaintjs) {
                 }
             } else {
                 // save history
-                for (var action of actionList.getActions()) {
-                    var atomId = action.oldObject.getId();
+                for (let action of actionList.getActions()) {
+                    let atomId = action.oldObject.getId();
                     action.newObject = context.getMolecule().getAtom(atomId).copy();
                 }
                 context.getHistory().appendAction(actionList);
@@ -47,8 +47,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function mouseDown (context, x, y, evt) {
-            var coord = context.getView().getCoordReverse(x, y);
-            var atomId = context.getMolecule().selectAtom(coord, distMax);
+            let coord = context.getView().getCoordReverse(x, y);
+            let atomId = context.getMolecule().selectAtom(coord, distMax);
 
             if ((atomId == null) ||
                ((context.getMolecule().getAtom(atomId).getSelected() & 2) == 0)) {
@@ -62,9 +62,9 @@ var molPaintJS = (function (molpaintjs) {
             } else {
                 // transform mode; prepare history
                 actionList = molPaintJS.ActionList();
-                var sel = context.getMolecule().getSelected(2); // return the selection
-                for (var a1 of sel.atoms) {
-                    var atom = context.getMolecule().getAtom(a1);
+                let sel = context.getMolecule().getSelected(2); // return the selection
+                for (let a1 of sel.atoms) {
+                    let atom = context.getMolecule().getAtom(a1);
                     actionList.addAction(molPaintJS.Action("UPD", "ATOM", null, atom.copy()));
                 }
 
@@ -97,9 +97,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function mouseMoveSelect (context, x, y, evt) {
-            var vctx = context.getView().getViewContext();
-            var box = molPaintJS.Box(origin.x, origin.y, x, y);
-            var mbox = context.getView().getBBoxReverse(box);
+            let vctx = context.getView().getViewContext();
+            let box = molPaintJS.Box(origin.x, origin.y, x, y);
+            let mbox = context.getView().getBBoxReverse(box);
             context.getMolecule().clearSelection(1);
             context.getMolecule().selectBBox(mbox, 1, 0);
             context.draw();
@@ -107,9 +107,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function mouseMoveRotate (context, x, y, evt) {
-            var dx = x - origin.x;
-            var sin = Math.sin(dx / 57.0 );
-            var cos = Math.cos(dx / 57.0 );
+            let dx = x - origin.x;
+            let sin = Math.sin(dx / 57.0 );
+            let cos = Math.cos(dx / 57.0 );
 
             origin = { 'x':x, 'y':y };
             context.getMolecule().transform([[cos, sin, 0], [ (sin * -1.0), cos, 0]], 2);
@@ -117,10 +117,10 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function mouseMoveTranslate (context, x, y, evt) {
-            var coord = context.getView().getCoordReverse(x, y);
-            var o = context.getView().getCoordReverse(origin.x, origin.y);
-            var dx = coord.x - o.x;
-            var dy = coord.y - o.y;
+            let coord = context.getView().getCoordReverse(x, y);
+            let o = context.getView().getCoordReverse(origin.x, origin.y);
+            let dx = coord.x - o.x;
+            let dy = coord.y - o.y;
 
             origin = { 'x':x, 'y':y };
             context.getMolecule().transform([[1, 0, dx], [0, 1, dy]], 2);
@@ -140,7 +140,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             onMouseDown : function (x, y, evt) {
-                var helper = this.context;
+                let helper = this.context;
                 mouseDown(this.context, x, y, evt);
             },
 

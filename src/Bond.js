@@ -27,16 +27,16 @@ var molPaintJS = (function (molpaintjs) {
             'ov3': [ 0, 1, 2, 3 ] 
         };
   
-        var atomA;
-        var atomB;
-        var sgroups = {};
-        var color;
-        var id;                 // unique id (i.e. for undo / redo)
-        var index;              // numeric index
-        var selected = 0;       // non zero if bond is selected
-        var stereo = "0";       // 0 no stereo, 1 up, 6 down; also for Query!
-        var temp = 0;           // non zero if bond is transient (temporary)
-        var type = null;
+        let atomA;
+        let atomB;
+        let sgroups = {};
+        let color;
+        let id;                 // unique id (i.e. for undo / redo)
+        let index;              // numeric index
+        let selected = 0;       // non zero if bond is selected
+        let stereo = "0";       // 0 no stereo, 1 up, 6 down; also for Query!
+        let temp = 0;           // non zero if bond is transient (temporary)
+        let type = null;
 
         return {
 

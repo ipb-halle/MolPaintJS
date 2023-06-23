@@ -25,7 +25,7 @@ var molPaintJS = (function (molpaintjs) {
          * user action (e.g. adding a residue) may be composed of 
          * several atomic actions.
          */
-        var actions = [];
+        let actions = [];
 
         return {
             /**

@@ -23,7 +23,7 @@
 {
 //  const util = require('util');
 
-    var mdlParserData = {
+    let mdlParserData = {
         'atomCount':0,
         'atomListCount':0,
         'bondCount':0,

@@ -20,8 +20,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.AtomTool = function (ctx, prop, i) {
 
-        var distMax = prop.distMax;
-        var atom = null;
+        let distMax = prop.distMax;
+        let atom = null;
 
         return {
             context : ctx,

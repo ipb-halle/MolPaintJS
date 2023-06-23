@@ -20,24 +20,24 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.View = function (cid, prop) {
 
-        var displayScale = 1.0;
-        var fontFamily = prop.fontFamily;
-        var fontSize = prop.fontSize;
-        var medianBondLength = 1.5;
-        var molScaleDefault = prop.molScaleDefault;
-        var molScale = molScaleDefault / medianBondLength;
-        var rasterX = [];
-        var rasterY = [];
-        var sizeX = prop.sizeX;
-        var sizeY = prop.sizeY;
-        var subscriptFactor = prop.subscriptFactor;
+        let displayScale = 1.0;
+        let fontFamily = prop.fontFamily;
+        let fontSize = prop.fontSize;
+        let medianBondLength = 1.5;
+        let molScaleDefault = prop.molScaleDefault;
+        let molScale = molScaleDefault / medianBondLength;
+        let rasterX = [];
+        let rasterY = [];
+        let sizeX = prop.sizeX;
+        let sizeY = prop.sizeY;
+        let subscriptFactor = prop.subscriptFactor;
 
-        var centerX = sizeX / 2;
-        var centerY = sizeY / 2;
+        let centerX = sizeX / 2;
+        let centerY = sizeY / 2;
 
-        var contextId = cid + "_canvas";
-        var viewContext = null;
-        var element = null;
+        let contextId = cid + "_canvas";
+        let viewContext = null;
+        let element = null;
 
         return {
 
@@ -130,8 +130,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getOffset : function () {
-                var bbox = element.getBoundingClientRect();
-                // var bdy = document.body.getBoundingClientRect();
+                let bbox = element.getBoundingClientRect();
+                // let bdy = document.body.getBoundingClientRect();
                 // DO NOT USE: offset.??? = bbox.??? + bdy.???
                 return {
                     x: bbox.left,
@@ -184,7 +184,7 @@ var molPaintJS = (function (molpaintjs) {
             initRaster : function(mol) {
                 medianBondLength = mol.computeBondLengths();
 
-                for(var i=0; i<15; i++) {
+                for(let i=0; i<15; i++) {
                     rasterX[i] = Math.cos(i * Math.PI / 6.0) * medianBondLength;
                     rasterY[i] = Math.sin(i * Math.PI / 6.0) * medianBondLength;
                 }
@@ -210,9 +210,9 @@ var molPaintJS = (function (molpaintjs) {
              */
             setDisplayScale : function (mol, center) {
 
-                var molbox;
-                var x = sizeX - 40;     // leave some margin
-                var y = sizeY - 40;
+                let molbox;
+                let x = sizeX - 40;     // leave some margin
+                let y = sizeY - 40;
 
                 if (center) {
                     molbox = this.getBBox(mol.center());
@@ -225,7 +225,7 @@ var molPaintJS = (function (molpaintjs) {
                     displayScale = x / molbox.getDeltaX();
                 }
                 if (molbox.getDeltaY() > y) {
-                    var f = y / molbox.getDeltaY();
+                    let f = y / molbox.getDeltaY();
                     displayScale = (f < displayScale) ? f : displayScale;
                 }
             },
@@ -249,7 +249,7 @@ var molPaintJS = (function (molpaintjs) {
              * set superscript / subscript size
              */
             setSubscript : function () {
-                var fs = fontSize * subscriptFactor;
+                let fs = fontSize * subscriptFactor;
                 viewContext.font = fs + "px " + fontFamily;
             },
 

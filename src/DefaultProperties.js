@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.DefaultProperties = function (prop) {
 
-        var properties = {
+        let properties = {
             bondLength: 1.5,
             distMax: 0.08,
             fontFamily: "SansSerif",

@@ -21,9 +21,9 @@ var molPaintJS = (function (molpaintjs) {
     /*
      * variables and constructor 
      */
-    var contextRegistry = {};
-    var properties = molpaintjs.DefaultProperties();
-    var templates = [ 'benzene', 'cyclohexane', 'cyclopentane' ];
+    let contextRegistry = {};
+    let properties = molpaintjs.DefaultProperties();
+    let templates = [ 'benzene', 'cyclohexane', 'cyclopentane' ];
 
 
     /**
@@ -31,9 +31,9 @@ var molPaintJS = (function (molpaintjs) {
      * @param t the template
      */
     function loadTemplate (t, url) {
-        var that = this;
-        var tp = t;
-        var request = new XMLHttpRequest();
+        let that = this;
+        let tp = t;
+        let request = new XMLHttpRequest();
         request.open('GET',url, true);
         request.overrideMimeType('text/html');
         request.send(null);
@@ -51,14 +51,14 @@ var molPaintJS = (function (molpaintjs) {
      * @param templateConfig an array of config objects [ {key:"Asn", molURL:"asparagine.mol", iconURL:"asparagine.png"} , ... ]
      */
     molpaintjs.addTemplates = function (templateConfig) {
-        for (var cfg of templateConfig) {
+        for (let cfg of templateConfig) {
             molPaintJS.Resources[cfg.key + ".png"] = cfg.iconURL;
             loadTemplate(cfg.key, cfg.molURL);
         }
     }
 
     molpaintjs.createCSS = function() {
-        var e = document.getElementById("MolPaintJS_CSS");
+        let e = document.getElementById("MolPaintJS_CSS");
         if (e == null) {
             e = document.createElement("link");
             e.id = "MolPaintJS_CSS";
@@ -69,7 +69,7 @@ var molPaintJS = (function (molpaintjs) {
     },
 
     molpaintjs.createHelpWidget = function() {
-        var e = document.getElementById("MolPaintJS_Help_Widget");
+        let e = document.getElementById("MolPaintJS_Help_Widget");
         if (e == null) {
             e = document.createElement("div");
             e.id = "MolPaintJS_Help_Widget";
@@ -84,9 +84,9 @@ var molPaintJS = (function (molpaintjs) {
      * context id "cid".
      */
     molpaintjs.dump = function (cid, dumpId) {
-        var o = document.getElementById(dumpId);
-        var format = arguments[2] || 'V2000';
-        var moltext = '';
+        let o = document.getElementById(dumpId);
+        let format = arguments[2] || 'V2000';
+        let moltext = '';
 
         switch(format) {
             case 'V3000':
@@ -112,9 +112,9 @@ var molPaintJS = (function (molpaintjs) {
      * return the current date in MMDDYYhhmm format as specified for MDL header line
      */
     molpaintjs.getMDLDateCode = function () {
-        var date = new Date();
-        var part = date.getMonth() + 1;
-        var st = ((part < 10) ? "0" + part : "" + part);
+        let date = new Date();
+        let part = date.getMonth() + 1;
+        let st = ((part < 10) ? "0" + part : "" + part);
         part = date.getDate();
         st += ((part < 10) ? "0" + part : "" + part);
         part = date.getFullYear();
@@ -130,7 +130,7 @@ var molPaintJS = (function (molpaintjs) {
      * @return the molecule from context cid in MDLv2000 format
      */
     molpaintjs.getMDLv2000 = function (cid) { 
-        var w = this.MDLv2000Writer();
+        let w = this.MDLv2000Writer();
         return w.write(contextRegistry[cid].getMolecule());
     },
 
@@ -138,7 +138,7 @@ var molPaintJS = (function (molpaintjs) {
      * @return the molecule from context cid in MDLv3000 format
      */
     molpaintjs.getMDLv3000 = function (cid) {
-        var w = this.MDLv3000Writer();
+        let w = this.MDLv3000Writer();
         return w.write(contextRegistry[cid].getMolecule());
     },
 
@@ -175,7 +175,7 @@ var molPaintJS = (function (molpaintjs) {
      * create a new context
      */
     molpaintjs.newContext = function (cid, prop) {
-        var ctx = molPaintJS.Context(cid, prop, this);
+        let ctx = molPaintJS.Context(cid, prop, this);
         ctx.render();
         return ctx;
     },

@@ -20,8 +20,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.EraserTool = function (ctx, prop) {
 
-        var distMax = prop.distMax;
-        var actionList;
+        let distMax = prop.distMax;
+        let actionList;
 
         /**
          * erase a single atom and all of its bonds

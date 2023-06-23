@@ -20,8 +20,8 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.IsotopeTool = function(ctx, prop) {
 
-        var distMax = prop.distMax;
-        var type = "isotope_up";
+        let distMax = prop.distMax;
+        let type = "isotope_up";
 
         return {
             id : "isotope",

@@ -20,10 +20,10 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.ChainTool = function (ctx, prop) {
 
-        var distMax = prop.distMax;
-        var origin = null;
-        var atomA = null
-        var actionList;
+        let distMax = prop.distMax;
+        let origin = null;
+        let atomA = null
+        let actionList;
 
         return {
 

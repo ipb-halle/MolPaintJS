@@ -23,12 +23,12 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.Box = function (x1, y1, x2, y2) {
 
-        var minX = (x1 < x2) ? x1 : x2;
-        var minY = (y1 < y2) ? y1 : y2;
-        var maxX = (x1 < x2) ? x2 : x1;
-        var maxY = (y1 < y2) ? y2 : y1;
-        var centerX = (x1 + x2) / 2;
-        var centerY = (y1 + y2) / 2;
+        let minX = (x1 < x2) ? x1 : x2;
+        let minY = (y1 < y2) ? y1 : y2;
+        let maxX = (x1 < x2) ? x2 : x1;
+        let maxY = (y1 < y2) ? y2 : y1;
+        let centerX = (x1 + x2) / 2;
+        let centerY = (y1 + y2) / 2;
 
         /**
          * clip in quadrant I

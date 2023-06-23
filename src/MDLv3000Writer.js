@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.MDLv3000Writer = function() {
 
-        var output = "";
+        let output = "";
 
         /**
          * check if the concatenation of line and st would exceed the 80 characters

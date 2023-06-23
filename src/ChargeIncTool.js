@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.ChargeIncTool = function (ctx, prop) {
 
-        var distMax = prop.distMax;
+        let distMax = prop.distMax;
 
         return {
 

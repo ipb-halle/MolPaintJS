@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.CollectionHandler = function (cid) {
 
-        var contextId = cid;
+        let contextId = cid;
 
         function applySelection(collection, selection) {
             let atoms = {};

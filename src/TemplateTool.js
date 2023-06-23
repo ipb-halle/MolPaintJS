@@ -20,11 +20,11 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.TemplateTool = function (ctx, prop, i) {
 
-        var actionList = null;
-        var properties = prop;
-        var template = "";
-        var templateId = "";
-        var origin = null;
+        let actionList = null;
+        let properties = prop;
+        let template = "";
+        let templateId = "";
+        let origin = null;
 
         return {
             id : i,
@@ -39,14 +39,14 @@ var molPaintJS = (function (molpaintjs) {
              * @param a2 the atom from the template fragment
              */
             joinAtoms : function (atom1, atom2) {
-                var a1 = atom1.getId();
-                var a2 = atom2.getId();
-                var allBonds = this.context.getMolecule().getBonds();
-                for (var b in atom1.getBonds()) {
-                    var atom = null;
-                    var bond = null;
+                let a1 = atom1.getId();
+                let a2 = atom2.getId();
+                let allBonds = this.context.getMolecule().getBonds();
+                for (let b in atom1.getBonds()) {
+                    let atom = null;
+                    let bond = null;
                     if (allBonds[b].getAtomA().getId() == a1) {
-                        var atom = allBonds[b].getAtomB();
+                        let atom = allBonds[b].getAtomB();
                         if ((atom.getSelected() & 2) === 0) {
                             bond = molPaintJS.Bond();
                             bond.setAtomA(atom2);
@@ -80,16 +80,16 @@ var molPaintJS = (function (molpaintjs) {
                 origin = null;
 
                 this.context.getMolecule().adjustSelection(2,2,0);
-                var box = this.context.getMolecule().computeBBox(1);
-                var sel = this.context.getMolecule().selectBBox(box, 2, 1);  // overlapping atoms and bonds
-                var tpl = this.context.getMolecule().getSelected(1);         // return the template
+                let box = this.context.getMolecule().computeBBox(1);
+                let sel = this.context.getMolecule().selectBBox(box, 2, 1);  // overlapping atoms and bonds
+                let tpl = this.context.getMolecule().getSelected(1);         // return the template
 
-                for (var a1 of sel.atoms) {
-                    for (var a2 of tpl.atoms) {
-                        var atom1 = this.context.getMolecule().getAtom(a1);
-                        var atom2 = this.context.getMolecule().getAtom(a2);
-                        var dx = atom1.getX() - atom2.getX();
-                        var dy = atom1.getY() - atom2.getY();
+                for (let a1 of sel.atoms) {
+                    for (let a2 of tpl.atoms) {
+                        let atom1 = this.context.getMolecule().getAtom(a1);
+                        let atom2 = this.context.getMolecule().getAtom(a2);
+                        let dx = atom1.getX() - atom2.getX();
+                        let dy = atom1.getY() - atom2.getY();
                         if (prop.distMax > ((dx * dx) + (dy * dy))) {
                             this.joinAtoms(atom1, atom2);
                             break;
@@ -111,14 +111,14 @@ var molPaintJS = (function (molpaintjs) {
             onMouseMove : function (x, y, evt) {
                 /* move template around */
                 if (origin != null) {
-                    var coord = this.context.getView().getCoordReverse(x, y);
-                    var dx = coord.x - origin.x;
-                    var dy = coord.y - origin.y;
+                    let coord = this.context.getView().getCoordReverse(x, y);
+                    let dx = coord.x - origin.x;
+                    let dy = coord.y - origin.y;
                     origin = coord;
                     this.context.getMolecule().transform([[1, 0, dx], [0, 1, dy]], 1)
 
                     this.context.getMolecule().adjustSelection(2,2,0);
-                    var box = this.context.getMolecule().computeBBox(1);
+                    let box = this.context.getMolecule().computeBBox(1);
                     this.context.getMolecule().selectBBox(box, 2, 1);
                     this.context.draw();
                 }
@@ -131,8 +131,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                var destIconId = this.context.contextId + "_template";
-                var icon = document.getElementById(destIconId);
+                let destIconId = this.context.contextId + "_template";
+                let icon = document.getElementById(destIconId);
                 icon.src = molPaintJS.Resources[templateId + ".png"];
             }
         };

@@ -19,13 +19,13 @@ var molPaintJS = (function (molpaintjs) {
     "use strict";
 
     molpaintjs.setElement = function (id, el) {
-        var ctx = molPaintJS.getContext(id);
+        let ctx = molPaintJS.getContext(id);
         ctx.setCurrentElement(molPaintJS.Elements.getElement(el));
         ctx.getWidget().onCustomElement({target: {id: id}});
     }
 
     molpaintjs.setCurrentBond = function (id) {
-        var ctx = molPaintJS.getContext(id);
+        let ctx = molPaintJS.getContext(id);
         if (ctx != undefined) {
             ctx.setCurrentTool(ctx.getCurrentBondTool());
         }
@@ -33,27 +33,27 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Widget = function(contextId, prop, mp) {
 
-        var distMax = prop.distMax;
-        var molpaint = mp;
-        var iconSize = prop.iconSize;
-        var height = prop.sizeY;
-        var helpURL = prop.helpURL;
-        var widgetId = contextId;
-        var widgetObject = document.getElementById(contextId);
-        var width = prop.sizeX;
-        var viewer = (prop.viewer === 1);
+        let distMax = prop.distMax;
+        let molpaint = mp;
+        let iconSize = prop.iconSize;
+        let height = prop.sizeY;
+        let helpURL = prop.helpURL;
+        let widgetId = contextId;
+        let widgetObject = document.getElementById(contextId);
+        let width = prop.sizeX;
+        let viewer = (prop.viewer === 1);
 
         /*
          * Actions
          */
         function actionCarbon (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentElement(molPaintJS.Elements.getElement("C"));
             ctx.setCurrentTool(ctx.getTools().carbonAtomTool);
         }
 
         function actionCenter (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
 
         //
         // do not affect (atomic) coordinates -> no need for history
@@ -65,30 +65,30 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionChain (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().chainTool);
         }
 
         function actionChargeDec (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().chargeDecTool);
         }
 
         function actionChargeInc (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().chargeIncTool);
         }
 
         function actionCollection (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             molPaintJS.CollectionHandler(ctx.contextId).render();
         }
 
         function actionCopy (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var w = molPaintJS.MDLv2000Writer();
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let w = molPaintJS.MDLv2000Writer();
 
-            var dummy = document.createElement("textarea");
+            let dummy = document.createElement("textarea");
             document.body.appendChild(dummy);
             dummy.setAttribute("id", evt.target.id + "dummyId");
             document.getElementById(evt.target.id + "dummyId").value = w.write(ctx.getMolecule()); 
@@ -98,15 +98,15 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionClear (evt) {
-            var id = evt.target.id;
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var actionList = molPaintJS.ActionList();
+            let id = evt.target.id;
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let actionList = molPaintJS.ActionList();
 
-            var molecule = ctx.getMolecule();
-            for (var a in molecule.getAtoms()) {
+            let molecule = ctx.getMolecule();
+            for (let a in molecule.getAtoms()) {
                 actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, molecule.getAtom(a)));
             }
-            for (var b in molecule.getBonds()) {
+            for (let b in molecule.getBonds()) {
                 actionList.addAction(molPaintJS.Action("DEL", "BOND", null, molecule.getBond(b)));
             }
 
@@ -116,8 +116,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionCustomElement (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var sym = ctx.getCurrentElement().getSymbol();
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let sym = ctx.getCurrentElement().getSymbol();
             switch (sym) {
                 case "H":
                     ctx.setCurrentTool(ctx.getTools().hydrogenAtomTool);
@@ -137,29 +137,29 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionEraser (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().eraserTool);
         }
 
         function actionDoubleBond (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().doubleBondTool);
         }
         function actionHashedWedge (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().hashedWedgeTool);
         }
 
         function actionHydrogen (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentElement(molPaintJS.Elements.getElement("H"));
             ctx.setCurrentTool(ctx.getTools().hydrogenAtomTool);
         }
 
         function actionInfo (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var e = document.getElementById('MolPaintJS_Help_Widget');
-            var content = decodeURI(molPaintJS.Resources['help.html'])
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let e = document.getElementById('MolPaintJS_Help_Widget');
+            let content = decodeURI(molPaintJS.Resources['help.html'])
                 .replace('data:text/html;charset=UTF-8,','');
             e.innerHTML = content
                 .replaceAll('%HELP_URL%', helpURL)
@@ -168,9 +168,9 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionIsotope (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var tool = ctx.getTools().isotopeTool;
-            var tp = evt.target.id.replace(ctx.contextId + "_", "");
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let tool = ctx.getTools().isotopeTool;
+            let tp = evt.target.id.replace(ctx.contextId + "_", "");
             if (tp != "isotope") {
                 tool.setType(tp);
             }
@@ -178,13 +178,13 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionNitrogen (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentElement(molPaintJS.Elements.getElement("N"));
             ctx.setCurrentTool(ctx.getTools().nitrogenAtomTool);
         }
 
         function actionOxygen (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentElement(molPaintJS.Elements.getElement("O"));
             ctx.setCurrentTool(ctx.getTools().oxygenAtomTool);
         }
@@ -194,19 +194,19 @@ var molPaintJS = (function (molpaintjs) {
          * Currently works only in recent Firefox browsers.
          */
         function actionPaste (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);;
+            let ctx = molPaintJS.getContext(evt.target.id);;
 
             // Stop data actually being pasted into div
             evt.stopPropagation();
             evt.preventDefault();
 
             // Get pasted data via clipboard API
-            var clipboardData = evt.clipboardData || window.clipboardData;
+            let clipboardData = evt.clipboardData || window.clipboardData;
             if (clipboardData == null) {
                 alert("Clipboard not supported in this browser.\n"
                     + "You might want to try the paste icon");
             }
-            var pastedData = clipboardData.getData("text");
+            let pastedData = clipboardData.getData("text");
             ctx.pasteMolecule(pastedData, 2);
         }
 
@@ -216,8 +216,8 @@ var molPaintJS = (function (molpaintjs) {
          */
         function actionPasteButton (evt) {
             try {
-                var ctx = molPaintJS.getContext(evt.target.id);
-                var clp = AllowClipboard.Client.ClipboardClient();
+                let ctx = molPaintJS.getContext(evt.target.id);
+                let clp = AllowClipboard.Client.ClipboardClient();
                 clp.read(function (x, pastedData) {
                     ctx.pasteMolecule(pastedData);
                     // alert(pastedData); 
@@ -230,15 +230,15 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionPointer (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().pointerTool);
         }
 
         function actionRadical (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var tool = ctx.getTools().radicalTool;
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let tool = ctx.getTools().radicalTool;
             ctx.setCurrentTool(tool);
-            var tp = evt.target.id.replace(ctx.contextId + "_", "");
+            let tp = evt.target.id.replace(ctx.contextId + "_", "");
             if (tp != "radical") {
                 tool.setType(tp);
             }
@@ -250,31 +250,31 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionRedo (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.getHistory().redo(ctx);
             ctx.draw();
         }
 
         function actionSingleBond (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().singleBondTool);
         }
 
 
         function actionSlide (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().slideTool);
         }
 
         function actionSolidWedge (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().solidWedgeTool);
         }
 
         function actionTemplate (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var tool = ctx.getTools().templateTool;
-            var tp = evt.target.id.replace(ctx.contextId + "_", "");
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let tool = ctx.getTools().templateTool;
+            let tp = evt.target.id.replace(ctx.contextId + "_", "");
             if (tp == "template") {
                 tp = ctx.getCurrentTemplate();
             } else {
@@ -285,30 +285,30 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function actionTripleBond (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().tripleBondTool);
         }
 
         function actionUndo (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.getHistory().undo(ctx);
             ctx.draw();
         }
 
         function actionWavyBond (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentTool(ctx.getTools().wavyBondTool);
         }
 
         function actionZoomIn (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.getView().scaleDisplay(1.5);
             ctx.getView().scaleFontSize(1.5);
             ctx.draw();
         }
 
         function actionZoomOut (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
+            let ctx = molPaintJS.getContext(evt.target.id);
             ctx.getView().scaleDisplay(1.0/1.5);
             ctx.getView().scaleFontSize(1.0 / 1.5);
             ctx.draw();
@@ -349,38 +349,38 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function onClick (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var offset = ctx.getView().getOffset();
-            var x = evt.clientX - offset.x;
-            var y = evt.clientY - offset.y;
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let offset = ctx.getView().getOffset();
+            let x = evt.clientX - offset.x;
+            let y = evt.clientY - offset.y;
             if (typeof ctx.getCurrentTool().onClick == 'function') {
                 ctx.getCurrentTool().onClick(x, y, evt);
             }
         }
 
         function onMouseDown (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var offset = ctx.getView().getOffset();
-            var x = evt.clientX - offset.x;
-            var y = evt.clientY - offset.y;
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let offset = ctx.getView().getOffset();
+            let x = evt.clientX - offset.x;
+            let y = evt.clientY - offset.y;
             if (typeof ctx.getCurrentTool().onMouseDown == 'function') {
                 ctx.getCurrentTool().onMouseDown(x, y, evt);
             }
         }
 
         function onMouseMove (evt) {
-            var ctx = molPaintJS.getContext(evt.target.id);
-            var offset = ctx.getView().getOffset();
-            var x = evt.clientX - offset.x;
-            var y = evt.clientY - offset.y;
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let offset = ctx.getView().getOffset();
+            let x = evt.clientX - offset.x;
+            let y = evt.clientY - offset.y;
             if (typeof ctx.getCurrentTool().onMouseMove == 'function') {
                 ctx.getCurrentTool().onMouseMove(x, y, evt);
             }
         }
 
         function registerEvent (ctx, evt, w, a) {
-            var id = ctx.contextId + w;
-            var e = document.getElementById(id);
+            let id = ctx.contextId + w;
+            let e = document.getElementById(id);
             molPaintJS.registerContext(id, ctx); 
             e.addEventListener(evt, a, false);
         }
@@ -463,7 +463,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderPeriodicTable () {
-            var header = "<tr><td>"
+            let header = "<tr><td>"
                 + "<div class='molPaintJS-rightDropdown'>"
                 + "<a href='javascript:void(0);' class='molPaintJS-dropbtn'><img id='"
                 + widgetId + "_pse' src='" + molPaintJS.Resources['pse.png']
@@ -472,16 +472,16 @@ var molPaintJS = (function (molpaintjs) {
                 + "  <div  id='" + widgetId + "_pseMenu' class='molPaintJS-rightDropdown-content'>"
                 + "  <table class='molPaintJS-elementTable'>";
 
-            var footer = "</table>"
+            let footer = "</table>"
                 + "</div>"
                 + "</div>"
                 + "</td></tr>";
 
-            var tbl = "<tr>";
-            var period = 1;
-            var group = 1;
-            for (var isotopes of molPaintJS.Elements.getAllElements()) {
-                var el = isotopes[0];
+            let tbl = "<tr>";
+            let period = 1;
+            let group = 1;
+            for (let isotopes of molPaintJS.Elements.getAllElements()) {
+                let el = isotopes[0];
                 if (el.getAtomicNumber() == 0) {
                     // skip atomic number 0 (reserved for '*', 'R', ...)
                     continue;
@@ -498,7 +498,7 @@ var molPaintJS = (function (molpaintjs) {
                         group = 2;
                     }
                 }
-                var colspan = el.getGroup() - group - 1;
+                let colspan = el.getGroup() - group - 1;
                 group = el.getGroup();
                 if (colspan > 0) {
                     tbl += "<td colspan='" + colspan + "'></td>";
@@ -547,19 +547,19 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderTemplateMenu () {
-            var ctx = molPaintJS.getContext(widgetId);
-            var currentTemplate = ctx.getCurrentTemplate();
+            let ctx = molPaintJS.getContext(widgetId);
+            let currentTemplate = ctx.getCurrentTemplate();
 
-            var header = "<tr><td>"
+            let header = "<tr><td>"
                 + "<div class='molPaintJS-leftDropdown'>"
                 + " <a href='javascript:void(0);' class='molPaintJS-dropbtn' >"
                 + item("template", currentTemplate, currentTemplate, "molPaintJS-inactiveTool")
                 + "</a><div id='" + widgetId + "_templateMenu' class='molPaintJS-leftDropdown-content'>"
                 + "<table>";
 
-            var body = "";
-            var i = 0;
-            for (var t of molPaintJS.getTemplates()) {
+            let body = "";
+            let i = 0;
+            for (let t of molPaintJS.getTemplates()) {
 
                 if ((i % 5) == 0) {
                     body += "<tr>";
@@ -578,7 +578,7 @@ var molPaintJS = (function (molpaintjs) {
                 body += "</tr>";
             }
 
-            var footer = "</table></div>"
+            let footer = "</table></div>"
                 + "</div>"
                 + "</td></tr>";
 
@@ -644,7 +644,7 @@ var molPaintJS = (function (molpaintjs) {
                 registerEvent(ctx, "mousemove", "_canvas", onMouseMove);
                 registerEvent(ctx, "paste", "_canvas", actionPaste);
 
-                for(var t of molpaint.getTemplates()) {
+                for(let t of molpaint.getTemplates()) {
                     registerEvent(ctx, "click", "_" + t, actionTemplate);
                 }
             },

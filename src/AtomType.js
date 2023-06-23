@@ -20,9 +20,9 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.AtomType = function () {
 
-        var color;
-        var label;
-        var isotope;
+        let color;
+        let label;
+        let isotope;
 
         return {
             getColor : function () {

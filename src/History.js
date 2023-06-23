@@ -20,9 +20,9 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.History = function (cid) {
 
-        var actions = [];
-        var actionPtr = -1;
-        var contextId = cid;
+        let actions = [];
+        let actionPtr = -1;
+        let contextId = cid;
 
         function redoAdd (ctx, action) {
             switch (action.objectType) {

@@ -25,26 +25,26 @@ var molPaintJS = (function (molpaintjs) {
          * in the CT-file document. Implementation is incomplete!
          *
          */
-        var id = null;
-        var type = t;
-        var jsonData = {};
+        let id = null;
+        let type = t;
+        let jsonData = {};
 
-        var atoms = [];
-        var brkxyz = [];
-        var cbonds = [];
-        var connect = 'EU';
-        var fieldData = '';
-        var fieldDisposition = '';
-        var label = '';
-        var patoms = [];
-        var selected = 0;
-        var xbonds = [];
+        let atoms = [];
+        let brkxyz = [];
+        let cbonds = [];
+        let connect = 'EU';
+        let fieldData = '';
+        let fieldDisposition = '';
+        let label = '';
+        let patoms = [];
+        let selected = 0;
+        let xbonds = [];
 
 /* 
     ToDo:
-        var subscript = null;
-        var bondVector = [];
-        var uniqueLabel = null;
+        let subscript = null;
+        let bondVector = [];
+        let uniqueLabel = null;
 
         and much more ...
 */
@@ -56,7 +56,7 @@ var molPaintJS = (function (molpaintjs) {
              * add data to existing jsonDataObject
              */
             addJsonData : function(data) {
-                for (var t in [ 'ATOMS', 'BONDS', 'CBONDS', 'XBONDS', 'PATOMS', 'XHEAD' ]) {
+                for (let t in [ 'ATOMS', 'BONDS', 'CBONDS', 'XBONDS', 'PATOMS', 'XHEAD' ]) {
                     if (data[t] != null) {
                         if (t == 'BONDS') {
                             t = (type == 'DAT') ?  'CBONDS' : 'XBONDS';
@@ -75,7 +75,7 @@ var molPaintJS = (function (molpaintjs) {
                     jsonData[listType].count = data.length;
                     jsonData[listType].data = data;
                 } else {
-                    for (var d of data[listType].data) {
+                    for (let d of data[listType].data) {
                         jsonData[listType].count++;
                         jsonData[listType].data.push(d);
                     }
@@ -111,8 +111,8 @@ var molPaintJS = (function (molpaintjs) {
             * @return JSON object with parsed data
             */
             getFieldDispositionCoordinates : function() {
-                var x = parseFloat(fieldDisposition.substr(0,9));
-                var y = -1.0 * parseFloat(fieldDisposition.substr(10,19)); // flip on X axis
+                let x = parseFloat(fieldDisposition.substr(0,9));
+                let y = -1.0 * parseFloat(fieldDisposition.substr(10,19)); // flip on X axis
                 return { 'x':x, 'y':y };
             },
 
@@ -130,8 +130,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonAtoms : function(molecule) {
                 if (jsonData['ATOMS'] != null) {
-                    for (var idx of jsonData['ATOMS'].data) {
-                        var atom = molecule.getAtom('Atom' + idx);
+                    for (let idx of jsonData['ATOMS'].data) {
+                        let atom = molecule.getAtom('Atom' + idx);
                         atoms.push(atom); 
                         atom.addSGroup(this);
                     }
@@ -141,7 +141,7 @@ var molPaintJS = (function (molpaintjs) {
             parseJsonBRKXYZ : function() {
                 brkxyz = jsonData['BRKXYZ'];
                 // invert Y coordinates
-                for (var i in brkxyz) {
+                for (let i in brkxyz) {
                     if (brkxyz[i].data !== undefined) {
                         brkxyz[i].data[1] *= -1.0;
                         brkxyz[i].data[4] *= -1.0;
@@ -151,8 +151,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonCBonds : function(molecule) {
                 if (jsonData['CBONDS'] != null) {
-                    for (var idx of jsonData['CBONDS'].data) {
-                        var cbond = molecule.getBond('Bond' + idx);
+                    for (let idx of jsonData['CBONDS'].data) {
+                        let cbond = molecule.getBond('Bond' + idx);
                         cbonds.push(cbond);
                         cbond.addSGroup(this);
                     }
@@ -180,8 +180,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonPAtoms : function(molecule) {
                 if (jsonData['PATOMS'] != null) {
-                    for (var idx of jsonData['PATOMS'].data) {
-                        var atom = molecule.getAtom('Atom' + idx);
+                    for (let idx of jsonData['PATOMS'].data) {
+                        let atom = molecule.getAtom('Atom' + idx);
                         patoms.push(atom);
                         atom.addSGroup(this);
                     }
@@ -190,8 +190,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonXBonds : function(molecule) {
                 if (jsonData['XBONDS'] != null) {
-                    for (var idx of jsonData['XBONDS'].data) {
-                        var xbond = molecule.getBond('Bond' + idx);
+                    for (let idx of jsonData['XBONDS'].data) {
+                        let xbond = molecule.getBond('Bond' + idx);
                         xbonds.push(xbond);
                         xbond.addSGroup(this);
                     }

@@ -73,7 +73,7 @@ var molPaintJS = (function (molpaintjs) {
 
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let bonds = this.context.getDrawing().selectBond(coord, distMax);
+                let bonds = this.context.getDrawing().selectBonds(coord, distMax);
                 if (bonds.length == 1) {
                     eraseBond(this.context, bonds[0]);
                     // alert("Erase bond: id=" + bonds[0]);

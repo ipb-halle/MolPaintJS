@@ -153,7 +153,7 @@ var molPaintJS = (function (molpaintjs) {
                     // only create non-empty collections
                     if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                         applySelection(collection, selection);
-                        drawing.setCollection(collection);
+                        drawing.replaceCollection(collection);
                         document.getElementById(dlgId).style.display = 'none';
                     }
                 } else {

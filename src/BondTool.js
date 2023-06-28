@@ -59,7 +59,7 @@ var molPaintJS = (function (molpaintjs) {
             onMouseDown : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
 
-                let bonds = this.context.getDrawing().selectBond(coord, distMax);
+                let bonds = this.context.getDrawing().selectBonds(coord, distMax);
                 let atomId = this.context.getDrawing().selectAtom(coord, distMax);
 
                 actionList = molPaintJS.ActionList();

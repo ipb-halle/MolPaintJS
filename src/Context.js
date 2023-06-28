@@ -89,7 +89,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             draw : function () {
-                let d = molPaintJS.Draw(view, molecule);
+                let d = molPaintJS.DrawCanvas(view, molecule);
                 d.draw();
                 if (changeListener != null) {
                     changeListener.call(this);

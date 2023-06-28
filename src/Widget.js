@@ -54,12 +54,6 @@ var molPaintJS = (function (molpaintjs) {
 
         function actionCenter (evt) {
             let ctx = molPaintJS.getContext(evt.target.id);
-
-        //
-        // do not affect (atomic) coordinates -> no need for history
-        //
-        //  ctx.molecule.center();
-
             ctx.getView().center();
             ctx.draw();
         }

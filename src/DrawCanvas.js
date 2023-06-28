@@ -18,7 +18,7 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
-    molpaintjs.Draw = function (v, mol) {
+    molpaintjs.DrawCanvas = function (v, mol) {
 
         let view = v;
         let molecule = mol;

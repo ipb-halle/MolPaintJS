@@ -30,15 +30,15 @@ var molPaintJS = (function (molpaintjs) {
             origin = null;
             if (mode == 0) {
                 if(evt.ctrlKey) {
-                    context.getMolecule().adjustSelection(1, 3, 0);
+                    context.getDrawing().adjustSelection(1, 3, 0);
                 } else {
-                    context.getMolecule().adjustSelection(1, 1, 2);
+                    context.getDrawing().adjustSelection(1, 1, 2);
                 }
             } else {
                 // save history
                 for (let action of actionList.getActions()) {
                     let atomId = action.oldObject.getId();
-                    action.newObject = context.getMolecule().getAtom(atomId).copy();
+                    action.newObject = context.getDrawing().getAtom(atomId).copy();
                 }
                 context.getHistory().appendAction(actionList);
                 actionList = null;
@@ -48,23 +48,23 @@ var molPaintJS = (function (molpaintjs) {
 
         function mouseDown (context, x, y, evt) {
             let coord = context.getView().getCoordReverse(x, y);
-            let atomId = context.getMolecule().selectAtom(coord, distMax);
+            let atomId = context.getDrawing().selectAtom(coord, distMax);
 
             if ((atomId == null) ||
-               ((context.getMolecule().getAtom(atomId).getSelected() & 2) == 0)) {
+               ((context.getDrawing().getAtom(atomId).getSelected() & 2) == 0)) {
                 // select mode
                 mode = 0;
                 if(evt.shiftKey || evt.ctrlKey) {
-                    context.getMolecule().clearSelection(1);
+                    context.getDrawing().clearSelection(1);
                 } else {
-                    context.getMolecule().clearSelection(7);
+                    context.getDrawing().clearSelection(7);
                 }
             } else {
                 // transform mode; prepare history
                 actionList = molPaintJS.ActionList();
-                let sel = context.getMolecule().getSelected(2); // return the selection
+                let sel = context.getDrawing().getSelected(2); // return the selection
                 for (let a1 of sel.atoms) {
-                    let atom = context.getMolecule().getAtom(a1);
+                    let atom = context.getDrawing().getAtom(a1);
                     actionList.addAction(molPaintJS.Action("UPD", "ATOM", null, atom.copy()));
                 }
 
@@ -100,8 +100,8 @@ var molPaintJS = (function (molpaintjs) {
             let vctx = context.getView().getViewContext();
             let box = molPaintJS.Box(origin.x, origin.y, x, y);
             let mbox = context.getView().getBBoxReverse(box);
-            context.getMolecule().clearSelection(1);
-            context.getMolecule().selectBBox(mbox, 1, 0);
+            context.getDrawing().clearSelection(1);
+            context.getDrawing().selectBBox(mbox, 1, 0);
             context.draw();
             box.draw(vctx);
         }
@@ -112,7 +112,7 @@ var molPaintJS = (function (molpaintjs) {
             let cos = Math.cos(dx / 57.0 );
 
             origin = { 'x':x, 'y':y };
-            context.getMolecule().transform([[cos, sin, 0], [ (sin * -1.0), cos, 0]], 2);
+            context.getDrawing().transform([[cos, sin, 0], [ (sin * -1.0), cos, 0]], 2);
             context.draw();
         }
 
@@ -123,7 +123,7 @@ var molPaintJS = (function (molpaintjs) {
             let dy = coord.y - o.y;
 
             origin = { 'x':x, 'y':y };
-            context.getMolecule().transform([[1, 0, dx], [0, 1, dy]], 2);
+            context.getDrawing().transform([[1, 0, dx], [0, 1, dy]], 2);
             context.draw();
         }
 

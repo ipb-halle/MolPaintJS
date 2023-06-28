@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     /**
      * The SlideTool does not provide history as it does not affect
-     * the coordinates of the molecule. Only the View is manipulated.
+     * the coordinates of the drawing. Only the View is manipulated.
      */
     molpaintjs.SlideTool = function(ctx) {
 

@@ -7,8 +7,8 @@ describe('MolPaintJS top menu test', () => {
 
         // check start condition
         cy.window().then((win) => {
-            win.molPaintJS.getContext('mol').getMolecule().reIndex();
-            expect(win.molPaintJS.getContext('mol').getMolecule().getAtomCount()).to.eq(14);
+            win.molPaintJS.getContext('mol').getDrawing().reIndex();
+            expect(win.molPaintJS.getContext('mol').getDrawing().getAtomCount()).to.eq(14);
 
             // undo icon is inactive
             cy.get("#mol_undo").invoke('attr', 'src').then((src) => {
@@ -25,7 +25,7 @@ describe('MolPaintJS top menu test', () => {
 
         // check clear outcome
         cy.window().then((win) => {
-            expect(win.molPaintJS.getContext('mol').getMolecule().getAtomCount()).to.eq(0);
+            expect(win.molPaintJS.getContext('mol').getDrawing().getAtomCount()).to.eq(0);
 
             // undo icon is active
             cy.get("#mol_undo").invoke('attr', 'src').then((src) => {
@@ -43,8 +43,8 @@ describe('MolPaintJS top menu test', () => {
 
         // check undo outcome
         cy.window().then((win) => {
-            win.molPaintJS.getContext('mol').getMolecule().reIndex();
-            expect(win.molPaintJS.getContext('mol').getMolecule().getAtomCount()).to.eq(14);
+            win.molPaintJS.getContext('mol').getDrawing().reIndex();
+            expect(win.molPaintJS.getContext('mol').getDrawing().getAtomCount()).to.eq(14);
 
             // undo icon is inactive
             cy.get("#mol_undo").invoke('attr', 'src').then((src) => {
@@ -58,7 +58,7 @@ describe('MolPaintJS top menu test', () => {
     });
 
 
-    it('tests the "slide" and "center molecule" buttons', () => {
+    it('tests the "slide" and "center drawing" buttons', () => {
 
         cy.visit('/');
         cy.wait(200);
@@ -70,7 +70,7 @@ describe('MolPaintJS top menu test', () => {
         cy.window().then((win) => {
             var ctx =  win.molPaintJS.getContext('mol');
             var view = ctx.getView();
-            var coord = view.getCoord(ctx.getMolecule().getAtom('Atom1'));
+            var coord = view.getCoord(ctx.getDrawing().getAtom('Atom1'));
 
             expect(coord.x).to.be.closeTo(20, 0.5);
             expect(coord.y).to.be.closeTo(20, 0.5);
@@ -84,7 +84,7 @@ describe('MolPaintJS top menu test', () => {
         cy.window().then((win) => {
             var ctx = win.molPaintJS.getContext('mol');
             var view = ctx.getView();
-            var coord = view.getCoord(ctx.getMolecule().getAtom('Atom1'));
+            var coord = view.getCoord(ctx.getDrawing().getAtom('Atom1'));
 
             expect(coord.x).to.be.closeTo(100, 0.5);
             expect(coord.y).to.be.closeTo(20, 0.5);
@@ -94,7 +94,7 @@ describe('MolPaintJS top menu test', () => {
         cy.window().then((win) => {
             var ctx = win.molPaintJS.getContext('mol');
             var view = ctx.getView();
-            var coord = view.getCoord(ctx.getMolecule().getAtom('Atom1'));
+            var coord = view.getCoord(ctx.getDrawing().getAtom('Atom1'));
 
             expect(coord.x).to.be.closeTo(20, 0.5);
             expect(coord.y).to.be.closeTo(20, 0.5);

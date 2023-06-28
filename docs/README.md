@@ -29,7 +29,7 @@ Test drive MolPaintJS on [GitHub.io](https://ipb-halle.github.io/MolPaintJS).
 <script type="text/javascript">
   molPaintJS.newContext("mol", {sizeX: 400, sizeY: 400, debugId: "molDebug"})
     .init()
-    .setMolecule(... MDL MOL string ...);
+    .setDrawing(... MDL MOL string ...);
 </script>
 ```
 * For additional comfort, you may want to provide additional files (e.g. additional templates, help text, example files, etc.). In this case, please download the compressed tar archive (`molpaintjs.tar.gz`) from a recent release. It contains everything needed to set up a small test environment.

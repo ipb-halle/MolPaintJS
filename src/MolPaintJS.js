@@ -80,7 +80,7 @@ var molPaintJS = (function (molpaintjs) {
 
     /**
      * replace the content of a HTML element with id "dumpId"
-     * by the molecule in MDLv2000 format from the editor with
+     * by the chemical drawing in MDLv2000 format from the editor with
      * context id "cid".
      */
     molpaintjs.dump = function (cid, dumpId) {
@@ -127,19 +127,19 @@ var molPaintJS = (function (molpaintjs) {
     },
 
     /**
-     * @return the molecule from context cid in MDLv2000 format
+     * @return the drawing from context cid in MDLv2000 format
      */
     molpaintjs.getMDLv2000 = function (cid) { 
         let w = this.MDLv2000Writer();
-        return w.write(contextRegistry[cid].getMolecule());
+        return w.write(contextRegistry[cid].getDrawing());
     },
 
     /**
-     * @return the molecule from context cid in MDLv3000 format
+     * @return the drawing from context cid in MDLv3000 format
      */
     molpaintjs.getMDLv3000 = function (cid) {
         let w = this.MDLv3000Writer();
-        return w.write(contextRegistry[cid].getMolecule());
+        return w.write(contextRegistry[cid].getDrawing());
     },
 
     /**
@@ -151,7 +151,7 @@ var molPaintJS = (function (molpaintjs) {
 
     /**
      * @param t the name of the template
-     * @return return the molecule string for template t
+     * @return return the formatted input string for template t
      */
     molpaintjs.getTemplate = function (t) {
         return atob(molPaintJS.Resources[t + '.mol']);
@@ -196,7 +196,7 @@ var molPaintJS = (function (molpaintjs) {
         templates = [];
         for(let t of tp) {
             if (molPaintJS.Resources[t + '.png'] != null) {
-                // molecule might be delayed because of asynchronous load
+                // drawing might be delayed because of asynchronous load
                 templates.push(t);
             } else {
                 console.log("Missing resources for template key: " + t);

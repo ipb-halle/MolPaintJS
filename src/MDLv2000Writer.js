@@ -79,7 +79,7 @@ var molPaintJS = (function (molpaintjs) {
 
         /**
          * Write the "M  CHG" part of the mol file
-         * @param mol the molecule
+         * @param mol the drawing
          * @return the string
          */
         function writeCharges (mol) {
@@ -115,7 +115,7 @@ var molPaintJS = (function (molpaintjs) {
 
         /**
          * Write the "M  ISO" part of the mol file
-         * @param mol the molecule
+         * @param mol the drawing 
          * @return the string
          */
         function writeIsotopes (mol) {
@@ -151,7 +151,7 @@ var molPaintJS = (function (molpaintjs) {
 
         /**
          * write the properties block 
-         * @param mol the molecule
+         * @param mol the drawing 
          * @return a string containing the properties block
          */
         function writeProperties (mol) {
@@ -164,7 +164,7 @@ var molPaintJS = (function (molpaintjs) {
 
         /**
          * Write the "M  RAD" part of the mol file
-         * @param mol the molecule
+         * @param mol the drawing 
          * @return the string
          */
         function writeRadicals (mol) {

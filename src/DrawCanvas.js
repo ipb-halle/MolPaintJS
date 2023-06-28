@@ -18,10 +18,10 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
-    molpaintjs.DrawCanvas = function (v, mol) {
+    molpaintjs.DrawCanvas = function (v, d) {
 
         let view = v;
-        let molecule = mol;
+        let drawing = d;
 
         /**
          * draw all atoms which
@@ -29,7 +29,7 @@ var molPaintJS = (function (molpaintjs) {
          * - have no bonds to other atoms
          */
         function drawAtoms (ctx) {
-            let atoms = molecule.getAtoms();
+            let atoms = drawing.getAtoms();
             for (let i in atoms) {
                 let a = atoms[i];
                 if (a.getSelected()) {
@@ -64,7 +64,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawBonds (ctx) {
-            let bonds = molecule.getBonds();
+            let bonds = drawing.getBonds();
             for (let i in bonds) {
                 let b = bonds[i];
                 switch (b.getType()) {
@@ -130,7 +130,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawSGroups (ctx) {
-            let sgroups = molecule.getSGroups();
+            let sgroups = drawing.getSGroups();
             for (let idx in sgroups) {
                 let sgroup = sgroups[idx];
                 if (sgroup.getType() === 'DAT') {
@@ -209,7 +209,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawHydrogen (ctx, atom, symbolHeight) {
-            let hCount = atom.getHydrogenCount(molecule);
+            let hCount = atom.getHydrogenCount(drawing);
             if (hCount > 0) {
                 let hWidth = ctx.measureText("H").width;
                 let hx = atom.getBBox().getMaxX();
@@ -470,7 +470,7 @@ var molPaintJS = (function (molpaintjs) {
             let rightFree = true;
             let leftFree = true;
             for(let id in atom.getBonds()) {
-                let bond = molecule.getBond(id);
+                let bond = drawing.getBond(id);
                 let neighbourAtom = bond.getAtomA();
                 if (neighbourAtom.getId() == atom.getId()) {
                     neighbourAtom = bond.getAtomB();

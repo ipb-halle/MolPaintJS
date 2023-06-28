@@ -48,7 +48,7 @@ var molPaintJS = (function (molpaintjs) {
             onClick : function (x, y, evt) {
                 if(atomA == null) return;
                 atomA = null;
-                actionList.addActionList(this.context.getMolecule().clearTemp());
+                actionList.addActionList(this.context.getDrawing().clearTemp());
                 this.context.getHistory().appendAction(actionList); 
                 this.context.draw();
             },
@@ -59,14 +59,14 @@ var molPaintJS = (function (molpaintjs) {
             onMouseDown : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
 
-                let bonds = this.context.getMolecule().selectBond(coord, distMax);
-                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let bonds = this.context.getDrawing().selectBond(coord, distMax);
+                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
 
                 actionList = molPaintJS.ActionList();
 
                 if (atomId == null) {
                     if (bonds.length > 0) {
-                        let b = this.context.getMolecule().getBonds()[bonds[0]];
+                        let b = this.context.getDrawing().getBonds()[bonds[0]];
                         let old = b.copy();
                         let changed = false;
                         if((b.getType() != bondType) || (b.getStereo() != stereoType)) { 
@@ -93,14 +93,14 @@ var molPaintJS = (function (molpaintjs) {
                         at.setIsotope(this.context.getCurrentElement());
                         at.setColor(this.context.getCurrentElement().getColor());
                         atomA.setType(at);
-                        this.context.getMolecule().addAtom(atomA, null);
+                        this.context.getDrawing().addAtom(atomA, null);
                         atomId = atomA.getId();
                         
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atomA, null));
 
                     }
                 } else {
-                    atomA = this.context.getMolecule().getAtom(atomId);
+                    atomA = this.context.getDrawing().getAtom(atomId);
                 } 
                 this.onMouseMove(x, y, evt);
             },
@@ -114,8 +114,8 @@ var molPaintJS = (function (molpaintjs) {
                 let view = this.context.getView();
                 let coord = view.getCoordReverse(x, y);
 
-                this.context.getMolecule().delTemp();
-                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                this.context.getDrawing().delTemp();
+                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 let atomB;
 
                 // no atom found in proximity?
@@ -140,10 +140,10 @@ var molPaintJS = (function (molpaintjs) {
                     at.setIsotope(this.context.getCurrentElement());
                     at.setColor(this.context.getCurrentElement().getColor());
                     atomB.setType(at);
-                    this.context.getMolecule().addAtom(atomB, null);
+                    this.context.getDrawing().addAtom(atomB, null);
 
                 } else {
-                    atomB = this.context.getMolecule().getAtom(atomId);
+                    atomB = this.context.getDrawing().getAtom(atomId);
                 }
                 let bond = molPaintJS.Bond();
                 bond.setAtomA(atomA);
@@ -151,7 +151,7 @@ var molPaintJS = (function (molpaintjs) {
                 bond.setType(bondType);
                 bond.setStereo(stereoType);
                 bond.setTemp(1);
-                this.context.getMolecule().addBond(bond, null);
+                this.context.getDrawing().addBond(bond, null);
                 this.context.draw();
             },
 

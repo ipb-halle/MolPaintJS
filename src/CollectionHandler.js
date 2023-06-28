@@ -70,7 +70,7 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderInput (dlgId) {
             let html = "";
-            let selection = molPaintJS.getContext(contextId).getMolecule().getSelected(2);
+            let selection = molPaintJS.getContext(contextId).getDrawing().getSelected(2);
             if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                 html = "Collection name:<br/><center style='margin:10px;'>"
                     + "<input id='" + dlgId + "_input' type='text'/>"
@@ -83,7 +83,7 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderList () {
             let html = "Currently known collections:<br/>";
-            let collections = molPaintJS.getContext(contextId).getMolecule().getCollections();
+            let collections = molPaintJS.getContext(contextId).getDrawing().getCollections();
             if (collections.length === 0) {
                 return html;
             }
@@ -107,7 +107,7 @@ var molPaintJS = (function (molpaintjs) {
             highlight: function (name) {
                 let dlgId = contextId + "_modalDlg";
                 let context = molPaintJS.getContext(contextId);
-                let mol = context.getMolecule();
+                let mol = context.getDrawing();
                 let collection = getCollection(mol, name);
                 highlightAtoms(mol, collection.getAtoms());
                 highlightBonds(mol, collection.getBonds());
@@ -117,9 +117,9 @@ var molPaintJS = (function (molpaintjs) {
 
             deleteCollection : function (name) {
                 let dlgId = contextId + "_modalDlg";
-                molPaintJS.getContext(contextId).getMolecule().delCollection(name);
+                molPaintJS.getContext(contextId).getDrawing().delCollection(name);
                 this.highlight('');
-                if (molPaintJS.getContext(contextId).getMolecule().getCollections().length > 0) {
+                if (molPaintJS.getContext(contextId).getDrawing().getCollections().length > 0) {
                     this.render();
                 } else {
                     document.getElementById(dlgId).style.display = 'none';
@@ -147,13 +147,13 @@ var molPaintJS = (function (molpaintjs) {
                 // check for invalid name
                 if (name.match("[A-Za-z][A-Za-z #$+-;@]*")) {
                     let collection = molPaintJS.Collection(name);
-                    let molecule = context.getMolecule();
-                    let selection = molecule.getSelected(2);
+                    let drawing = context.getDrawing();
+                    let selection = drawing.getSelected(2);
 
                     // only create non-empty collections
                     if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                         applySelection(collection, selection);
-                        molecule.setCollection(collection);
+                        drawing.setCollection(collection);
                         document.getElementById(dlgId).style.display = 'none';
                     }
                 } else {

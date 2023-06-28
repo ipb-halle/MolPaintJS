@@ -205,27 +205,27 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * set the display scaling factor
-             * @param mol the current molecule
-             * @param center true if molecule should be centered
+             * @param mol the current drawing
+             * @param center true if drawing should be centered
              */
-            setDisplayScale : function (mol, center) {
+            setDisplayScale : function (drawing, center) {
 
-                let molbox;
+                let drawingBox;
                 let x = sizeX - 40;     // leave some margin
                 let y = sizeY - 40;
 
                 if (center) {
-                    molbox = this.getBBox(mol.center());
+                    drawingBox = this.getBBox(drawing.center());
                 } else {
-                    molbox = this.getBBox(mol.computeBBox(0));
+                    drawingBox = this.getBBox(drawing.computeBBox(0));
                 }
                 displayScale = 1.0;
 
-                if (molbox.getDeltaX() > x) {
-                    displayScale = x / molbox.getDeltaX();
+                if (drawingBox.getDeltaX() > x) {
+                    displayScale = x / drawingBox.getDeltaX();
                 }
-                if (molbox.getDeltaY() > y) {
-                    let f = y / molbox.getDeltaY();
+                if (drawingBox.getDeltaY() > y) {
+                    let f = y / drawingBox.getDeltaY();
                     displayScale = (f < displayScale) ? f : displayScale;
                 }
             },

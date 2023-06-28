@@ -22,7 +22,7 @@ var molPaintJS = (function (molpaintjs) {
      * ToDo: history for collections, removal and replacement of
      * atoms and bonds in collections
      */
-    molpaintjs.Molecule = function() {
+    molpaintjs.Drawing = function() {
 
         let properties = {};
 
@@ -124,8 +124,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * center the molecule according to its bounding box
-             * i.e. move the center of the molecule to the point 0,0
+             * center the drawing according to its bounding box
+             * i.e. move the center of the drawing to the point 0,0
              * @return the updated bounding box
              */
             center : function () {
@@ -195,7 +195,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * compute the bounding box coordinates of the current molecule
+             * compute the bounding box coordinates of the current drawing
              * @param sel select bits which must be set when computing the
              * bounding box; if sel = 0, everything is selected
              */
@@ -221,7 +221,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * computes the median bond length in this molecule
+             * computes the median bond length in this drawing
              */
             computeBondLengths : function () {
                 let bondLength = [];
@@ -242,10 +242,10 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * deletes a single atom from this molecule
+             * deletes a single atom from this drawing
              * CAVEAT: this function does not perform any cross-check,
              * whether this atom is still part of a bond in this
-             * molecule
+             * drawing
              */
             delAtom : function (a) {
                 let idx = a.getId();
@@ -285,7 +285,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * delete all temporary bonds and atoms from the molecule
+             * delete all temporary bonds and atoms from the drawing
              */
             delTemp : function() {
                 for(let b in bonds) {
@@ -395,7 +395,7 @@ var molPaintJS = (function (molpaintjs) {
                 let id = a.getId();
                 let o = atoms[id];
                 if (o == null) {
-                    alert("Molecule.replaceAtom() called for non-existing atom.");
+                    alert("Drawing.replaceAtom() called for non-existing atom.");
                     return;
                 }
                 for (let i in a.getBonds()) {
@@ -419,7 +419,7 @@ var molPaintJS = (function (molpaintjs) {
                 let id = b.getId();
                 let o = bonds[id];
                 if (o == null) {
-                    alert("Molecule.replaceBond() called for non-existing bond.");
+                    alert("Drawing.replaceBond() called for non-existing bond.");
                     return;
                 }
                 bonds[id] = b;
@@ -447,7 +447,7 @@ var molPaintJS = (function (molpaintjs) {
              * return a list of atom id's and a list of bond id's,
              * which are enclosed by the given bounding box.
              * Enclosed atoms and bonds are marked as selected.
-             * @param bbox bounding box in molecule coordinates
+             * @param bbox bounding box in drawing coordinates
              * @param val bit value to set on selected entities
              * @param cond bits which must not be set for selection of an entity
              * @return an object with properties "atoms" and "bonds"
@@ -514,7 +514,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * replace a Collection of this Molecule by the Collection
+             * replace a Collection of this Drawing by the Collection
              * given as an argument. If the Collection does not yet
              * exist, append it to the list of Collections.
              * @param collection the collection object with modified data
@@ -534,7 +534,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * 2d-transforms the coordinates of this molecule.
+             * 2d-transforms the coordinates of this drawing.
              * The z-coordinate is not affected!
              * @param matrix a 2x3 transformation matrix
              * @param sel select bits to which the transformation should apply (set to

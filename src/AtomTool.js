@@ -38,7 +38,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 let at = molPaintJS.AtomType();
                 at.setIsotope(this.context.getCurrentElement());
                 at.setColor(this.context.getCurrentElement().getColor());
@@ -51,13 +51,13 @@ var molPaintJS = (function (molpaintjs) {
                     atom.setY(coord.y);
                     atom.setZ(0.0);
                     atom.setType(at);
-                    this.context.getMolecule().addAtom(atom, null);
+                    this.context.getDrawing().addAtom(atom, null);
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", atom, null));
                 } else {
-                    oldAtom = this.context.getMolecule().getAtom(atomId);
+                    oldAtom = this.context.getDrawing().getAtom(atomId);
                     atom = oldAtom.copy();
                     atom.setType(at);
-                    this.context.getMolecule().replaceAtom(atom);
+                    this.context.getDrawing().replaceAtom(atom);
                     actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
                 }
 

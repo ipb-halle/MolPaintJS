@@ -31,7 +31,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
         cy.get('#mol_canvas').click(200, 200);
         
         cy.window().then((win) => {
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             mol.reIndex();
             expect(mol.getAtomCount()).to.eq(2);
             expect(mol.getAtom("Atom1").getHydrogenCount(mol)).to.eq(2);
@@ -51,7 +51,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
         cy.get('#mol_plus').click();
         cy.get('#mol_canvas').click(100,100);
         cy.window().then((win) => {
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             expect(mol.getAtom("Atom1").getHydrogenCount(mol)).to.eq(3);
         });
 
@@ -59,7 +59,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
         cy.get('#mol_canvas').click(100,100);
         cy.get('#mol_canvas').click(100,100);
         cy.window().then((win) => {
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             expect(mol.getAtom("Atom1").getHydrogenCount(mol)).to.eq(1);
         });
     });
@@ -79,7 +79,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
                     expect(src).to.equal(win.molPaintJS.Resources['isotope_up.png']);
             });
 
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             expect(mol.getAtom("Atom1").getType().getIsotope().getMassExact()).to.be.closeTo(35.45, 0.002);
         });
 
@@ -87,7 +87,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
         cy.get('#mol_canvas').click(100, 100);
 
         cy.window().then((win) => {
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             expect(mol.getAtom("Atom1").getType().getIsotope().getMassExact()).to.be.closeTo(35.96830698, 0.00001);
         });
 
@@ -104,7 +104,7 @@ describe('test mostly the right menu (elements, charges, isotopes, radicals)', (
                     expect(src).to.equal(win.molPaintJS.Resources['isotope_down.png']);
             });
 
-            var mol = win.molPaintJS.getContext('mol').getMolecule();
+            var mol = win.molPaintJS.getContext('mol').getDrawing();
             expect(mol.getAtom("Atom1").getType().getIsotope().getMassExact()).to.be.closeTo(34.96885268, 0.00001);
         });
     });

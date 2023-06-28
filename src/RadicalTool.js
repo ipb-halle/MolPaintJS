@@ -37,11 +37,11 @@ var molPaintJS = (function (molpaintjs) {
 
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
 
                     let actionList = molPaintJS.ActionList();
-                    let atom = this.context.getMolecule().getAtom(atomId);
+                    let atom = this.context.getDrawing().getAtom(atomId);
                     let oldAtom = atom.copy();
 
                     switch (type) {
@@ -58,7 +58,7 @@ var molPaintJS = (function (molpaintjs) {
                             atom.setRadical(0);
                             break;
                     }
-                    this.context.getMolecule().replaceAtom(atom);
+                    this.context.getDrawing().replaceAtom(atom);
                     actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
                     this.context.getHistory().appendAction(actionList);
 

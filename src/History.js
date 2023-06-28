@@ -27,10 +27,10 @@ var molPaintJS = (function (molpaintjs) {
         function redoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().addAtom(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addAtom(action.newObject, action.newObject.id);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().addBond(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addBond(action.newObject, action.newObject.id);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
@@ -40,10 +40,10 @@ var molPaintJS = (function (molpaintjs) {
         function redoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().delAtom(action.oldObject);
+                    ctx.getDrawing().delAtom(action.oldObject);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().delBond(action.oldObject);
+                    ctx.getDrawing().delBond(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
@@ -53,10 +53,10 @@ var molPaintJS = (function (molpaintjs) {
         function redoUpdate (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().replaceAtom(action.newObject);
+                    ctx.getDrawing().replaceAtom(action.newObject);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().replaceBond(action.newObject);
+                    ctx.getDrawing().replaceBond(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
@@ -66,10 +66,10 @@ var molPaintJS = (function (molpaintjs) {
         function undoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().delAtom(action.newObject);
+                    ctx.getDrawing().delAtom(action.newObject);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().delBond(action.newObject);
+                    ctx.getDrawing().delBond(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
@@ -79,10 +79,10 @@ var molPaintJS = (function (molpaintjs) {
         function undoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().addAtom(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addAtom(action.oldObject, action.oldObject.id);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().addBond(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addBond(action.oldObject, action.oldObject.id);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
@@ -92,10 +92,10 @@ var molPaintJS = (function (molpaintjs) {
         function undoUpdate (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getMolecule().replaceAtom(action.oldObject);
+                    ctx.getDrawing().replaceAtom(action.oldObject);
                     break;
                 case "BOND" :
-                    ctx.getMolecule().replaceBond(action.oldObject);
+                    ctx.getDrawing().replaceBond(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");

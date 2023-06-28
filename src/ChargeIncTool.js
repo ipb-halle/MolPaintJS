@@ -33,9 +33,9 @@ var molPaintJS = (function (molpaintjs) {
 
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let atomId = this.context.getMolecule().selectAtom(coord, distMax);
+                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
-                    this.context.getMolecule().getAtom(atomId).chargeIncrement();
+                    this.context.getDrawing().getAtom(atomId).chargeIncrement();
                 }
                 this.context.draw();
             },

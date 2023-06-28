@@ -28,14 +28,14 @@ var molPaintJS = (function (molpaintjs) {
          */
         function eraseAtom (context, id) {
             let actionList = molPaintJS.ActionList();
-            let atom = context.getMolecule().getAtom(id);
+            let atom = context.getDrawing().getAtom(id);
             for (let b in atom.getBonds()) {
-                let bond = context.getMolecule().getBond(b);
+                let bond = context.getDrawing().getBond(b);
                 actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
-                context.getMolecule().delBond(bond);
+                context.getDrawing().delBond(bond);
             }
             actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atom));
-            context.getMolecule().delAtom(atom);
+            context.getDrawing().delAtom(atom);
             context.getHistory().appendAction(actionList);
             context.draw();
         }
@@ -46,18 +46,18 @@ var molPaintJS = (function (molpaintjs) {
          */
         function eraseBond (context, id) {
             let actionList = molPaintJS.ActionList();
-            let bond = context.getMolecule().getBond(id);
+            let bond = context.getDrawing().getBond(id);
             let atomA = bond.getAtomA();
             let atomB = bond.getAtomB();
             actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
-            context.getMolecule().delBond(bond);
+            context.getDrawing().delBond(bond);
             if (Object.keys(atomA.getBonds()).length == 0) {
                 actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atomA));
-                context.getMolecule().delAtom(atomA);
+                context.getDrawing().delAtom(atomA);
             }
             if (Object.keys(atomB.getBonds()).length == 0) {
                 actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atomB));
-                context.getMolecule().delAtom(atomB);
+                context.getDrawing().delAtom(atomB);
             }
             context.getHistory().appendAction(actionList);
             context.draw();
@@ -73,12 +73,12 @@ var molPaintJS = (function (molpaintjs) {
 
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let bonds = this.context.getMolecule().selectBond(coord, distMax);
+                let bonds = this.context.getDrawing().selectBond(coord, distMax);
                 if (bonds.length == 1) {
                     eraseBond(this.context, bonds[0]);
                     // alert("Erase bond: id=" + bonds[0]);
                 } else {
-                    let atom = this.context.getMolecule().selectAtom(coord, distMax);
+                    let atom = this.context.getDrawing().selectAtom(coord, distMax);
                     if (atom != null) {
                         eraseAtom(this.context, atom);
                         // alert("Erase atom: id=" + atom);

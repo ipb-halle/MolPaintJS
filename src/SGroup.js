@@ -128,10 +128,10 @@ var molPaintJS = (function (molpaintjs) {
                 return type;
             },
 
-            parseJsonAtoms : function(molecule) {
+            parseJsonAtoms : function(drawing) {
                 if (jsonData['ATOMS'] != null) {
                     for (let idx of jsonData['ATOMS'].data) {
-                        let atom = molecule.getAtom('Atom' + idx);
+                        let atom = drawing.getAtom('Atom' + idx);
                         atoms.push(atom); 
                         atom.addSGroup(this);
                     }
@@ -149,10 +149,10 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
-            parseJsonCBonds : function(molecule) {
+            parseJsonCBonds : function(drawing) {
                 if (jsonData['CBONDS'] != null) {
                     for (let idx of jsonData['CBONDS'].data) {
-                        let cbond = molecule.getBond('Bond' + idx);
+                        let cbond = drawing.getBond('Bond' + idx);
                         cbonds.push(cbond);
                         cbond.addSGroup(this);
                     }
@@ -178,36 +178,36 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
-            parseJsonPAtoms : function(molecule) {
+            parseJsonPAtoms : function(drawing) {
                 if (jsonData['PATOMS'] != null) {
                     for (let idx of jsonData['PATOMS'].data) {
-                        let atom = molecule.getAtom('Atom' + idx);
+                        let atom = drawing.getAtom('Atom' + idx);
                         patoms.push(atom);
                         atom.addSGroup(this);
                     }
                 }
             },
 
-            parseJsonXBonds : function(molecule) {
+            parseJsonXBonds : function(drawing) {
                 if (jsonData['XBONDS'] != null) {
                     for (let idx of jsonData['XBONDS'].data) {
-                        let xbond = molecule.getBond('Bond' + idx);
+                        let xbond = drawing.getBond('Bond' + idx);
                         xbonds.push(xbond);
                         xbond.addSGroup(this);
                     }
                 }
             },
 
-            parseJsonData : function(molecule) {
+            parseJsonData : function(drawing) {
                 console.log("parseJsonData");
-                this.parseJsonAtoms(molecule);
+                this.parseJsonAtoms(drawing);
                 this.parseJsonBRKXYZ();
-                this.parseJsonCBonds(molecule);
+                this.parseJsonCBonds(drawing);
                 this.parseJsonFieldData();
                 this.parseJsonFieldDisposition();
                 this.parseJsonLabel();
-                this.parseJsonPAtoms(molecule);
-                this.parseJsonXBonds(molecule);
+                this.parseJsonPAtoms(drawing);
+                this.parseJsonXBonds(drawing);
             },
 
             setId : function(i) {

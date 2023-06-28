@@ -34,7 +34,7 @@ var molPaintJS = (function (molpaintjs) {
         let currentBondTool = null;
 
         let history = molPaintJS.History(cid);
-        let molecule = molPaintJS.Molecule();
+        let drawing = molPaintJS.Drawing();
 
         let view = molPaintJS.View(cid, properties);
         let widget = molPaintJS.Widget(cid, properties, mp);
@@ -89,7 +89,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             draw : function () {
-                let d = molPaintJS.DrawCanvas(view, molecule);
+                let d = molPaintJS.DrawCanvas(view, drawing);
                 d.draw();
                 if (changeListener != null) {
                     changeListener.call(this);
@@ -111,8 +111,8 @@ var molPaintJS = (function (molpaintjs) {
             getHistory : function () {
                 return history;
             },
-            getMolecule : function () {
-                return molecule;
+            getDrawing : function () {
+                return drawing;
             },
             getProperties : function () {
                 return properties;
@@ -145,19 +145,19 @@ var molPaintJS = (function (molpaintjs) {
                         ctx.setCurrentTool(ctx.getTools().pointerTool);
                         ctx.getWidget().initEvents(ctx);
                     }
-                    ctx.getView().initRaster(molecule);
+                    ctx.getView().initRaster(drawing);
                 });
                 return this;
             },
 
             /**
-             * Paste a molecule (from clipboard) into the
-             * current molecule. Update the history accordingly.
-             * @param st the molecule string (MDL mol, ...)
-             * @param sel the selection bits to set for the pasted molecule
+             * Paste a chemical drawing (from clipboard) into the
+             * current drawing. Update the history accordingly.
+             * @param st the chemical drawing string (MDL mol, ...)
+             * @param sel the selection bits to set for the pasted drawing
              * @return the already appended (!) actionList
              */
-            pasteMolecule : function (st, sel) {
+            pasteDrawing: function (st, sel) {
                 let mol;
                 try {
                     mol = molPaintJS.MDLParser.parse(st, {'logLevel': 5});
@@ -165,7 +165,7 @@ var molPaintJS = (function (molpaintjs) {
                         console.log("collections not supported during paste");
                     }
                 } catch(e) {
-                    console.log("Parse error in Context.pasteMolecule(): " + e.message);
+                    console.log("Parse error in Context.pasteDrawing(): " + e.message);
                     console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
                     console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
@@ -178,7 +178,7 @@ var molPaintJS = (function (molpaintjs) {
                     let a = atoms[i];
                     a.setBonds({});
                     a.setSelected(sel);
-                    a.setId(molecule.addAtom(a, null));
+                    a.setId(drawing.addAtom(a, null));
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
                 }
 
@@ -187,7 +187,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (let i in bonds) {
                     let b = bonds[i];
                     b.setSelected(sel);
-                    molecule.addBond(b, null);
+                    drawing.addBond(b, null);
                     actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
                 }
 
@@ -196,7 +196,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (let i in sgroups) {
                     let g = sgroups[i];
                     g.setSelected(sel);
-                    molecule.addSGroup(g, null);
+                    drawing.addSGroup(g, null);
                     // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
                 }
 
@@ -204,7 +204,7 @@ var molPaintJS = (function (molpaintjs) {
 
                 history.appendAction(actionList);
 
-                view.initRaster(molecule);
+                view.initRaster(drawing);
                 this.draw();
                 return actionList;
             },
@@ -216,7 +216,7 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * set a changeListener which is called each time
-             * the molecule is changed
+             * the drawing is changed
              * @param listener the function to be executed on each change
              */
             setChangeListener : function (listener) {
@@ -251,25 +251,38 @@ var molPaintJS = (function (molpaintjs) {
             /**
              * @return this Context instance (useful for method chaining)
              */
-            setMolecule : function (st) {
+            setDrawing : function (st) {
                 try {
-                    molecule = molPaintJS.MDLParser.parse(st);
+                    drawing = molPaintJS.MDLParser.parse(st);
                 } catch(e) {
-                    console.log("Parse error in Context.setMolecule(): " + e.message);
+                    console.log("Parse error in Context.setDrawing(): " + e.message);
                     console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
                     console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
 
                 view.center();
-                view.initRaster(molecule);
-                view.setDisplayScale(molecule, true);
+                view.initRaster(drawing);
+                view.setDisplayScale(drawing, true);
                 this.draw();
                 return this;
             },
 
-            setMoleculeObject : function (m) {
-                molecule = m;
+            setDrawingObject : function (m) {
+                drawing = m;
+            },
+
+            /**
+             * @deprecated
+             * Compatibility function; will be removed. Future  
+             * implementations are planned to include support for 
+             * chemical reactions etc., therefore the method name 
+             * seemed inappropriate.
+             * @see setDrawing(st)
+             */
+            setMolecule : function(st) {
+                console.log("Encountered deprecated method setMolecule(), use setDrawing() instead!");
+                return this.setDrawing(st);
             }
 
         };  // return

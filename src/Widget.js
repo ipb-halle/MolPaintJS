@@ -82,13 +82,13 @@ var molPaintJS = (function (molpaintjs) {
             let ctx = molPaintJS.getContext(evt.target.id);
             let w = molPaintJS.MDLv2000Writer();
 
-            let dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.setAttribute("id", evt.target.id + "dummyId");
-            document.getElementById(evt.target.id + "dummyId").value = w.write(ctx.getMolecule()); 
-            dummy.select();
+            let tempObj = document.createElement("textarea");
+            document.body.appendChild(tempObj);
+            tempObj.setAttribute("id", evt.target.id + "tempObjId");
+            document.getElementById(evt.target.id + "tempObjId").value = w.write(ctx.getDrawing()); 
+            tempObj.select();
             document.execCommand("copy");
-            document.body.removeChild(dummy);
+            document.body.removeChild(tempObj);
         }
 
         function actionClear (evt) {
@@ -96,16 +96,16 @@ var molPaintJS = (function (molpaintjs) {
             let ctx = molPaintJS.getContext(evt.target.id);
             let actionList = molPaintJS.ActionList();
 
-            let molecule = ctx.getMolecule();
-            for (let a in molecule.getAtoms()) {
-                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, molecule.getAtom(a)));
+            let drawing = ctx.getDrawing();
+            for (let a in drawing.getAtoms()) {
+                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, drawing.getAtom(a)));
             }
-            for (let b in molecule.getBonds()) {
-                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, molecule.getBond(b)));
+            for (let b in drawing.getBonds()) {
+                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, drawing.getBond(b)));
             }
 
             ctx.getHistory().appendAction(actionList);
-            ctx.setMoleculeObject(molPaintJS.Molecule());
+            ctx.setDrawingObject(molPaintJS.Drawing());
             ctx.draw();
         }
 
@@ -201,7 +201,7 @@ var molPaintJS = (function (molpaintjs) {
                     + "You might want to try the paste icon");
             }
             let pastedData = clipboardData.getData("text");
-            ctx.pasteMolecule(pastedData, 2);
+            ctx.pasteDrawing(pastedData, 2);
         }
 
         /**
@@ -213,7 +213,7 @@ var molPaintJS = (function (molpaintjs) {
                 let ctx = molPaintJS.getContext(evt.target.id);
                 let clp = AllowClipboard.Client.ClipboardClient();
                 clp.read(function (x, pastedData) {
-                    ctx.pasteMolecule(pastedData);
+                    ctx.pasteDrawing(pastedData);
                     // alert(pastedData); 
                 });
             } catch (e) {

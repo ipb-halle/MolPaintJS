@@ -31,11 +31,12 @@ var molPaintJS = (function (molpaintjs) {
         let atomB;
         let sgroups = {};
         let color;
-        let id;                 // unique id (i.e. for undo / redo)
-        let index;              // numeric index
-        let selected = 0;       // non zero if bond is selected
-        let stereo = "0";       // 0 no stereo, 1 up, 6 down; also for Query!
-        let temp = 0;           // non zero if bond is transient (temporary)
+        let id;                     // unique id (i.e. for undo / redo)
+        let chemObjectId = null;    // id of the containing object
+        let index;                  // numeric index
+        let selected = 0;           // non zero if bond is selected
+        let stereo = "0";           // 0 no stereo, 1 up, 6 down; also for Query!
+        let temp = 0;               // non zero if bond is transient (temporary)
         let type = null;
 
         return {
@@ -88,6 +89,11 @@ var molPaintJS = (function (molpaintjs) {
                 return color;
             },
 
+
+            getChemObjectId : function () {
+                return chemObjectId;
+            },
+
             getId : function () {
                 return id;
             },
@@ -129,6 +135,10 @@ var molPaintJS = (function (molpaintjs) {
 
             setColor : function (c) {
                 color = c;
+            },
+
+            setChemObjectId : function (co) {
+                chemObjectId = co;
             },
 
             setId : function (i) {

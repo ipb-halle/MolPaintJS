@@ -21,22 +21,23 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Atom = function () {
 
 
-        let bbox = null;        // bounding box for the atom label
+        let bbox = null;            // bounding box for the atom label
         let bonds = {};
         let sgroups = {};
         let coordX = 0.0;
         let coordY = 0.0;
         let coordZ = 0.0;
 
-        let charge = 0;         // formal charge of the atom
-        let radical = 0;        // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
+        let charge = 0;             // formal charge of the atom
+        let radical = 0;            // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
 
-        let id = null;          // unique id (i.e. for undo / redo)
-        let index = null;       // numeric index in list of atoms
-        let selected = 0;       // non zero, if the atom is currently selected
+        let id = null;              // unique id (i.e. for undo / redo)
+        let chemObjectId = null;    // id of the containing object
+        let index = null;           // numeric index in list of atoms
+        let selected = 0;           // non zero, if the atom is currently selected
         let stereo = 0;
-        let temp = 0;           // non zero if the atom is transient (temporary)
-        let type = null;        // atom type / element / isotope
+        let temp = 0;               // non zero if the atom is transient (temporary)
+        let type = null;            // atom type / element / isotope
 
 
         return {
@@ -158,6 +159,10 @@ var molPaintJS = (function (molpaintjs) {
                 return charge;
             },
 
+            getChemObjectId : function () {
+                return chemObjectId;
+            },
+
             /**
              * compute the hydrogen count (implicit hydrogens)
              * for this atom. Currently does not account for 
@@ -242,6 +247,10 @@ var molPaintJS = (function (molpaintjs) {
 
             setCharge : function (c) {
                 charge = c;
+            },
+
+            setChemObjectId : function (co) {
+                chemObjectId = co;
             },
 
             setId : function (i) {

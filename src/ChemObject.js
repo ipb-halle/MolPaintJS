@@ -22,6 +22,7 @@ var molPaintJS = (function (molpaintjs) {
 
         let drawing = d;
 
+        const id = "chemObj" + drawing.uniqueCounter();
         let atoms = {};
         let bonds = {};
         let collections = {};
@@ -36,9 +37,8 @@ var molPaintJS = (function (molpaintjs) {
 
         return {
             addAtom : function (a, id) {
-                let count = drawing.uniqueCounter();
                 if (id == null) {
-                    id = "Atom" + count;
+                    id = "Atom" + drawing.uniqueCounter();
                     a.setId(id);
                 }
                 atoms[id] = a;
@@ -46,9 +46,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             addBond : function (b, id) {
-                let count = drawing.uniqueCounter();
                 if (id == null) {
-                    id = "Bond" + count;
+                    id = "Bond" + drawing.uniqueCounter();
                     b.setId(id);
                 }
                 bonds[id] = b;
@@ -70,9 +69,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             addSGroup : function (sg, id) {
-                let count = drawing.uniqueCounter();
                 if (id == null) {
-                    id = "SGroup" + count;
+                    id = "SGroup" + drawing.uniqueCounter();
                     sg.setId(id);
                 }
                 sgroups[id] = sg;
@@ -272,6 +270,10 @@ var molPaintJS = (function (molpaintjs) {
                 return collections;
             },
 
+            getId : function () {
+                return id;
+            },
+
             getProperties : function () {
                 return properties;
             },
@@ -304,6 +306,23 @@ var molPaintJS = (function (molpaintjs) {
 
             getSGroups : function () {
                 return sgroups;
+            },
+
+
+            /**
+             * Join two ChemObjects by adding the atoms, bonds, sgroups etc. from 
+             * the given ChemObjecty to this ChemObject. Joins happen, if two 
+             * ChemObjects are connected by a common bond.
+             * Split is the inverse operation to join.
+             */
+            join : function (chemObj) {
+                for (let atom of chemObj.getAtoms()) {
+                    atoms[atom.getId()] = atom;
+                }
+                for (let bond of chemObj.getBonds()) {
+                    bonds[bond.getId()] = bond;
+                }
+                // xxxxx
             },
 
             /**

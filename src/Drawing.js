@@ -27,17 +27,52 @@ var molPaintJS = (function (molpaintjs) {
         let counter = 0;
         let chemObjects = {};
         let properties = {};
+        let chemObjects = {};
 
-        chemObjects["chemObject" + counter++] = ChemObject();
+        function addNewChemObject() {
+            let c = ChemObject(this);
+            chemObjects[c.getId()] = c;
+            return c.getId();
+        }
+        addNewChemObject();
 
         return {
 
+            /**
+             * Add and Atom to this drawing. If the atom has a chemObjectId set,
+             * it is added to that chemObject. Otherwise a new ChemObject is 
+             * created and the atom is assigned to that new ChemObject.
+             */
             addAtom : function (a, id) {
-                // xxxxx
+                let chemObjectId = a.getChemObjectId();
+                if (chemObjectId == null) {
+                    chemObjectId = addNewChemObject();
+                    a.setChemObjectId(chemObjectId);
+                }
+                chemObjects[chemObjectId].addAtom(a, id);
             },
 
+            /**
+             * Add a Bond to this drawing. If both atoms of the bond belong 
+             * to different ChemObjects, the two ChemObjects are joined to 
+             * form a single ChemObject.
+             */
             addBond : function (b, id) {
-                // xxxxx
+                let coA = b.getAtomA().getChemObjectId();
+                let coB = b.getAtomB().getChemObjectId();
+                if (coA === coB) {
+                    chemObjects[coA].addBond(b, id);
+                } else {
+                    if (Object.keys(chemObjects[coA].getAtoms()).length > Object.keys(chemObjects[coB].getAtoms()).length) {
+                        chemObjects[coA].join(chemObjects[coB]);
+                        chemObjects[coA].addBond(b, id);
+                        delete chemObjects[coB];
+                    } else {
+                        chemObjects[coB].join(chemObjects[coA]);
+                        chemObjects[coB].addBond(b, id);
+                        delete chemObjects[coA];
+                    }
+                }
             },
 
             addCollection : function (collection) {
@@ -147,11 +182,11 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             delAtom : function (a) {
-                // xxxxx
+                chemObjects[a.getChemObject()].delAtom(a);
             },
 
             delBond : function (b) {
-                // xxxxx
+                chemObjects[b.getChemObject()].delBond(b);
             },
 
             delCollection : function (name) {
@@ -159,7 +194,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             delSGroup : function (sg) {
-                // xxxxx
+                chemObjects[sg.getChemObject()].delSGroup(sg);
             },
 
             delTemp : function() {

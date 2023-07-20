@@ -54,6 +54,7 @@ var molPaintJS = (function (molpaintjs) {
                 let b = molPaintJS.Bond();
                 b.setAtomA(atomA);
                 b.setAtomB(atomB);
+                b.setChemObjectId(chemObjectId);
                 b.setColor(color);
                 b.setId(id);
                 b.setIndex(index);

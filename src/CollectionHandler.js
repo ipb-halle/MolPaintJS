@@ -25,12 +25,20 @@ var molPaintJS = (function (molpaintjs) {
         function applySelection(collection, selection) {
             let atoms = {};
             let bonds = {};
+            let chemObjects = {};
             for (let atom of selection.atoms) {
+                let cid = atom.getChemObjectId();
                 atoms[atom] = atom;
+                chemObjects[cid] = cid;
             }
             for (let bond of selection.bonds) {
+                let cid = bond.getChemObjectId();
                 bonds[bond] = bond;
+                chemObjects[cid] = cid;
             }
+            //
+            // xxxxx      what to do if collection belongs to multiple ChemObjects? Merge?
+            //
             collection.setAtoms(atoms);
             collection.setBonds(bonds);
         }

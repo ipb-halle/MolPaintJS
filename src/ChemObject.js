@@ -174,7 +174,6 @@ var molPaintJS = (function (molpaintjs) {
                             minY = y;
                             maxY = y;
                             first = 1;
-                        }
                         } else {
                             minX = (minX < x) ? minX : x;
                             maxX = (maxX > x) ? maxX : x;
@@ -186,8 +185,26 @@ var molPaintJS = (function (molpaintjs) {
                 return molPaintJS.Box(minX, minY, maxX, maxY);
             },
 
+            /**
+             * compute median bond length; return 1.5 ChemObject does not
+             * contain any bonds
+             */
             computeBondLengths : function () {
-                // xxxxx
+                let bondLength = [];
+                for (let i in bonds) {
+                    let b = bonds[i];
+                    let dx = b.getAtomA().getX() - b.getAtomB().getX();
+                    let dy = b.getAtomA().getY() - b.getAtomB().getY();
+                    let lensq = (dx * dx) + (dy * dy);
+                    bondLength.push(lensq);
+                }
+                bondLength.sort(function (a, b) {
+                    return a - b;
+                });
+                if (bondLength.length > 0) {
+                    return Math.sqrt(bondLength[Math.floor(bondLength.length / 2)]);
+                }
+                return 1.5;     // default bond length
             },
 
             /**
@@ -322,7 +339,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (let bond of chemObj.getBonds()) {
                     bonds[bond.getId()] = bond;
                 }
-                // xxxxx
+                // xxxxx join also SGroups, Collections and other Info
             },
 
             /**

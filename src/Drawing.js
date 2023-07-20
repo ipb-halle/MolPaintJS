@@ -27,14 +27,6 @@ var molPaintJS = (function (molpaintjs) {
         let counter = 0;
         let chemObjects = {};
         let properties = {};
-        let chemObjects = {};
-
-        function addNewChemObject() {
-            let c = ChemObject(this);
-            chemObjects[c.getId()] = c;
-            return c.getId();
-        }
-        addNewChemObject();
 
         return {
 
@@ -46,7 +38,7 @@ var molPaintJS = (function (molpaintjs) {
             addAtom : function (a, id) {
                 let chemObjectId = a.getChemObjectId();
                 if (chemObjectId == null) {
-                    chemObjectId = addNewChemObject();
+                    chemObjectId = this.addChemObject();
                     a.setChemObjectId(chemObjectId);
                 }
                 chemObjects[chemObjectId].addAtom(a, id);
@@ -75,12 +67,27 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            addChemObject : function () {
+                let c = molpaintjs.ChemObject(this);
+                let cid = c.getId();
+                chemObjects[cid] = c;
+                return cid;
+            },
+
             addCollection : function (collection) {
                 // xxxxx
+                // need to select the chemObjects, which are involved in
+                // this collection. ChemObjects possibly need to be
+                // joined, because Collections should not span multiple
+                // ChemObjects!
             },
 
             addSGroup : function (sg, id) {
                 // xxxxx
+                // need to select the chemObjects, which are involved in
+                // this SGroup. ChemObjects possibly need to be
+                // joined, because SGroups should not span multiple
+                // ChemObjects!
             },
 
             /**
@@ -165,12 +172,8 @@ var molPaintJS = (function (molpaintjs) {
              */
             computeBondLengths : function () {
                 let bondLength = [];
-                for (let i in bonds) {
-                    let b = bonds[i];
-                    let dx = b.getAtomA().getX() - b.getAtomB().getX();
-                    let dy = b.getAtomA().getY() - b.getAtomB().getY();
-                    let lensq = (dx * dx) + (dy * dy);
-                    bondLength.push(lensq);
+                for (let id in chemObjects) {
+                    bondLength.push(chemObjects[id].computeBondLengths());
                 }
                 bondLength.sort(function (a, b) {
                     return a - b;
@@ -189,8 +192,13 @@ var molPaintJS = (function (molpaintjs) {
                 chemObjects[b.getChemObject()].delBond(b);
             },
 
+            /**
+             * Deletes all collections with given name from all ChemObjects
+             */
             delCollection : function (name) {
-                // xxxxx
+                for (let cid in chemObjects) {
+                    chemObjects[cid].delCollection(name);
+                }
             },
 
             delSGroup : function (sg) {
@@ -198,35 +206,69 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             delTemp : function() {
-                // xxxxx
+                for (let cid in chemObjects) {
+                    chemObjects[cid].delTemp();
+                }
             },
 
-            getAtom : function (id) {
-                // xxxxx
+            getAtom : function (idx) {
+                for (let cid in chemObjects) {
+                    let atom = chemObjects[cid].getAtom(idx);
+                    if (atom != undefined) {
+                        return atom;
+                    }
+                }
+                return undefined;
             },
 
             getAtomCount : function () {
-                // xxxxx
+                let atomCount = 0;
+                for (let cid in chemObjects) {
+                    atomCount += chemObjects[cid].getAtomCount();
+                }
+                return atomCount;
             },
 
             getAtoms : function () {
-                // xxxxx
+                let atoms = [];
+                for (let cid in chemObjects) {
+                    atoms = atoms.concat(chemObjects[cid].getAtoms());
+                }
+                return atoms;
             },
 
-            getBond : function (id) {
-                // xxxxx
+            getBond : function (idx) {
+                for (let cid in chemObjects) {
+                    let bond = chemObjects[cid].getBond(idx);
+                    if (bond != undefined) {
+                        return bond;
+                    }
+                }
+                return undefined;
             },
 
             getBondCount : function () {
-                // xxxxx
+                let bondCount = 0;
+                for (let cid in chemObjects) {
+                    bondCount += chemObjects[cid].getBondCount();
+                }
+                return bondCount;
             },
 
             getBonds : function () {
-                // xxxxx
+                let bonds = [];
+                for (let cid in chemObjects) {
+                    bonds = bonds.concat(chemObjects[cid].getBonds());
+                }
+                return bonds;
             },
 
             getCollections : function () {
-                // xxxxx
+                let collections = [];
+                for (let cid in chemObjects) {
+                    collections = collections.concat(chemObjects[cid].getCollections());
+                }
+                return collections;
             },
 
             getProperties : function () {
@@ -250,23 +292,37 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getSGroup : function (idx) {
-                // xxxxx
+                for (let cid in chemObjects) {
+                    let sgroup = chemObjects[cid].getSGroup(idx);
+                    if (sgroup != undefined) {
+                        return sgroup;
+                    }
+                }
+                return undefined;
             },
 
             getSGroups : function () {
-                // xxxxx
+                let sgroups = [];
+                for (let id in chemObjects) {
+                    sgroups = sgroups.concat(chemObjects[id].getSGroups());
+                }
+                return sgroups;
             },
 
             reIndex : function () {
-                // xxxxx
+                for (let cid in chemObjects) {
+                    chemObjects[cid].reIndex();
+                }
             },
 
-            replaceAtom : function (a) {
-                // xxxxx
+            replaceAtom : function (atom) {
+                cid = atom.getChemObjectId();
+                chemObjects[cid].replaceAtom(atom);
             },
 
-            replaceBond : function (b) {
-                // xxxxx
+            replaceBond : function (bond) {
+                cid = bond.getChemObjectId();
+                chemObjects[cid].replaceBond(bond);
             },
 
             /**

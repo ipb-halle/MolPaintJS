@@ -108,6 +108,7 @@ var molPaintJS = (function (molpaintjs) {
                 a.setY(coordY);
                 a.setZ(coordZ);
                 a.setCharge(charge);
+                a.setChemObjectId(chemObjectId);
                 a.setRadical(radical);
                 a.setId(id);
                 a.setIndex(index);

@@ -225,7 +225,7 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.drawing = molPaintJS.Drawing();
+            mdlParserData.drawing = molPaintJS.Drawing(options.context);
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
@@ -560,7 +560,7 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.drawing = molPaintJS.Drawing();
+            mdlParserData.drawing = molPaintJS.Drawing(options.context);
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);

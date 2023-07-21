@@ -22,7 +22,7 @@ var molPaintJS = (function (molpaintjs) {
 
         let drawing = d;
 
-        const id = "chemObj" + drawing.uniqueCounter();
+        const id = "chemObj" + drawing.getContext().uniqueCounter();
         let atoms = {};
         let bonds = {};
         let collections = {};
@@ -65,7 +65,7 @@ var molPaintJS = (function (molpaintjs) {
 
             addSGroup : function (sg, id) {
                 if (id == null) {
-                    id = "SGroup" + drawing.uniqueCounter();
+                    id = "SGroup" + drawing.getContext().uniqueCounter();
                     sg.setId(id);
                 }
                 sgroups[id] = sg;

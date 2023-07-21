@@ -326,12 +326,12 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             replaceAtom : function (atom) {
-                cid = atom.getChemObjectId();
+                let cid = atom.getChemObjectId();
                 chemObjects[cid].replaceAtom(atom);
             },
 
             replaceBond : function (bond) {
-                cid = bond.getChemObjectId();
+                let cid = bond.getChemObjectId();
                 chemObjects[cid].replaceBond(bond);
             },
 

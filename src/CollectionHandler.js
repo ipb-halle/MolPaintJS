@@ -22,17 +22,17 @@ var molPaintJS = (function (molpaintjs) {
 
         let contextId = cid;
 
-        function applySelection(collection, selection) {
+        function applySelection(drawing, collection, selection) {
             let atoms = {};
             let bonds = {};
             let chemObjects = {};
             for (let atom of selection.atoms) {
-                let cid = atom.getChemObjectId();
+                let cid = drawing.getAtom(atom).getChemObjectId();
                 atoms[atom] = atom;
                 chemObjects[cid] = cid;
             }
             for (let bond of selection.bonds) {
-                let cid = bond.getChemObjectId();
+                let cid = drawing.getBond(bond).getChemObjectId();
                 bonds[bond] = bond;
                 chemObjects[cid] = cid;
             }
@@ -158,7 +158,7 @@ var molPaintJS = (function (molpaintjs) {
 
                     // only create non-empty collections
                     if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
-                        applySelection(collection, selection);
+                        applySelection(drawing, collection, selection);
                         drawing.replaceCollection(collection);
                         document.getElementById(dlgId).style.display = 'none';
                     }

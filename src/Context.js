@@ -178,7 +178,7 @@ var molPaintJS = (function (molpaintjs) {
                     let a = atoms[i];
                     a.setBonds({});
                     a.setSelected(sel);
-                    a.setId(drawing.addAtom(a, null));
+                    drawing.addAtom(a);
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
                 }
 
@@ -187,7 +187,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (let i in bonds) {
                     let b = bonds[i];
                     b.setSelected(sel);
-                    drawing.addBond(b, null);
+                    drawing.addBond(b);
                     actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
                 }
 

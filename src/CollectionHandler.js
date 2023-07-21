@@ -43,13 +43,11 @@ var molPaintJS = (function (molpaintjs) {
             collection.setBonds(bonds);
         }
 
-        function getCollection(mol, name) {
-            for (let collection of mol.getCollections()) {
-                if (collection.getName() == name) {
-                    return collection;
-                }
-            }
-            return molPaintJS.Collection("");
+        /**
+         * return the named collection or coalesce to a fresh and empty collection
+         */
+        function getCollection(drawing, name) {
+            return drawing.getCollections()[name] ?? molPaintJS.Collection("");
         }
 
         function highlightAtoms(mol, atoms) {
@@ -97,8 +95,8 @@ var molPaintJS = (function (molpaintjs) {
             }
 
             html += "<ul>";
-            for (let c of collections) {
-                const name = c.getName();
+            for (let c in collections) {
+                const name = collections[c].getName();
                 html += "<li>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\">"
                     + name + "</span>"

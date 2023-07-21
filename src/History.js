@@ -27,10 +27,10 @@ var molPaintJS = (function (molpaintjs) {
         function redoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addAtom(action.newObject);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addBond(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
@@ -79,10 +79,10 @@ var molPaintJS = (function (molpaintjs) {
         function undoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addAtom(action.oldObject);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addBond(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoDelete().");

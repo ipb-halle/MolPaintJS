@@ -36,21 +36,16 @@ var molPaintJS = (function (molpaintjs) {
         properties["NAME"] = "n.n.";
 
         return {
-            addAtom : function (a, id) {
-                if (id == null) {
-                    id = "Atom" + drawing.uniqueCounter();
-                    a.setId(id);
-                }
+            addAtom : function (a) {
+                let id = a.getId();
                 atoms[id] = a;
                 return id;
             },
 
-            addBond : function (b, id) {
-                if (id == null) {
-                    id = "Bond" + drawing.uniqueCounter();
-                    b.setId(id);
-                }
+            addBond : function (b) {
+                let id = b.getId();
                 bonds[id] = b;
+                b.setChemObjectId(this.getId());
                 b.getAtomA().addBond(id);
                 b.getAtomB().addBond(id);
                 return id;
@@ -333,11 +328,18 @@ var molPaintJS = (function (molpaintjs) {
              * Split is the inverse operation to join.
              */
             join : function (chemObj) {
-                for (let atom of chemObj.getAtoms()) {
-                    atoms[atom.getId()] = atom;
+                let otherAtoms = chemObj.getAtoms();
+                let otherBonds = chemObj.getBonds();
+                for (let atomId in otherAtoms) {
+                    let atom = otherAtoms[atomId];
+                    atom.setChemObjectId(this.getId());
+                    atoms[atomId] = atom;
+
                 }
-                for (let bond of chemObj.getBonds()) {
-                    bonds[bond.getId()] = bond;
+                for (let bondId in otherBonds) {
+                    let bond = otherBonds[bondId];
+                    bond.setChemObjectId(this.getId());
+                    bonds[bondId] = bond;
                 }
                 // xxxxx join also SGroups, Collections and other Info
             },
@@ -349,8 +351,8 @@ var molPaintJS = (function (molpaintjs) {
              */
             move : function (dx, dy) {
                 for (let id in atoms) {
-                    atoms[id].addX(cx);
-                    atoms[id].addY(cy);
+                    atoms[id].addX(dx);
+                    atoms[id].addY(dy);
                 }
             },
 

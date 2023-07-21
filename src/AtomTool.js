@@ -47,11 +47,12 @@ var molPaintJS = (function (molpaintjs) {
 
                 if (atomId == null) {
                     atom = molPaintJS.Atom();
+                    atom.setId(this.context.getDrawing().createAtomId());
                     atom.setX(coord.x);
                     atom.setY(coord.y);
                     atom.setZ(0.0);
                     atom.setType(at);
-                    this.context.getDrawing().addAtom(atom, null);
+                    this.context.getDrawing().addAtom(atom);
                     actionList.addAction(molPaintJS.Action("ADD", "ATOM", atom, null));
                 } else {
                     oldAtom = this.context.getDrawing().getAtom(atomId);

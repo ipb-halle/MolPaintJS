@@ -25,8 +25,10 @@
 
     let mdlParserData = {
         'atomCount':0,
+        'atomIndexMap':{},
         'atomListCount':0,
         'bondCount':0,
+        'bondIndexMap':{},
         'currentAtom':0,
         'currentAtomList':0,
         'currentBond':0,
@@ -282,6 +284,7 @@ v2atomLine
             return false;
         } {
             let a = molPaintJS.Atom();
+            a.setId(mdlParserData.drawing.createAtomId());
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -291,6 +294,8 @@ v2atomLine
 
             // query features etc.
 
+            // indexing
+            mdlParserData.atomIndexMap['a' + mdlParserData.currentAtom] = a.getId();
             return a;
         }
 
@@ -323,13 +328,20 @@ v2bondLine
             return false;
         } {
             let b = molPaintJS.Bond();
-            b.setAtomA(mdlParserData.drawing.getAtom("Atom" + atom1));
-            b.setAtomB(mdlParserData.drawing.getAtom("Atom" + atom2));
+            b.setId(mdlParserData.drawing.createBondId()); 
+
+            let atomIndex = mdlParserData.atomIndexMap['a' + atom1];
+            b.setAtomA(mdlParserData.drawing.getAtom(atomIndex));
+            atomIndex = mdlParserData.atomIndexMap['a' + atom2];
+            b.setAtomB(mdlParserData.drawing.getAtom(atomIndex));
+
             b.setType(bondType);
             b.setStereo(sss, 'v2');
 
             // optprop
 
+            // indexing
+            mdlParserData['b' + mdlParserData.currentBond] = b.getId();
             return b;
         }
 
@@ -386,7 +398,8 @@ v2propIsis
 v2propAtomValuePairs
     = propType:v2propAtomValuePairsHeader props:v2propAtomValuePair+ {
             for(let prop of props) {
-                let atom = mdlParserData.drawing.getAtom("Atom" + prop.atom);
+                let atomIndex = mdlParserData.atomIndexMap('a' + prop.atom);
+                let atom = mdlParserData.drawing.getAtom(atomIndex);
                 switch(propType) {
                     case 'CHG' :
                         atom.setCharge(prop.value);
@@ -588,6 +601,8 @@ atomEntry
 
 
             let a = molPaintJS.Atom();
+            a.setId(mdlParserData.drawing.createAtomId());
+
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -605,6 +620,9 @@ atomEntry
 
             // query features etc.
 
+            // indexing
+            mdlParserData.currentAtom++;
+            mdlParserData.atomIndexMap['a' + mdlParserData.currentAtom] = a.getId();
             return a;
         }
 
@@ -711,8 +729,12 @@ bondEntry
     = 'M  V30' bondIndex:uint bondType:uint atom1:uint atom2:uint bondCont:bondContinuation {
 
             let b = molPaintJS.Bond();
-            b.setAtomA(mdlParserData.drawing.getAtom("Atom" + atom1));
-            b.setAtomB(mdlParserData.drawing.getAtom("Atom" + atom2));
+            b.setId(mdlParserData.drawing.createBondId());
+
+            let atomIndex = mdlParserData.atomIndexMap['a' + atom1];
+            b.setAtomA(mdlParserData.drawing.getAtom(atomIndex));
+            atomIndex = mdlParserData.atomIndexMap['a' + atom2];
+            b.setAtomB(mdlParserData.drawing.getAtom(atomIndex));
             b.setType(bondType);
 
             if (bondCont == null) {
@@ -722,6 +744,9 @@ bondEntry
                 b.setStereo(bondCont.configuration, 'v3');
             }
 
+            // indexing
+            mdlParserData.currentBond++;
+            mdlParserData.bondIndexMap['b' + mdlParserData.currentBond] = b.getId();
             return b;
         }
 
@@ -920,16 +945,18 @@ v3collectionBlock
                 let bonds = {};
                 for (let data of entry.data) {
                     if (data['ATOM'] != null) {
-                        for( let a of data['ATOM'].data) {
-                            if (a != null) {
-                                atoms['Atom' + a] = 'Atom' + a;
+                        for( let idx of data['ATOM'].data) {
+                            if (idx != null) {
+                                let atomIndex = mdlParserData.atomIndexMap['a' + idx];
+                                atoms[atomIndex] = atomIndex;
                             }
                         }
                     }
                     if (data['BOND'] != null) {
-                        for( let b of data['BOND'].data) {
-                            if (b != null) {
-                                bonds['Bond' + b] = 'Bond' + b;
+                        for( let idx of data['BOND'].data) {
+                            if (idx != null) {
+                                let bondIndex = mdlParserData.bondIndexMap['b' + idx];
+                                bonds[bondIndex] = bondIndex;
                             }
                         }
                     }

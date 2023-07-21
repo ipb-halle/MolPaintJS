@@ -57,6 +57,7 @@ var molPaintJS = (function (molpaintjs) {
 
                 if (atomId == null) {
                     atomA = molPaintJS.Atom();
+                    atomA.setId(this.context.getDrawing().createAtomId());
                     atomA.setX(coord.x);
                     atomA.setY(coord.y);
                     atomA.setZ(0.0);
@@ -69,7 +70,7 @@ var molPaintJS = (function (molpaintjs) {
                     at.setIsotope(molPaintJS.Elements.getElement("C"));
                     at.setColor(molPaintJS.Elements.getElement("C").getColor());
                     atomA.setType(at);
-                    this.context.getDrawing().addAtom(atomA, null);
+                    this.context.getDrawing().addAtom(atomA);
                     atomId = atomA.id;
 
                     // must add to history
@@ -116,6 +117,8 @@ var molPaintJS = (function (molpaintjs) {
                 let atomB = atomA;
                 do { 
                     let atom = molPaintJS.Atom();
+                    atom.setId(this.context.getDrawing().createAtomId());
+
                     let k = ((n % 2) == m) ? i : j;
                     n++;
                     dx += view.getRasterX(k);
@@ -128,14 +131,16 @@ var molPaintJS = (function (molpaintjs) {
                     at.setIsotope(molPaintJS.Elements.getElement("C"));
                     at.setColor(molPaintJS.Elements.getElement("C").getColor());
                     atom.setType(at);
-                    this.context.getDrawing().addAtom(atom, null);
+                    this.context.getDrawing().addAtom(atom);
 
                     let bond = molPaintJS.Bond();
+                    bond.setId(this.context.getDrawing().createBondId());
+
                     bond.setAtomA(atomB);
                     bond.setAtomB(atom);
                     bond.setType(1);
                     bond.setTemp(1);
-                    this.context.getDrawing().addBond(bond, null);
+                    this.context.getDrawing().addBond(bond);
                     atomB = atom;
 
                 } while (len > Math.sqrt((dx*dx) + (dy*dy))); 

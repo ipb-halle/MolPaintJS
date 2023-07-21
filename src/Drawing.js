@@ -35,13 +35,13 @@ var molPaintJS = (function (molpaintjs) {
              * it is added to that chemObject. Otherwise a new ChemObject is 
              * created and the atom is assigned to that new ChemObject.
              */
-            addAtom : function (a, id) {
-                let chemObjectId = a.getChemObjectId();
-                if (chemObjectId == null) {
-                    chemObjectId = this.addChemObject();
-                    a.setChemObjectId(chemObjectId);
+            addAtom : function (a) {
+                let cid = a.getChemObjectId();
+                if (cid == null) {
+                    cid = this.createChemObject();
+                    a.setChemObjectId(cid);
                 }
-                chemObjects[chemObjectId].addAtom(a, id);
+                chemObjects[cid].addAtom(a);
             },
 
             /**
@@ -49,29 +49,23 @@ var molPaintJS = (function (molpaintjs) {
              * to different ChemObjects, the two ChemObjects are joined to 
              * form a single ChemObject.
              */
-            addBond : function (b, id) {
+            addBond : function (b) {
                 let coA = b.getAtomA().getChemObjectId();
                 let coB = b.getAtomB().getChemObjectId();
+
                 if (coA === coB) {
-                    chemObjects[coA].addBond(b, id);
+                    chemObjects[coA].addBond(b);
                 } else {
                     if (Object.keys(chemObjects[coA].getAtoms()).length > Object.keys(chemObjects[coB].getAtoms()).length) {
                         chemObjects[coA].join(chemObjects[coB]);
-                        chemObjects[coA].addBond(b, id);
+                        chemObjects[coA].addBond(b);
                         delete chemObjects[coB];
                     } else {
                         chemObjects[coB].join(chemObjects[coA]);
-                        chemObjects[coB].addBond(b, id);
+                        chemObjects[coB].addBond(b);
                         delete chemObjects[coA];
                     }
                 }
-            },
-
-            addChemObject : function () {
-                let c = molpaintjs.ChemObject(this);
-                let cid = c.getId();
-                chemObjects[cid] = c;
-                return cid;
             },
 
             addCollection : function (collection) {
@@ -184,12 +178,28 @@ var molPaintJS = (function (molpaintjs) {
                 return 1.5;     // default bond length
             },
 
+
+            createAtomId : function() {
+                return "Atom" + this.uniqueCounter();
+            },
+
+            createBondId : function() {
+                return "Bond" + this.uniqueCounter();
+            },
+
+            createChemObject : function () {
+                let c = molpaintjs.ChemObject(this);
+                let cid = c.getId();
+                chemObjects[cid] = c;
+                return cid;
+            },
+
             delAtom : function (a) {
-                chemObjects[a.getChemObject()].delAtom(a);
+                chemObjects[a.getChemObjectId()].delAtom(a);
             },
 
             delBond : function (b) {
-                chemObjects[b.getChemObject()].delBond(b);
+                chemObjects[b.getChemObjectId()].delBond(b);
             },
 
             /**
@@ -230,9 +240,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getAtoms : function () {
-                let atoms = [];
+                let atoms = {};
                 for (let cid in chemObjects) {
-                    atoms = atoms.concat(chemObjects[cid].getAtoms());
+                    atoms = Object.assign(atoms, chemObjects[cid].getAtoms());
                 }
                 return atoms;
             },
@@ -256,17 +266,17 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getBonds : function () {
-                let bonds = [];
+                let bonds = {};
                 for (let cid in chemObjects) {
-                    bonds = bonds.concat(chemObjects[cid].getBonds());
+                    bonds = Object.assign(bonds, chemObjects[cid].getBonds());
                 }
                 return bonds;
             },
 
             getCollections : function () {
-                let collections = [];
+                let collections = {};
                 for (let cid in chemObjects) {
-                    collections = collections.concat(chemObjects[cid].getCollections());
+                    collections = Object.assign(collections, chemObjects[cid].getCollections());
                 }
                 return collections;
             },
@@ -302,9 +312,9 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getSGroups : function () {
-                let sgroups = [];
+                let sgroups = {};
                 for (let id in chemObjects) {
-                    sgroups = sgroups.concat(chemObjects[id].getSGroups());
+                    sgroups = Object.assign(sgroups, chemObjects[id].getSGroups());
                 }
                 return sgroups;
             },
@@ -380,7 +390,7 @@ var molPaintJS = (function (molpaintjs) {
             selectBonds : function (coords, distmax) {
                 let matches = [];
                 for (let id in chemObjects) {
-                    chemObject.selectBonds(matches, coords, distmax);
+                    chemObjects[id].selectBonds(matches, coords, distmax);
                 }
                 return matches;
             },

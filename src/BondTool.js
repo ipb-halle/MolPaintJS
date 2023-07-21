@@ -86,6 +86,8 @@ var molPaintJS = (function (molpaintjs) {
                         }
                     } else {
                         atomA = molPaintJS.Atom();
+                        atomA.setId(this.context.getDrawing().createAtomId());
+
                         atomA.setX(coord.x);
                         atomA.setY(coord.y);
                         atomA.setZ(0.0);
@@ -93,7 +95,7 @@ var molPaintJS = (function (molpaintjs) {
                         at.setIsotope(this.context.getCurrentElement());
                         at.setColor(this.context.getCurrentElement().getColor());
                         atomA.setType(at);
-                        this.context.getDrawing().addAtom(atomA, null);
+                        this.context.getDrawing().addAtom(atomA);
                         atomId = atomA.getId();
                         
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atomA, null));
@@ -132,6 +134,8 @@ var molPaintJS = (function (molpaintjs) {
 
                     let i = Math.floor(w / 30.0);
                     atomB = molPaintJS.Atom();
+                    atomB.setId(this.context.getDrawing().createAtomId());
+
                     atomB.setX(atomA.getX() + view.getRasterX(i));
                     atomB.setY(atomA.getY() + view.getRasterY(i));
                     atomB.setZ(0.0);
@@ -140,18 +144,20 @@ var molPaintJS = (function (molpaintjs) {
                     at.setIsotope(this.context.getCurrentElement());
                     at.setColor(this.context.getCurrentElement().getColor());
                     atomB.setType(at);
-                    this.context.getDrawing().addAtom(atomB, null);
+                    this.context.getDrawing().addAtom(atomB);
 
                 } else {
                     atomB = this.context.getDrawing().getAtom(atomId);
                 }
                 let bond = molPaintJS.Bond();
+                bond.setId(this.context.getDrawing().createBondId());
+
                 bond.setAtomA(atomA);
                 bond.setAtomB(atomB);
                 bond.setType(bondType);
                 bond.setStereo(stereoType);
                 bond.setTemp(1);
-                this.context.getDrawing().addBond(bond, null);
+                this.context.getDrawing().addBond(bond);
                 this.context.draw();
             },
 

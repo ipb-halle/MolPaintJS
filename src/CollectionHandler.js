@@ -18,9 +18,9 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
-    molpaintjs.CollectionHandler = function (cid) {
+    molpaintjs.CollectionHandler = function (ctx) {
 
-        let contextId = cid;
+        let contextId = ctx;
 
         function applySelection(drawing, collection, selection) {
             let atoms = {};

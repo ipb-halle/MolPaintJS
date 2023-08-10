@@ -168,8 +168,6 @@ var molPaintJS = (function (molpaintjs) {
                     }
                 } catch(e) {
                     console.log("Parse error in Context.pasteDrawing(): " + e.message);
-                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
-                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
                 let actionList = molPaintJS.ActionList();
@@ -261,8 +259,6 @@ var molPaintJS = (function (molpaintjs) {
                     drawing = molPaintJS.MDLParser.parse(st, {'context': this});
                 } catch(e) {
                     console.log("Parse error in Context.setDrawing(): " + e.message);
-                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
-                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
 

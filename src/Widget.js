@@ -456,6 +456,23 @@ var molPaintJS = (function (molpaintjs) {
                 + renderAdvancedMenu();
         }
 
+        function renderRGroupSymbols (isotopes) {
+            let tbl = "<td colspan='6'></td>";
+            let trailingColspan = 18 - 6;
+            for (let el of isotopes) {
+                tbl += "<td><a href='javascript:void(0)' "
+                    + "id='" + widgetId + "_pse_" + el.getSymbol() + "' "
+                    + "class='molPaintJS-elementLink' "
+                    + "onclick=\"molPaintJS.setElement('"
+                    + widgetId + "','" + el.getSymbol()
+                    + "');\"><span style='color: " + el.getColor()
+                    + ";'>" + el.getSymbol() + "</span></a></td>";
+                trailingColspan--;
+            }
+            tbl += "<td colspan='" + trailingColspan + "'></td>";
+            return tbl;
+        }
+
         function renderPeriodicTable () {
             let header = "<tr><td>"
                 + "<div class='molPaintJS-rightDropdown'>"
@@ -472,12 +489,12 @@ var molPaintJS = (function (molpaintjs) {
                 + "</td></tr>";
 
             let tbl = "<tr>";
-            let period = 1;
+            let period = 0;
             let group = 1;
             for (let isotopes of molPaintJS.Elements.getAllElements()) {
                 let el = isotopes[0];
                 if (el.getAtomicNumber() == 0) {
-                    // skip atomic number 0 (reserved for '*', 'R', ...)
+                    tbl += renderRGroupSymbols(isotopes);
                     continue;
                 }
                 if (el.getPeriod() > period) {

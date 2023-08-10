@@ -32,6 +32,7 @@
         'currentAtom':0,
         'currentAtomList':0,
         'currentBond':0,
+        'currentChemObject':null,
         'currentProperty':0,
         'currentStext':0,
         'propertyCount':0,
@@ -126,13 +127,55 @@
     }
 
     /**
+     * map atoms from collection table indexes to atom identifiers
+     */
+    function mapAtomList (list) {
+        let atoms = {};
+        for (let idx of list) {
+            if (idx != null) {
+                let atomIndex = mdlParserData.atomIndexMap['a' + idx];
+                atoms[atomIndex] = atomIndex;
+            }
+        }
+        return atoms;
+    }
+
+    /**
+     * map bonds from collection table indexes to bond identifiers
+     */
+    function mapBondList (list) {
+        let bonds = {};
+        for (let idx of list) {
+            if (idx != null) {
+                let bondIndex = mdlParserData.bondIndexMap['b' + idx];
+                bonds[bondIndex] = bondIndex;
+            }
+        }
+        return bonds;
+    }
+
+    /**
+     * join multiple maps (objects) in an array to a single object
+     * [ {key:{x:x, y:y, z:z}}, {key:{a:a, b:b}} ] --> {x:x, y:y, z:z, a:a, b:b}
+     */
+    function mapJoin(array, key) {
+        let obj = {};
+        for (let element of array) {
+            if ((element != null) && (element[key] != null)) {
+                obj = Object.assign(obj, element[key]);
+            }
+        }
+        return obj;
+    }
+
+    /**
      * reset the charge and radical properties for V2000 connection tables
      * in case a 'M  CHG' or 'M  RAD' block is found. Executes only once.
      */
     function resetCharges () {
         if (mdlParserData.resetCharges) {
-            for (let a in mdlParserData.drawing.getAtoms()) {
-                let atom = mdlParserData.drawing.getAtom(a);
+            for (let a in mdlParserData.currentChemObject.getAtoms()) {
+                let atom = mdlParserData.currentChemObject.getAtom(a);
                 atom.setCharge(0);
                 atom.setRadical(0);
             }
@@ -146,8 +189,8 @@
      */
     function resetIsotopes () {
         if (mdlParserData.resetIsotopes) {
-            for (let a in mdlParserData.drawing.getAtoms()) {
-                let atom = mdlParserData.drawing.getAtom(a);
+            for (let a in mdlParserData.currentChemObject.getAtoms()) {
+                let atom = mdlParserData.currentChemObject.getAtom(a);
                 if (atom.getType().getIsotope().getIsotope() > 0) {
 
                     // does not reset Deuterium and Tritium!
@@ -226,6 +269,7 @@ v2Counts
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
             mdlParserData.drawing = molPaintJS.Drawing(options.context);
+            mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
@@ -270,7 +314,7 @@ v2ctab
 
 v2atom
     = newline atom:v2atomLine {
-            mdlParserData.drawing.addAtom(atom, null);
+            mdlParserData.currentChemObject.addAtom(atom);
         }
 
 v2atomLine
@@ -315,7 +359,7 @@ v2atomLine
 
 v2bond
     = newline bond:v2bondLine {
-            mdlParserData.drawing.addBond(bond, null);
+            mdlParserData.currentChemObject.addBond(bond);
         }
 
 v2bondLine
@@ -561,6 +605,7 @@ v3ctab
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
             mdlParserData.drawing = molPaintJS.Drawing(options.context);
+            mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
@@ -591,7 +636,7 @@ countRegNo
 
 v3atomBlock
     = newline 'M  V30 BEGIN ATOM' newline atoms:atomEntry* 'M  V30 END ATOM' {
-            atoms.forEach(atom => { mdlParserData.drawing.addAtom(atom, null); });
+            atoms.forEach(atom => { mdlParserData.currentChemObject.addAtom(atom); });
             logMessage(1, 'parsed ATOM BLOCK');
         }
 
@@ -721,7 +766,7 @@ atomTypeList
 
 v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bonds:bondEntry* 'M  V30 END BOND' {
-            bonds.forEach(bond => { mdlParserData.drawing.addBond(bond, null); });
+            bonds.forEach(bond => { mdlParserData.currentChemObject.addBond(bond); });
             logMessage(1, 'parsed BOND BLOCK');
         }
 
@@ -818,7 +863,7 @@ v3SGroupBlock
     = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
             sgroups.forEach(sgroup => {
                 sgroup.parseJsonData(mdlParserData.drawing);
-                mdlParserData.drawing.addSGroup(sgroup, null);
+                mdlParserData.currentChemObject.addSGroup(sgroup);
             });
             logMessage(1, 'parsed SGROUP BLOCK');
         }
@@ -855,17 +900,17 @@ v3SGroupType
 
 v3SGroupContinuation
     = v3LineContinuation cont:v3SGroupContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['ATOMS'] = list; return c; }
-    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBONDS'] = list; return c; }
-    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['CBONDS'] = list; return c; }
-    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['PATOMS'] = list; return c; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['ATOMS'] = mapAtomList(list.data); return c; }
+    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBONDS'] = mapBondList(list.data); return c; }
+    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['CBONDS'] = mapBondList(list.data); return c; }
+    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['PATOMS'] = mapAtomList(list.data); return c; }
     / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { let c=cont || {}; c['SUBTYPE'] = subtype; return c; }
     / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { let c=cont || {}; c['MULT'] = mult; return c; }
     / ' '* 'CONNECT=' connect:sgroupConnectType cont:v3SGroupContinuation { let c=cont || {}; c['CONNECT'] = connect; return c; }
     / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { let c=cont || {}; c['PARENT'] = connect; return c; }
     / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { let c=cont || {}; c['COMPNO'] = connect; return c; }
-    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XHEAD'] = list; return c; }
-    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBCORR'] = list; return c; }
+    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XHEAD'] = mapBondList(list.data); return c; }
+    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBCORR'] = mapBondList(list.data); return c; }
     / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { let c = cont || {}; c['LABEL'] = label; return c; }
     / ' '* 'BRKXYZ=' brkxyz:v3CountedFloatList cont:v3SGroupContinuation { let c = cont || {}; if (c['BRKXYZ'] === undefined) { c['BRKXYZ'] = []; } c['BRKXYZ'].push(brkxyz); return c; }
     / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { let c = cont || {}; c['ESTATE'] = estate; return c; }
@@ -941,29 +986,9 @@ v3collectionBlock
             entries.forEach(entry => {
 //              logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
                 let collection = molPaintJS.Collection(entry.name);
-                let atoms = {};
-                let bonds = {};
-                for (let data of entry.data) {
-                    if (data['ATOM'] != null) {
-                        for( let idx of data['ATOM'].data) {
-                            if (idx != null) {
-                                let atomIndex = mdlParserData.atomIndexMap['a' + idx];
-                                atoms[atomIndex] = atomIndex;
-                            }
-                        }
-                    }
-                    if (data['BOND'] != null) {
-                        for( let idx of data['BOND'].data) {
-                            if (idx != null) {
-                                let bondIndex = mdlParserData.bondIndexMap['b' + idx];
-                                bonds[bondIndex] = bondIndex;
-                            }
-                        }
-                    }
-                }
-                collection.setAtoms(atoms);
-                collection.setBonds(bonds);
-                mdlParserData.drawing.addCollection(collection);
+                collection.setAtoms(mapJoin(entry.data, 'ATOMS'));
+                collection.setBonds(mapJoin(entry.data, 'BONDS'));
+                mdlParserData.currentChemObject.addCollection(collection);
             });
             logMessage(1, 'parsed COLLECTION BLOCK');
 }
@@ -975,8 +1000,8 @@ collectionEntry
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['ATOM'] = list; return c; }
-    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['BOND'] = list; return c; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['ATOMS'] = mapAtomList(list.data); return c; }
+    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['BONDS'] = mapBondList(list.data); return c; }
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation

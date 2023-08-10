@@ -23,6 +23,8 @@ var molPaintJS = (function (molpaintjs) {
         let name = n;
         let atoms = {};
         let bonds = {};
+        let sgroups = {};
+        let chemObjectId = null;
 
         return {
             getAtoms: function () {

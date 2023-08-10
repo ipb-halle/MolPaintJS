@@ -27,6 +27,7 @@ var molPaintJS = (function (molpaintjs) {
         let chemObjects = {};
         let properties = {};
         let context = ctx;
+        let currentChemObjectId;
 
         return {
 
@@ -39,7 +40,6 @@ var molPaintJS = (function (molpaintjs) {
                 let cid = a.getChemObjectId();
                 if (cid == null) {
                     cid = this.createChemObject();
-                    a.setChemObjectId(cid);
                 }
                 chemObjects[cid].addAtom(a);
             },
@@ -66,22 +66,6 @@ var molPaintJS = (function (molpaintjs) {
                         delete chemObjects[coA];
                     }
                 }
-            },
-
-            addCollection : function (collection) {
-                // xxxxx
-                // need to select the chemObjects, which are involved in
-                // this collection. ChemObjects possibly need to be
-                // joined, because Collections should not span multiple
-                // ChemObjects!
-            },
-
-            addSGroup : function (sg, id) {
-                // xxxxx
-                // need to select the chemObjects, which are involved in
-                // this SGroup. ChemObjects possibly need to be
-                // joined, because SGroups should not span multiple
-                // ChemObjects!
             },
 
             /**
@@ -273,6 +257,10 @@ var molPaintJS = (function (molpaintjs) {
                 return bonds;
             },
 
+            getChemObjects : function () {
+                return chemObjects;
+            },
+
             getCollections : function () {
                 let collections = {};
                 for (let cid in chemObjects) {
@@ -283,6 +271,13 @@ var molPaintJS = (function (molpaintjs) {
 
             getContext : function () {
                 return context;
+            },
+
+            getCurrentChemObject : function () {
+                if (currentChemObjectId === undefined) {
+                    currentChemObjectId = this.createChemObject();
+                }
+                return chemObjects[currentChemObjectId];
             },
 
             getProperties : function () {
@@ -346,7 +341,9 @@ var molPaintJS = (function (molpaintjs) {
              * @param collection the collection object with modified data
              */
             replaceCollection : function (collection) {
+                for (let cid in chemObjects) {
                 // xxxxx
+                }
             },
 
 
@@ -397,6 +394,10 @@ var molPaintJS = (function (molpaintjs) {
                     chemObjects[id].selectBonds(matches, coords, distmax);
                 }
                 return matches;
+            },
+
+            setCurrentChemObjectId : function (cid) {
+                currentChemObjectId = cid;
             },
 
             setProperty : function (propname, propval) {

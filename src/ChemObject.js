@@ -37,9 +37,10 @@ var molPaintJS = (function (molpaintjs) {
 
         return {
             addAtom : function (a) {
-                let id = a.getId();
-                atoms[id] = a;
-                return id;
+                let atomId = a.getId();
+                atoms[atomId] = a;
+                a.setChemObjectId(this.getId());
+                return atomId;
             },
 
             addBond : function (b) {

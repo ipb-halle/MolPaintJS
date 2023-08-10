@@ -57,6 +57,7 @@ var molPaintJS = (function (molpaintjs) {
                   hashedWedgeTool: molPaintJS.BondTool(ctx, properties, 1, 3, "hashed_wedge"),
                   isotopeTool: molPaintJS.IsotopeTool(ctx, properties),
                   radicalTool: molPaintJS.RadicalTool(ctx, properties),
+                  roleTool: molPaintJS.RoleTool(ctx, properties),
                   chainTool: molPaintJS.ChainTool(ctx, properties),
                   chargeIncTool: molPaintJS.ChargeIncTool(ctx, properties),
                   chargeDecTool: molPaintJS.ChargeDecTool(ctx, properties),

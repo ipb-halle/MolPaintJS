@@ -75,6 +75,7 @@ var molPaintJS = (function (molpaintjs) {
 
         function actionCollection (evt) {
             let ctx = molPaintJS.getContext(evt.target.id);
+            ctx.setCurrentTool(ctx.getTools().pointerTool);
             molPaintJS.CollectionHandler(ctx.contextId).render();
         }
 
@@ -232,9 +233,9 @@ var molPaintJS = (function (molpaintjs) {
             let ctx = molPaintJS.getContext(evt.target.id);
             let tool = ctx.getTools().radicalTool;
             ctx.setCurrentTool(tool);
-            let tp = evt.target.id.replace(ctx.contextId + "_", "");
-            if (tp != "radical") {
-                tool.setType(tp);
+            let toolType = evt.target.id.replace(ctx.contextId + "_", "");
+            if (toolType != "radical") {
+                tool.setType(toolType);
             }
             // ignore clicks to the radical icon if no radical type has been 
             // selected previously
@@ -247,6 +248,20 @@ var molPaintJS = (function (molpaintjs) {
             let ctx = molPaintJS.getContext(evt.target.id);
             ctx.getHistory().redo(ctx);
             ctx.draw();
+        }
+
+        function actionSetRole (evt) {
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let tool = ctx.getTools().roleTool;
+            let toolType = evt.target.id.replace(ctx.contextId + "_", "");
+
+            // abort() is called to deactivate the old icon before 
+            // toolType is set. It gets called again when setCurrentTool()
+            // is called. Otherwise icons would stay activated when switching 
+            // among role types.
+            tool.abort();
+            tool.setType(toolType);
+            ctx.setCurrentTool(tool);
         }
 
         function actionSingleBond (evt) {
@@ -390,6 +405,14 @@ var molPaintJS = (function (molpaintjs) {
                 + itemH("label", "Label tool", "molPaintJS-inactiveTool")
                 + itemH("polymer", "Polymer tool", "molPaintJS-inactiveTool")
                 + itemH("collection", "Manage collections", "molPaintJS-inactiveTool")
+                + "</tr><tr>"
+                + itemH("educt", "Role: Educt / Reagent", "molPaintJS-inactiveTool")
+                + itemH("agent", "Role: Agent", "molPaintJS-inactiveTool")
+                + itemH("product", "Role: Product", "molPaintJS-inactiveTool")
+                + "</tr><tr>"
+                + itemH("rgroup_1", "Role: RGroup 1", "molPaintJS-inactiveTool")
+                + itemH("rgroup_2", "Role: RGroup 2", "molPaintJS-inactiveTool")
+                + itemH("rgroup_3", "Role: RGroup 3", "molPaintJS-inactiveTool")
 
                 + "</tr></table>"
                 + "</div></div>"
@@ -614,6 +637,7 @@ var molPaintJS = (function (molpaintjs) {
              * Event initialization
              */
             initEvents : function (ctx) {
+                registerEvent(ctx, "click", "_agent", actionSetRole);
                 registerEvent(ctx, "click", "_center", actionCenter);
                 registerEvent(ctx, "click", "_chain", actionChain);
                 registerEvent(ctx, "click", "_minus", actionChargeDec);
@@ -622,6 +646,7 @@ var molPaintJS = (function (molpaintjs) {
                 registerEvent(ctx, "click", "_copy", actionCopy);
                 registerEvent(ctx, "click", "_clear", actionClear);
                 registerEvent(ctx, "click", "_double_bond", actionDoubleBond);
+                registerEvent(ctx, "click", "_educt", actionSetRole);
                 registerEvent(ctx, "click", "_eraser", actionEraser);
                 registerEvent(ctx, "click", "_hashed_wedge", actionHashedWedge);
                 registerEvent(ctx, "click", "_info", actionInfo);
@@ -630,6 +655,7 @@ var molPaintJS = (function (molpaintjs) {
                 registerEvent(ctx, "click", "_isotope_up", actionIsotope);
                 registerEvent(ctx, "click", "_paste", actionPasteButton);
                 registerEvent(ctx, "click", "_pointer", actionPointer);
+                registerEvent(ctx, "click", "_product", actionSetRole);
                 registerEvent(ctx, "click", "_redo", actionRedo);
                 registerEvent(ctx, "click", "_no_radical", actionRadical);
                 registerEvent(ctx, "click", "_radical", actionRadical);

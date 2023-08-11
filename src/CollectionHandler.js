@@ -74,12 +74,16 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
+        function renderErrorMsg (dlgId) {
+            return "<center><div id='" + dlgId + "_error' class='.molPaintJS-modalDlgError'></div></center>";
+        }
+
         function renderInput (dlgId) {
             let html = "";
             let selection = molPaintJS.getContext(contextId).getDrawing().getSelected(2);
             if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                 html = "Collection name:<br/><center style='margin:10px;'>"
-                    + "<input id='" + dlgId + "_input' type='text'/>"
+                    + "<input id='" + dlgId + "_input' type='text'/> "
                     + "<input type='button' value='Update / Add' onclick=\"molPaintJS.CollectionHandler('"
                     + contextId
                     + "').setCollection();\" /></center>";
@@ -140,6 +144,7 @@ var molPaintJS = (function (molpaintjs) {
                     + "document.getElementById('" + dlgId
                     + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">&times;</span>"
                     + renderInput(dlgId)
+                    + renderError(dlgId)
                     + renderList()
                     + "</div>";
                 e.style.display = "block";

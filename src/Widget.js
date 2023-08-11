@@ -664,6 +664,9 @@ var molPaintJS = (function (molpaintjs) {
                 registerEvent(ctx, "click", "_pointer", actionPointer);
                 registerEvent(ctx, "click", "_product", actionSetRole);
                 registerEvent(ctx, "click", "_redo", actionRedo);
+                registerEvent(ctx, "click", "_rgroup_1", actionSetRole);
+                registerEvent(ctx, "click", "_rgroup_2", actionSetRole);
+                registerEvent(ctx, "click", "_rgroup_3", actionSetRole);
                 registerEvent(ctx, "click", "_no_radical", actionRadical);
                 registerEvent(ctx, "click", "_radical", actionRadical);
                 registerEvent(ctx, "click", "_doublet", actionRadical);

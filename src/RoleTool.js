@@ -32,6 +32,7 @@ var molPaintJS = (function (molpaintjs) {
                 let atom = context.getDrawing().getAtom(atomId);
                 let chemObjectId = atom.getChemObjectId();
                 context.getDrawing().getChemObjects()[chemObjectId].setRole(type);
+                // xxxxx history missing
             }
         }
 

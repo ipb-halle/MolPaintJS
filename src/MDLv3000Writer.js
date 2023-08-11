@@ -182,19 +182,24 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         return {
-            write : function (mol) {
+            write : function (drawing) {
 
-                mol.reIndex();
+                let chemObject = molPaintJS.ChemObject(drawing);
+                for (let c of Object.values(drawing.getChemObjects())) {
+                    chemObject.join(c);
+                }
 
-                output = mol.getProperty("NAME") + "\n";
+                chemObject.reIndex();
+
+                output = drawing.getProperty("NAME") + "\n";
                 //         IIPPPPPPPPMMDDYYHHMM
                 output += "  MolPaint" + molPaintJS.getMDLDateCode() + "\n";
-                output += mol.getProperty("COMMENT") + "\n";
+                output += drawing.getProperty("COMMENT") + "\n";
                 //
                 //         aaabbblllfffcccsssxxxrrrpppiii999vvvvv
                 //
                 output += "  0  0  0  0  0  0            999 V3000\n";
-                writeCTAB(mol);
+                writeCTAB(chemObject);
                 output += "M  END\n";
                 return output;
             }

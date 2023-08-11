@@ -199,26 +199,37 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         return {
-            write : function (mol) {
+            write : function (drawing) {
 
                 let st = "";
 
-                mol.reIndex();
+                let chemObject = molPaintJS.ChemObject(drawing);
+                for (let c of Object.values(drawing.getChemObjects())) {
+                    if (c.getRole() != "default") {
+                        throw new Error("MDLv2000Writer currently neither supports reactions nor RGroups");
+                    }
+                    chemObject.join(c);
+                }
+                chemObject.reIndex();
 
-                st += mol.getProperty("NAME") + "\n";
+                if ((chemObject.getAtomCount() > 999) || (chemObject.getBondCount() > 999)) {
+                    throw new Error("Atom count or bond count exceeds limit for V2000 format");
+                }
+
+                st += drawing.getProperty("NAME") + "\n";
                 //     IIPPPPPPPPMMDDYYHHMM
                 st += "  MolPaint" + molPaintJS.getMDLDateCode() + "\n";
-                st += mol.getProperty("COMMENT") + "\n";
+                st += drawing.getProperty("COMMENT") + "\n";
                 //
                 //             aaabbblllfffcccsssxxxrrrpppiii999vvvvvv
                 //
                 st += sprintf("%3d%3d  0  0  0  0            999 V2000\n",
-                    mol.getAtomCount(),
-                    mol.getBondCount());
+                    chemObject.getAtomCount(),
+                    chemObject.getBondCount());
 
-                st += writeAtomTable(mol);
-                st += writeBondTable(mol);
-                st += writeProperties(mol);
+                st += writeAtomTable(chemObject);
+                st += writeBondTable(chemObject);
+                st += writeProperties(chemObject);
 
                 st += "M  END\n";
                 return st;

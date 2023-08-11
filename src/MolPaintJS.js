@@ -100,15 +100,19 @@ var molPaintJS = (function (molpaintjs) {
         let format = arguments[2] || 'V2000';
         let moltext = '';
 
-        switch(format) {
-            case 'V3000':
-                moltext = this.getMDLv3000(cid);
-                break;
-            case 'V2000':
-                moltext = this.getMDLv2000(cid);
-                break;
-            default :
-                moltext = "Unknown output format: " + format;
+        try {
+            switch(format) {
+                case 'V3000':
+                    moltext = this.getMDLv3000(cid);
+                    break;
+                case 'V2000':
+                    moltext = this.getMDLv2000(cid);
+                    break;
+                default :
+                    moltext = "Unknown output format: " + format;
+            }
+        } catch (e) {
+            moltext = e.message;
         }
         o.innerHTML = "<pre>" + moltext + "</pre>";
     },

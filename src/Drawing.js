@@ -318,12 +318,6 @@ var molPaintJS = (function (molpaintjs) {
                 return sgroups;
             },
 
-            reIndex : function () {
-                for (let cid in chemObjects) {
-                    chemObjects[cid].reIndex();
-                }
-            },
-
             replaceAtom : function (atom) {
                 let cid = atom.getChemObjectId();
                 chemObjects[cid].replaceAtom(atom);

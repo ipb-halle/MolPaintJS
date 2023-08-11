@@ -387,6 +387,13 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
+        /**
+         * register event
+         * @param ctx the current context
+         * @param evt event, e.g. "click"
+         * @param w widget suffix (e.g. "_single_bond")
+         * @param a the event handler method
+         */
         function registerEvent (ctx, evt, w, a) {
             let id = ctx.contextId + w;
             let e = document.getElementById(id);

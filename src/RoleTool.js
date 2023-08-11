@@ -20,32 +20,25 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.RoleTool = function(ctx, prop) {
 
-        let origin;
+        let distMax = prop.distMax;
         let type = "default";
 
         let actionList;
 
         function click (context, x, y, evt) {
-            origin = null;
-            // context.getDrawing().adjustRoles(type);
-            context.getDrawing().clearSelection(1);
-            context.draw();
+            let coord = context.getView().getCoordReverse(x, y);
+            let atomId = context.getDrawing().selectAtom(coord, distMax);
+            if (atomId != null) {
+                let atom = context.getDrawing().getAtom(atomId);
+                let chemObjectId = atom.getChemObjectId();
+                context.getDrawing().getChemObjects()[chemObjectId].setRole(type);
+            }
         }
 
         function mouseDown (context, x, y, evt) {
-            origin = { 'x':x, 'y':y };
         }
 
         function mouseMove (context, x, y, evt) {
-            if (origin != null) {
-                let vctx = context.getView().getViewContext();
-                let box = molPaintJS.Box(origin.x, origin.y, x, y);
-                let mbox = context.getView().getBBoxReverse(box);
-                context.getDrawing().clearSelection(1);
-                context.getDrawing().selectBBox(mbox, 1, 0);
-                context.draw();
-                box.draw(vctx);
-            }
         }
 
         return {

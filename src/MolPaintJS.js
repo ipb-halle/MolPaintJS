@@ -79,6 +79,18 @@ var molPaintJS = (function (molpaintjs) {
     },
 
     /**
+     * destroy the context and do clean up
+     */
+    molpaintjs.destroy = function (cid) {
+        let context = contextRegistry[cid];
+        for (let id of context.getRegisteredIds()) {
+            delete contextRegistry[id];
+        }
+        let o = document.getElementById(context.contextId);
+        o.innerHTML = "";
+    },
+
+    /**
      * replace the content of a HTML element with id "dumpId"
      * by the chemical drawing in MDLv2000 format from the editor with
      * context id "cid".
@@ -185,6 +197,7 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.registerContext = function (id, ctx) {
         contextRegistry[id] = ctx;
+        ctx.registerId(id);
     },
 
 

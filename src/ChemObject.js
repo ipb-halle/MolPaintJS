@@ -27,6 +27,7 @@ var molPaintJS = (function (molpaintjs) {
         let bonds = {};
         let collections = {};
         let properties = {};
+        let role = "default";
         let sgroups = {};
         let atomCount = 0;
         let bondCount = 0;
@@ -295,6 +296,10 @@ var molPaintJS = (function (molpaintjs) {
                 return properties[propname];
             },
 
+            getRole : function () {
+                return role;
+            },
+
             /**
              * @param result object containing the atom and bond objects
              * @param sel selection bits
@@ -522,6 +527,10 @@ var molPaintJS = (function (molpaintjs) {
 
             setProperty : function (propname, propval) {
                 properties[propname] = propval;
+            },
+
+            setRole : function (r) {
+                role = r;
             },
 
             /**

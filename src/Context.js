@@ -36,6 +36,7 @@ var molPaintJS = (function (molpaintjs) {
         let history = molPaintJS.History(cid);
         let drawing = null;             // initialized by init()
 
+        let registeredIds = [];
         let view = molPaintJS.View(cid, properties);
         let widget = molPaintJS.Widget(cid, properties, mp);
         let counter = 0;                // context unique counter 
@@ -118,6 +119,9 @@ var molPaintJS = (function (molpaintjs) {
             },
             getProperties : function () {
                 return properties;
+            },
+            getRegisteredIds : function () {
+                return registeredIds;
             },
             getTools : function () {
                 return tools;
@@ -211,6 +215,10 @@ var molPaintJS = (function (molpaintjs) {
                 view.initRaster(drawing);
                 this.draw();
                 return actionList;
+            },
+
+            registerId : function(id) {
+                registeredIds.push(id);
             },
 
             render : function() {

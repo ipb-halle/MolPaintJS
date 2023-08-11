@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!--
+ MolPaintJS
+ Copyright 2017-2022 Leibniz-Institut f. Pflanzenbiochemie
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>MolPaintJS Playground</title>
+    <script type="text/javascript" src="%MOLPAINTJS%/molpaint.js"></script>
+    <script type="text/javascript">
+        molPaintJS.addTemplates([ {key:'asn', molURL:'templates/asparagine.mol', iconURL:'templates/asparagine.png'}, ]);
+        molPaintJS.setTemplates([ 'benzene', 'cyclohexane', 'cyclopentane', 'asn' ]);
+
+        /*
+         * changeListener() demo
+         * Every change to the molecule will cause the color of 
+         * the page heading to change.
+         */
+        var green = 0;
+        var changeListener = function() {
+            red = (green < 255) ? green + 1 : 0;
+            document.getElementById('heading').style.color = "rgb(0, " + green + ", 0)";
+        }
+
+        /*
+         * load example molecules
+         */
+        function changeMolecule(name) {
+            fetch('examples/' + name)
+                .then(obj => obj.text())
+                .then(mol => { 
+                    var ctx = molPaintJS.getContext("mol");
+                    ctx.setDrawing(mol); 
+            });
+        }
+
+    </script>
+</head>
+<body>
+
+<h1 id='heading'>MolPaintJS (large)</h1>
+<em>Pure HTML5/JavaScript Mol Editor/Viewer</em> (return to <a href="index.html">standard</a> demo)
+<br/><br/>
+<div id="debug"></div>
+<div id="mol"></div>
+<script type="text/javascript">
+    molPaintJS.newContext("mol", {helpURL:"help/index.html", iconSize: 32, debugId: "debug", sizeX:1200, sizeY:600})
+        .init()
+        .setDrawing("3-Acetylcoumarin\n  MolPaintJS\n\n 14 15  0  0  0  0  0  0  0  0999 V2000\n   -2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.1434   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289   -1.2375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7145    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0000    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1434    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289    1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    1.4289   -1.2375    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  2  0      \n  2  3  1  0      \n  3  4  2  0      \n  4  5  1  0      \n  5  6  2  0      \n  6  1  1  0      \n  4  7  1  0      \n  7  8  1  0      \n  8  9  1  0      \n  9 10  2  0      \n 10  5  1  0      \n  9 11  1  0      \n 11 12  1  0      \n 11 13  2  0      \n  8 14  2  0      \nM  END\n").setChangeListener(changeListener);
+
+</script>
+
+<div>Change molecule: 
+  <select id="examples" name="examples" onchange="changeMolecule(document.getElementById('examples').value); return false;">
+    <option value="v2000_3-acetylcoumarin.mol" selected>3-Acetylcoumarin</option>
+    <option value="6-O-acetylhygrophorone_A12.mol">6-O-Acetylhygrophorone A12</option>
+    <option value="jasmonic_acid.mol">Jasmonic acid</option>
+    <option value="cholecalciferol.mol">Cholecalciferol</option>
+    <option value="v2000_(-)-nicotine.mol">(-)-Nicotine</option>
+    <option value="v3000_PET.mol">V3000 PET</option>
+  </select>
+</div>
+
+<p>(c) 2017 - 2023 <a href="https://www.ipb-halle.de">Leibniz Institute of Plant Biochemistry</a><br>
+Visit this project on <a href="https://github.com/ipb-halle/MolPaintJS">GitHub</a></p>
+<select id="format" name="format">
+  <option value="V2000">V2000</option>
+  <option value="V3000">V3000</option>
+</select>
+<input type='button' value='write MOL' onclick='molPaintJS.dump("mol", "output", document.getElementById("format").value); return false;'/>
+<div id="output"></div>
+
+</body>
+</html>
+

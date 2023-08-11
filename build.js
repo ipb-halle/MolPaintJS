@@ -173,7 +173,10 @@ function copyToplevelFiles(dest) {
 
 function build(release, compress) {
 
-    var replacements = { 'index.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ], };
+    var replacements = { 
+        'index.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ], 
+        'large.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ],
+        };
 
     copyTemplate(pathInfo.join(__dirname , 'template'),
         pathInfo.join(__dirname, BUILD_DIR),
@@ -183,6 +186,7 @@ function build(release, compress) {
 
     if (release) {
         replacements['index.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];
+        replacements['large.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];
         copyTemplate(pathInfo.join(__dirname , 'template'),
             pathInfo.join(__dirname, 'docs'),
             replacements);

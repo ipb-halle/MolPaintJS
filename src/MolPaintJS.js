@@ -25,6 +25,35 @@ var molPaintJS = (function (molpaintjs) {
     let properties = molpaintjs.DefaultProperties();
     let templates = [ 'benzene', 'cyclohexane', 'cyclopentane' ];
 
+/* highly experimental stuff */
+    let modalX = 0;
+    let modalY = 0;
+    let modalPosX = 0;
+    let modalPosY = 0;
+    let modalActive = false;
+
+    molpaintjs.modalMouseDown = function (id, event) {
+        modalActive = true;
+        let e = document.getElementById(id);
+        let x = parseFloat(e.style.left, 10);
+        let y = parseFloat(e.style.top, 10);
+        modalPosX = (x) ? x : 0;
+        modalPosY = (y) ? y : 0;
+        modalX = event.clientX;
+        modalY = event.clientY;
+    }
+    molpaintjs.modalMouseMove = function (id, event) {
+        if (modalActive) {
+            let e = document.getElementById(id);
+            e.style.left = (modalPosX + event.clientX - modalX) + "px";
+            e.style.top = (modalPosY + event.clientY - modalY) + "px";
+        }
+    }
+    molpaintjs.modalMouseOut = function (event) {
+        modalActive = false;
+    }
+
+/* end experiment */
 
     /**
      * load a template 

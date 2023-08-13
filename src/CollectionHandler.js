@@ -102,7 +102,8 @@ var molPaintJS = (function (molpaintjs) {
             for (let c in collections) {
                 const name = collections[c].getName();
                 html += "<li>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\">"
+                    + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
+                    + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
                     + name + "</span>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name 
                     + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
@@ -122,7 +123,7 @@ var molPaintJS = (function (molpaintjs) {
                 let collection = getCollection(mol, name);
                 highlightAtoms(mol, collection.getAtoms());
                 highlightBonds(mol, collection.getBonds());
-                document.getElementById(dlgId).style.display = 'none';
+//              document.getElementById(dlgId).style.display = 'none';
                 context.draw();
             },
 
@@ -141,6 +142,9 @@ var molPaintJS = (function (molpaintjs) {
                 let dlgId = contextId + "_modalDlg";
                 let e = document.getElementById(dlgId);
                 e.innerHTML = "<div class='molPaintJS-modalDlgContent'>"
+                    + "<i class='molPaintJS-modalMoveButton fa-solid fa-arrows-up-down-left-right' onmousedown='molPaintJS.modalMouseDown(\""
+                    + dlgId + "\", event);'  onmousemove='molPaintJS.modalMouseMove(\"" 
+                    + dlgId + "\", event);' onmouseout='molPaintJS.modalMouseOut(event);'></i>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight(''); "
                     + "document.getElementById('" + dlgId
                     + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">"

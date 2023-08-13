@@ -21,10 +21,11 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Context = function(cid, prop, mp) {
 
         let molpaint = mp;
-        molpaint.createCSS();
+        let properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
+
+        molpaint.createCSS(properties);
         molpaint.createHelpWidget();
 
-        let properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
         let changeListener = null;
         let currentElement = molPaintJS.Elements.getElement("C");
         let currentTemplate = mp.getTemplates()[0];

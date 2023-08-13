@@ -57,7 +57,7 @@ var molPaintJS = (function (molpaintjs) {
         }
     }
 
-    molpaintjs.createCSS = function() {
+    molpaintjs.createCSS = function(prop) {
         let e = document.getElementById("MolPaintJS_CSS");
         if (e == null) {
             e = document.createElement("link");
@@ -65,8 +65,23 @@ var molPaintJS = (function (molpaintjs) {
             e.rel = "stylesheet";
             e.href = molPaintJS.Resources['styles.css'];
             document.head.appendChild(e);
+            // optionally add FontAwesome Icons
+            let fontAwesomePath = properties.getProperty("FontAwesomePath");
+            if (fontAwesomePath != null) {
+                e = document.createElement("link");
+                e.id = "MolPaintJS_FontAwesome";
+                e.rel = "stylesheet";
+                e.href = fontAwesomePath + "fontawesome.min.css";
+                document.head.appendChild(e);
+                e = document.createElement("link");
+                e.id = "MolPaintJS_FontAwesome";
+                e.rel = "stylesheet";
+                e.href = fontAwesomePath + "solid.min.css";
+                document.head.appendChild(e);
+
+            }
         }
-    },
+    }
 
     molpaintjs.createHelpWidget = function() {
         let e = document.getElementById("MolPaintJS_Help_Widget");
@@ -76,7 +91,7 @@ var molPaintJS = (function (molpaintjs) {
             e.classList.add("molPaintJS-modalHelp");
             document.body.appendChild(e);
         }
-    },
+    }
 
     /**
      * destroy the context and do clean up
@@ -88,7 +103,7 @@ var molPaintJS = (function (molpaintjs) {
         }
         let o = document.getElementById(context.contextId);
         o.innerHTML = "";
-    },
+    }
 
     /**
      * replace the content of a HTML element with id "dumpId"
@@ -115,14 +130,14 @@ var molPaintJS = (function (molpaintjs) {
             moltext = e.message;
         }
         o.innerHTML = "<pre>" + moltext + "</pre>";
-    },
+    }
 
     /**
      * return the context for a given context id
      */
     molpaintjs.getContext = function (cid) {
         return contextRegistry[cid];
-    },
+    }
 
     /**
      * return the current date in MMDDYYhhmm format as specified for MDL header line
@@ -140,7 +155,7 @@ var molPaintJS = (function (molpaintjs) {
         part = date.getMinutes();
         st += ((part < 10) ? "0" + part : "" + part);
         return st;
-    },
+    }
 
     /**
      * @return the drawing from context cid in MDLv2000 format
@@ -148,7 +163,7 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.getMDLv2000 = function (cid) { 
         let w = this.MDLv2000Writer();
         return w.write(contextRegistry[cid].getDrawing());
-    },
+    }
 
     /**
      * @return the drawing from context cid in MDLv3000 format
@@ -156,14 +171,14 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.getMDLv3000 = function (cid) {
         let w = this.MDLv3000Writer();
         return w.write(contextRegistry[cid].getDrawing());
-    },
+    }
 
     /**
      * @return global properties
      */
     molpaintjs.getProperties = function () {
         return properties.getProperties();
-    },
+    }
 
     /**
      * @param t the name of the template
@@ -171,21 +186,21 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.getTemplate = function (t) {
         return atob(molPaintJS.Resources[t + '.mol']);
-    },
+    }
 
     /**
      * @return the list of template keys
      */
     molpaintjs.getTemplates = function () {
         return templates;
-    },
+    }
 
     /**
      * @return version information
      */
     molpaintjs.getVersion = function () {
         return molPaintJS.Resources['version'];
-    },
+    }
 
     /**
      * create a new context
@@ -194,7 +209,7 @@ var molPaintJS = (function (molpaintjs) {
         let ctx = molPaintJS.Context(cid, prop, this);
         ctx.render();
         return ctx;
-    },
+    }
 
     /**
      * register a new context (i.e. for events)
@@ -202,8 +217,14 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.registerContext = function (id, ctx) {
         contextRegistry[id] = ctx;
         ctx.registerId(id);
-    },
+    }
 
+    /**
+     * set a global (default) property
+     */
+    molpaintjs.setProperty = function (prop, value) {
+        properties.setProperty(prop, value);
+    }
 
     /**
      * allows to configure the order of templates

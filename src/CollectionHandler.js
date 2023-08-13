@@ -74,7 +74,7 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
-        function renderErrorMsg (dlgId) {
+        function renderError (dlgId) {
             return "<center><div id='" + dlgId + "_error' class='.molPaintJS-modalDlgError'></div></center>";
         }
 
@@ -104,7 +104,8 @@ var molPaintJS = (function (molpaintjs) {
                 html += "<li>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\">"
                     + name + "</span>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name + "');\"> &#x1f5d1;</span>"
+                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name 
+                    + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
                     + "</li>";
             }
 
@@ -142,7 +143,8 @@ var molPaintJS = (function (molpaintjs) {
                 e.innerHTML = "<div class='molPaintJS-modalDlgContent'>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight(''); "
                     + "document.getElementById('" + dlgId
-                    + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">&times;</span>"
+                    + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">"
+                    + "<i class='fa-solid fa-xmark'></i></span>"
                     + renderInput(dlgId)
                     + renderError(dlgId)
                     + renderList()

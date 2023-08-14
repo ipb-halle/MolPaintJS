@@ -261,12 +261,14 @@ var molPaintJS = (function (molpaintjs) {
                 return chemObjects;
             },
 
-            getCollections : function () {
-                let collections = {};
+            getCollectionNames : function () {
+                let collectionNames = {};
                 for (let cid in chemObjects) {
-                    collections = Object.assign(collections, chemObjects[cid].getCollections());
+                    for (let name in chemObjects[cid].getCollections()) {
+                        collectionNames[name] = name;
+                    }
                 }
-                return collections;
+                return collectionNames;
             },
 
             getContext : function () {

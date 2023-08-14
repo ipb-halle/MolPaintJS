@@ -44,13 +44,6 @@ var molPaintJS = (function (molpaintjs) {
             return nonEmpty;
         }
 
-        /**
-         * return the named collection or coalesce to a fresh and empty collection
-         */
-        function getCollection(drawing, name) {
-            return drawing.getCollections()[name] ?? molPaintJS.Collection("");
-        }
-
         function highlightAtoms(chemObject, atoms) {
             for (let atomId of atoms) {
                 let atom = chemObject.getAtom(atomId);
@@ -83,24 +76,20 @@ var molPaintJS = (function (molpaintjs) {
 
         function renderTable () {
             let html = "Currently known collections:<br/>";
-            let collections = molPaintJS.getContext(contextId).getDrawing().getCollections();
-            if (collections.length === 0) {
-                return html;
+            let collectionNames = molPaintJS.getContext(contextId).getDrawing().getCollectionNames();
+            if (Object.keys(collectionNames).length > 0) {
+                html += "<table>";
+                for (let name in collectionNames) {
+                    html += "<tr><td>"
+                        + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
+                        + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
+                        + name + "</span></td><td>"
+                        + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name
+                        + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
+                        + "</td></tr>";
+                }
+                html += "</table>";
             }
-
-            html += "<table>";
-            for (let c in collections) {
-                const name = collections[c].getName();
-                html += "<tr><td>"
-                    + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
-                    + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
-                    + name + "</span></td><td>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name
-                    + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
-                    + "</td></tr>";
-            }
-
-            html += "</table>";
             return html;
         }
 
@@ -117,7 +106,7 @@ var molPaintJS = (function (molpaintjs) {
                     let chemObject = chemObjects[cid];
                     chemObject.clearSelection(4);
 
-                    let collection = chemObject.getCollections()[name];
+                    let collection = chemObject.getCollection(name);
                     if (collection != null) {
                         highlightAtoms(chemObject, collection.getAtoms());
                         highlightBonds(chemObject, collection.getBonds());
@@ -129,7 +118,7 @@ var molPaintJS = (function (molpaintjs) {
             deleteCollection : function (name) {
                 molPaintJS.getContext(contextId).getDrawing().delCollection(name);
                 this.clearHighlights();
-                if (Object.keys(molPaintJS.getContext(contextId).getDrawing().getCollections()).length > 0) {
+                if (Object.keys(molPaintJS.getContext(contextId).getDrawing().getCollectionNames()).length > 0) {
                     this.render();
                 } else {
                     molPaintJS.getDialog(contextId).close();

@@ -280,6 +280,10 @@ var molPaintJS = (function (molpaintjs) {
                 return bonds;
             },
 
+            getCollection : function (name) {
+                return collections[name];
+            },
+
             getCollections : function () {
                 return collections;
             },

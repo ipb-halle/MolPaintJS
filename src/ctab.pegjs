@@ -130,11 +130,11 @@
      * map atoms from collection table indexes to atom identifiers
      */
     function mapAtomList (list) {
-        let atoms = {};
+        let atoms = [];
         for (let idx of list) {
             if (idx != null) {
                 let atomIndex = mdlParserData.atomIndexMap['a' + idx];
-                atoms[atomIndex] = atomIndex;
+                atoms.push(atomIndex);
             }
         }
         return atoms;
@@ -144,28 +144,28 @@
      * map bonds from collection table indexes to bond identifiers
      */
     function mapBondList (list) {
-        let bonds = {};
+        let bonds = [];
         for (let idx of list) {
             if (idx != null) {
                 let bondIndex = mdlParserData.bondIndexMap['b' + idx];
-                bonds[bondIndex] = bondIndex;
+                bonds.push(bondIndex);
             }
         }
         return bonds;
     }
 
     /**
-     * join multiple maps (objects) in an array to a single object
-     * [ {key:{x:x, y:y, z:z}}, {key:{a:a, b:b}} ] --> {x:x, y:y, z:z, a:a, b:b}
+     * join multiple maps (objects) in an array to a single array
+     * [ {key:{x:x, y:y, z:z}}, {key:{a:a, b:b}} ] --> [x, y, z, a, b]
      */
-    function mapJoin(array, key) {
-        let obj = {};
+    function arrayJoin(array, key) {
+        let join = [];
         for (let element of array) {
             if ((element != null) && (element[key] != null)) {
-                obj = Object.assign(obj, element[key]);
+                join = join.concat(Object.values(element[key]));
             }
         }
-        return obj;
+        return join;
     }
 
     /**
@@ -986,8 +986,8 @@ v3collectionBlock
             entries.forEach(entry => {
 //              logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
                 let collection = molPaintJS.Collection(entry.name);
-                collection.setAtoms(mapJoin(entry.data, 'ATOMS'));
-                collection.setBonds(mapJoin(entry.data, 'BONDS'));
+                collection.setAtoms(arrayJoin(entry.data, 'ATOMS'));
+                collection.setBonds(arrayJoin(entry.data, 'BONDS'));
                 mdlParserData.currentChemObject.addCollection(collection);
             });
             logMessage(1, 'parsed COLLECTION BLOCK');

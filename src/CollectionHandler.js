@@ -22,25 +22,26 @@ var molPaintJS = (function (molpaintjs) {
 
         let contextId = ctx;
 
-        function applySelection(drawing, collection, selection) {
-            let atoms = {};
-            let bonds = {};
-            let chemObjects = {};
-            for (let atom of selection.atoms) {
-                let cid = drawing.getAtom(atom).getChemObjectId();
-                atoms[atom] = atom;
-                chemObjects[cid] = cid;
+        function applySelection(drawing, name) {
+            let chemObjects = drawing.getChemObjects();
+            let nonEmpty = false;
+            for (const cid in chemObjects) {
+                let selection = {atoms: [], bonds: []};
+                chemObjects[cid].getSelected(selection, 2);
+                let collection = molPaintJS.Collection(name);
+                if (selection.atoms.length > 0) {
+                    collection.setAtoms(selection.atoms)
+                    nonEmpty = true;
+                }
+                if (selection.bonds.length > 0) {
+                    collection.setBonds(selection.bonds);
+                    nonEmpty = true;
+                }
+                if (nonEmpty) {
+                    chemObjects[cid].replaceCollection(collection);
+                }
             }
-            for (let bond of selection.bonds) {
-                let cid = drawing.getBond(bond).getChemObjectId();
-                bonds[bond] = bond;
-                chemObjects[cid] = cid;
-            }
-            //
-            // xxxxx      what to do if collection belongs to multiple ChemObjects? Merge?
-            //
-            collection.setAtoms(atoms);
-            collection.setBonds(bonds);
+            return nonEmpty;
         }
 
         /**
@@ -50,27 +51,19 @@ var molPaintJS = (function (molpaintjs) {
             return drawing.getCollections()[name] ?? molPaintJS.Collection("");
         }
 
-        function highlightAtoms(mol, atoms) {
-            for (let a in mol.getAtoms()) {
-                let atom = mol.getAtom(a);
+        function highlightAtoms(chemObject, atoms) {
+            for (let atomId of atoms) {
+                let atom = chemObject.getAtom(atomId);
                 let sel = atom.getSelected();
-                if (atoms[atom.getId()] != null) {
-                    atom.setSelected(sel | 4);
-                } else {
-                    atom.setSelected(sel & ~4);
-                }
+                atom.setSelected(sel | 4);
             }
         }
 
-        function highlightBonds(mol, bonds) {
-            for (let b in mol.getBonds()) {
-                let bond = mol.getBond(b);
+        function highlightBonds(chemObject, bonds) {
+            for (let bondId of bonds) {
+                let bond = chemObject.getBond(bondId);
                 let sel = bond.getSelected();
-                if (bonds[bond.getId()] != null) {
-                    bond.setSelected(sel | 4);
-                } else {
-                    bond.setSelected(sel & ~4);
-                }
+                bond.setSelected(sel | 4);
             }
         }
 
@@ -102,7 +95,7 @@ var molPaintJS = (function (molpaintjs) {
                     + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
                     + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
                     + name + "</span></td><td>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name 
+                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name
                     + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
                     + "</td></tr>";
             }
@@ -119,10 +112,17 @@ var molPaintJS = (function (molpaintjs) {
 
             highlight: function (name) {
                 let context = molPaintJS.getContext(contextId);
-                let mol = context.getDrawing();
-                let collection = getCollection(mol, name);
-                highlightAtoms(mol, collection.getAtoms());
-                highlightBonds(mol, collection.getBonds());
+                let chemObjects = context.getDrawing().getChemObjects();
+                for (let cid in chemObjects) {
+                    let chemObject = chemObjects[cid];
+                    chemObject.clearSelection(4);
+
+                    let collection = chemObject.getCollections()[name];
+                    if (collection != null) {
+                        highlightAtoms(chemObject, collection.getAtoms());
+                        highlightBonds(chemObject, collection.getBonds());
+                    }
+                }
                 context.draw();
             },
 
@@ -132,7 +132,6 @@ var molPaintJS = (function (molpaintjs) {
                 if (Object.keys(molPaintJS.getContext(contextId).getDrawing().getCollections()).length > 0) {
                     this.render();
                 } else {
-                        console.log("ELSE");
                     molPaintJS.getDialog(contextId).close();
                 }
             },
@@ -153,16 +152,9 @@ var molPaintJS = (function (molpaintjs) {
 
                 // check for invalid name
                 if (name.match("[A-Za-z][A-Za-z #$+-;@]*")) {
-                    let collection = molPaintJS.Collection(name);
                     let drawing = context.getDrawing();
-                    let selection = drawing.getSelected(2);
-
-                    // only create non-empty collections
-                    if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
-                        applySelection(drawing, collection, selection);
-                        drawing.replaceCollection(collection);
-                        molPaintJS.getDialog(contextId).close();
-                    }
+                    applySelection(drawing, name);
+                    molPaintJS.getDialog(contextId).close();
                 } else {
                     alert('Invalid collection name');
                 }

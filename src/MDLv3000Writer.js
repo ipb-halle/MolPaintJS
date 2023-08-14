@@ -168,11 +168,11 @@ var molPaintJS = (function (molpaintjs) {
             for (let collection of mol.getCollections()) {
                 let st = "M  V30 ";
                 st = extendLine(st, '"' + collection.getName() + '" ');
-                let count = Object.keys(collection.getAtoms()).length;
+                let count = collection.getAtoms().length;
                 if (count > 0) {
                     st = writeAtomList(mol, 'ATOMS', st, count, collection.getAtoms());
                 }
-                count = Object.keys(collection.getBonds()).length;
+                count = collection.getBonds().length;
                 if (count > 0) {
                     st = writeBondList(mol, 'BONDS', st, count, collection.getBonds());
                 }

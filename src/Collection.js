@@ -21,9 +21,9 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Collection = function (n) {
 
         let name = n;
-        let atoms = {};
-        let bonds = {};
-        let sgroups = {};
+        let atoms = [];
+        let bonds = [];
+        let sgroups = [];
         let chemObjectId = null;
 
         return {

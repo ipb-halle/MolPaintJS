@@ -291,6 +291,21 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
+             * return a map of ChemObject-Ids by their role
+             */
+            getRoles : function () {
+                let roles = {};
+                for (let cid in chemObjects) {
+                    let role = chemObjects[cid].getRole();
+                    if (roles[role] === undefined) {
+                        roles[role] = {};
+                    }
+                    roles[role][cid] = cid;
+                }
+                return roles;
+            },
+
+            /**
              * @param sel selection bits
              * @return the atoms and bonds which match the given selection bits
              */

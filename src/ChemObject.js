@@ -340,6 +340,8 @@ var molPaintJS = (function (molpaintjs) {
             join : function (chemObj) {
                 let otherAtoms = chemObj.getAtoms();
                 let otherBonds = chemObj.getBonds();
+                let otherCollections = chemObj.getCollections();
+
                 for (let atomId in otherAtoms) {
                     let atom = otherAtoms[atomId];
                     atom.setChemObjectId(this.getId());
@@ -351,7 +353,16 @@ var molPaintJS = (function (molpaintjs) {
                     bond.setChemObjectId(this.getId());
                     bonds[bondId] = bond;
                 }
-                // xxxxx join also SGroups, Collections and other Info
+                // xxxxx join also SGroups and other Info
+
+                for (let name in otherCollections) {
+                    let collection = otherCollections[name];
+                    if (collections[name]) {
+                        collections[name].merge(collection);
+                    } else {
+                        collections[name] = collection;
+                    }
+                }
             },
 
             /**

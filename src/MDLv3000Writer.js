@@ -37,23 +37,23 @@ var molPaintJS = (function (molpaintjs) {
             return line + st;
         }
 
-        function writeCTAB (mol) {
+        function writeCTAB (chemObject) {
             output += 'M  V30 BEGIN CTAB\n';
 
-            writeCountsLine(mol);
+            writeCountsLine(chemObject);
 
-            if (mol.getAtomCount() > 0) {
-                writeAtomBlock(mol);
+            if (chemObject.getAtomCount() > 0) {
+                writeAtomBlock(chemObject);
             }
 
-            if (mol.getBondCount() > 0) {
-                writeBondBlock(mol);
+            if (chemObject.getBondCount() > 0) {
+                writeBondBlock(chemObject);
             }
 
             // SGroup
 
-            if (mol.getCollections().length > 0) {
-                writeCollectionBlock(mol);
+            if (Object.keys(chemObject.getCollections()).length > 0) {
+                writeCollectionBlock(chemObject);
             }
 
             output += 'M  V30 END CTAB\n';
@@ -121,7 +121,7 @@ var molPaintJS = (function (molpaintjs) {
             let st = " " + id + "=(";
             st = extendLine(line, st);
             st = extendLine(st, "" + count);
-            for (let a in atoms) {
+            for (let a of atoms) {
                 st = extendLine(st, ' ' + mol.getAtom(a).getIndex());
             }
             st = extendLine(st, ")");
@@ -149,7 +149,7 @@ var molPaintJS = (function (molpaintjs) {
             let st = " " + id + "=(";
             st = extendLine(line, st);
             st = extendLine(st, "" + count);
-            for (let b in bonds) {
+            for (let b of bonds) {
                 st = extendLine(st, ' ' + mol.getBond(b).getIndex());
             }
             st = extendLine(st, ")");
@@ -165,7 +165,7 @@ var molPaintJS = (function (molpaintjs) {
 
         function writeCollectionBlock (mol) {
             output += "M  V30 BEGIN COLLECTION\n";
-            for (let collection of mol.getCollections()) {
+            for (let collection of Object.values(mol.getCollections())) {
                 let st = "M  V30 ";
                 st = extendLine(st, '"' + collection.getName() + '" ');
                 let count = collection.getAtoms().length;

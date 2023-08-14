@@ -41,11 +41,12 @@ var molPaintJS = (function (molpaintjs) {
 
             merge: function(col) {
                 for (let a in col.getAtoms()) {
-                    atoms[a] = a;
+                    atoms.push(a);
                 }
                 for (let b in col.getBonds()) {
-                    bonds[b] = b;
+                    bonds.push(b);
                 }
+                // SGroups, Members, ...
             },
 
             setAtoms: function (a) {

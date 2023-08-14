@@ -515,16 +515,6 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
-            /**
-             * replace a Collection of this Drawing by the Collection
-             * given as an argument. If the Collection does not yet
-             * exist, append it to the list of Collections.
-             * @param collection the collection object with modified data
-             */
-            replaceCollection : function (collection) {
-                collections[collection.getName()] = collection;
-            },
-
             setProperty : function (propname, propval) {
                 properties[propname] = propval;
             },

@@ -74,16 +74,13 @@ var molPaintJS = (function (molpaintjs) {
             }
         }
 
-        function renderError (dlgId) {
-            return "<center><div id='" + dlgId + "_error' class='.molPaintJS-modalDlgError'></div></center>";
-        }
-
-        function renderInput (dlgId) {
+        function renderInput () {
             let html = "";
             let selection = molPaintJS.getContext(contextId).getDrawing().getSelected(2);
+            let inputId = molPaintJS.getDialog(contextId).getName() + "_input";
             if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                 html = "Collection name:<br/><center style='margin:10px;'>"
-                    + "<input id='" + dlgId + "_input' type='text'/> "
+                    + "<input id='" + inputId + "' type='text'/> "
                     + "<input type='button' value='Update / Add' onclick=\"molPaintJS.CollectionHandler('"
                     + contextId
                     + "').setCollection();\" /></center>";
@@ -91,75 +88,68 @@ var molPaintJS = (function (molpaintjs) {
             return html;
         }
 
-        function renderList () {
+        function renderTable () {
             let html = "Currently known collections:<br/>";
             let collections = molPaintJS.getContext(contextId).getDrawing().getCollections();
             if (collections.length === 0) {
                 return html;
             }
 
-            html += "<ul>";
+            html += "<table>";
             for (let c in collections) {
                 const name = collections[c].getName();
-                html += "<li>"
+                html += "<tr><td>"
                     + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
                     + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
-                    + name + "</span>"
+                    + name + "</span></td><td>"
                     + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name 
                     + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
-                    + "</li>";
+                    + "</td></tr>";
             }
 
-            html += "</ul>";
+            html += "</table>";
             return html;
         }
 
         return {
 
+            clearHighlights: function () {
+                this.highlight('');
+            },
+
             highlight: function (name) {
-                let dlgId = contextId + "_modalDlg";
                 let context = molPaintJS.getContext(contextId);
                 let mol = context.getDrawing();
                 let collection = getCollection(mol, name);
                 highlightAtoms(mol, collection.getAtoms());
                 highlightBonds(mol, collection.getBonds());
-//              document.getElementById(dlgId).style.display = 'none';
                 context.draw();
             },
 
             deleteCollection : function (name) {
-                let dlgId = contextId + "_modalDlg";
                 molPaintJS.getContext(contextId).getDrawing().delCollection(name);
-                this.highlight('');
-                if (molPaintJS.getContext(contextId).getDrawing().getCollections().length > 0) {
+                this.clearHighlights();
+                if (Object.keys(molPaintJS.getContext(contextId).getDrawing().getCollections()).length > 0) {
                     this.render();
                 } else {
-                    document.getElementById(dlgId).style.display = 'none';
+                        console.log("ELSE");
+                    molPaintJS.getDialog(contextId).close();
                 }
             },
 
             render: function() {
-                let dlgId = contextId + "_modalDlg";
-                let e = document.getElementById(dlgId);
-                e.innerHTML = "<div class='molPaintJS-modalDlgContent'>"
-                    + "<i class='molPaintJS-modalMoveButton fa-solid fa-arrows-up-down-left-right' onmousedown='molPaintJS.modalMouseDown(\""
-                    + dlgId + "\", event);'  onmousemove='molPaintJS.modalMouseMove(\"" 
-                    + dlgId + "\", event);' onmouseout='molPaintJS.modalMouseOut(event);'></i>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight(''); "
-                    + "document.getElementById('" + dlgId
-                    + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">"
-                    + "<i class='fa-solid fa-xmark'></i></span>"
-                    + renderInput(dlgId)
-                    + renderError(dlgId)
-                    + renderList()
-                    + "</div>";
-                e.style.display = "block";
+                let dialog = molPaintJS.getDialog(contextId);
+                dialog.setOnClose(this.clearHighlights());
+                dialog.setTitle("Collections");
+                dialog.setError("");
+                dialog.setContent(renderInput() + renderTable());
+                dialog.render();
             },
 
             setCollection: function() {
-                let dlgId = contextId + "_modalDlg";
+                let inputId = molPaintJS.getDialog(contextId).getName() + "_input";
                 let context = molPaintJS.getContext(contextId);
-                let name = document.getElementById(dlgId + "_input").value;
+                let name = document.getElementById(inputId).value;
 
                 // check for invalid name
                 if (name.match("[A-Za-z][A-Za-z #$+-;@]*")) {
@@ -171,7 +161,7 @@ var molPaintJS = (function (molpaintjs) {
                     if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                         applySelection(drawing, collection, selection);
                         drawing.replaceCollection(collection);
-                        document.getElementById(dlgId).style.display = 'none';
+                        molPaintJS.getDialog(contextId).close();
                     }
                 } else {
                     alert('Invalid collection name');

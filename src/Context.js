@@ -34,8 +34,9 @@ var molPaintJS = (function (molpaintjs) {
         let currentTool = null;
         let currentBondTool = null;
 
-        let history = molPaintJS.History(cid);
+        let dialog = molPaintJS.Dialog(cid);
         let drawing = null;             // initialized by init()
+        let history = molPaintJS.History(cid);
 
         let registeredIds = [];
         let view = molPaintJS.View(cid, properties);
@@ -112,11 +113,14 @@ var molPaintJS = (function (molpaintjs) {
             getCurrentTool : function () {
                 return currentTool;
             },
-            getHistory : function () {
-                return history;
+            getDialog: function () {
+                return dialog;
             },
             getDrawing : function () {
                 return drawing;
+            },
+            getHistory : function () {
+                return history;
             },
             getProperties : function () {
                 return properties;

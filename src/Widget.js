@@ -706,7 +706,7 @@ var molPaintJS = (function (molpaintjs) {
             renderWidget : function () {
                 if (! viewer) {
                     widgetObject.innerHTML = "<div style='position: relative;'>"
-                        + "<div id='" + widgetId + "_modalDlg' class='molPaintJS-modalDlg'></div>"
+                        + "<div id='" + widgetId + "_dialog' class='molPaintJS-dialog'></div>"
                         + "<table><tr><td colspan=3><table>"
                         + "<tr>" + renderTopMenu() + "</tr></table></td></tr>"
                         + "<tr>"
@@ -719,7 +719,7 @@ var molPaintJS = (function (molpaintjs) {
                         + "</table>"
                         + "</div>"
                 } else {
-                    widgetObject.innerHTML = "<div id='" + widgetId + "_modalDlg' class='molPaintJS-modalDlg'></div>"
+                    widgetObject.innerHTML = "<div id='" + widgetId + "_dialog' class='molPaintJS-dialog'></div>"
                         + renderCanvas();
                 }
             }

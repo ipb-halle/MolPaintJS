@@ -46,6 +46,11 @@ var molPaintJS = (function (molpaintjs) {
         /*
          * Actions
          */
+        function actionAnalysis (evt) {
+            let ctx = molPaintJS.getContext(evt.target.id);
+            molPaintJS.AnalysisTool(ctx.contextId).render();
+        }
+
         function actionCarbon (evt) {
             let ctx = molPaintJS.getContext(evt.target.id);
             ctx.setCurrentElement(molPaintJS.Elements.getElement("C"));
@@ -627,16 +632,17 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderTopMenu () {
-            return itemH("clear", "Clear", "molPaintJS-defaultTool")
-                + itemH("undo", "Undo", "molPaintJS-defaultTool")
-                + itemH("redo", "Redo", "molPaintJS-defaultTool")
+            return itemH("clear", "Clear", "molPaintJS-inactiveTool")
+                + itemH("undo", "Undo", "molPaintJS-inactiveTool")
+                + itemH("redo", "Redo", "molPaintJS-inactiveTool")
                 + itemH("center", "Center", "molPaintJS-inactiveTool")
                 + itemH("slide", "Slide", "molPaintJS-inactiveTool")
-                + itemH("copy", "Copy", "molPaintJS-defaultTool")
-                + itemH("paste", "Paste", "molPaintJS-defaultTool")
-                + itemH("zoom_in", "Zoom in", "molPaintJS-defaultTool")
-                + itemH("zoom_out", "Zoom out", "molPaintJS-defaultTool")
-                + itemH("info", "Info", "molPaintJS-defaultTool");
+                + itemH("copy", "Copy", "molPaintJS-inactiveTool")
+                + itemH("paste", "Paste", "molPaintJS-inactiveTool")
+                + itemH("zoom_in", "Zoom in", "molPaintJS-inactiveTool")
+                + itemH("zoom_out", "Zoom out", "molPaintJS-inactiveTool")
+                + itemH("analysis", "Display analysis window", "molPaintJS-inactiveTool")
+                + itemH("info", "Info", "molPaintJS-inactiveTool");
         }
 
         return {
@@ -645,6 +651,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             initEvents : function (ctx) {
                 registerEvent(ctx, "click", "_agent", actionSetRole);
+                registerEvent(ctx, "click", "_analysis", actionAnalysis);
                 registerEvent(ctx, "click", "_center", actionCenter);
                 registerEvent(ctx, "click", "_chain", actionChain);
                 registerEvent(ctx, "click", "_minus", actionChargeDec);

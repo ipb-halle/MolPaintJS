@@ -59,7 +59,7 @@ var molPaintJS = (function (molpaintjs) {
             addCollection : function (collection) {
                 let name = collection.getName();
                 if (collections[name] != null) {
-                    collections[name].merge(collection);
+                    collections[name].join(collection);
                 } else {
                     collections[name] = collection;
                 }
@@ -358,7 +358,7 @@ var molPaintJS = (function (molpaintjs) {
                 for (let name in otherCollections) {
                     let collection = otherCollections[name];
                     if (collections[name]) {
-                        collections[name].merge(collection);
+                        collections[name].join(collection);
                     } else {
                         collections[name] = collection;
                     }

@@ -180,10 +180,12 @@ var molPaintJS = (function (molpaintjs) {
 
             delAtom : function (a) {
                 chemObjects[a.getChemObjectId()].delAtom(a);
+                // xxxxx eventually delete empty ChemObject
             },
 
             delBond : function (b) {
                 chemObjects[b.getChemObjectId()].delBond(b);
+                // xxxxx eventually split ChemObject
             },
 
             /**
@@ -344,19 +346,6 @@ var molPaintJS = (function (molpaintjs) {
                 let cid = bond.getChemObjectId();
                 chemObjects[cid].replaceBond(bond);
             },
-
-            /**
-             * replace a Collection of this Drawing by the Collection
-             * given as an argument. If the Collection does not yet
-             * exist, append it to the list of Collections.
-             * @param collection the collection object with modified data
-             */
-            replaceCollection : function (collection) {
-                for (let cid in chemObjects) {
-                // xxxxx
-                }
-            },
-
 
             /**
              * loop over all ChemObjects and select the first matching atom 

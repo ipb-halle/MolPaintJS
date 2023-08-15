@@ -39,7 +39,7 @@ var molPaintJS = (function (molpaintjs) {
                 return name;
             },
 
-            merge: function(col) {
+            join: function(col) {
                 for (let a in col.getAtoms()) {
                     atoms.push(a);
                 }

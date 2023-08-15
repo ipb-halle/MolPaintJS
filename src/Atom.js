@@ -169,12 +169,12 @@ var molPaintJS = (function (molpaintjs) {
              * for this atom. Currently does not account for 
              * explicit hydrogens!
              */
-            getHydrogenCount : function(drawing) {
+            getHydrogenCount : function(chemObject) {
                 let cnt = 0;
 
                 // evaluate bond order
                 for(let b in bonds) {
-                    switch(drawing.getBond(b).getType()) {
+                    switch(chemObject.getBond(b).getType()) {
                         case 1 : cnt -= 1;
                                 break;
                         case 2 : cnt -= 2; 

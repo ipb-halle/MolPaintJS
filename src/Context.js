@@ -173,7 +173,7 @@ var molPaintJS = (function (molpaintjs) {
                 let mol;
                 try {
                     mol = molPaintJS.MDLParser.parse(st, {'context': this, 'logLevel': 5});
-                    if (mol.getCollections().length > 0) {
+                    if (Object.keys(mol.getCollectionNames()).length > 0) {
                         console.log("collections not supported during paste");
                     }
                 } catch(e) {

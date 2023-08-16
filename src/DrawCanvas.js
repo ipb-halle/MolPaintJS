@@ -216,7 +216,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawHydrogen (ctx, atom, symbolHeight) {
-            let hCount = atom.getHydrogenCount(currentChemObject);
+            let hCount = atom.getHydrogenCount(currentChemObject, false);
             if (hCount > 0) {
                 let hWidth = ctx.measureText("H").width;
                 let hx = atom.getBBox().getMaxX();

@@ -169,7 +169,7 @@ var molPaintJS = (function (molpaintjs) {
              * for this atom. Currently does not account for 
              * explicit hydrogens!
              */
-            getHydrogenCount : function(chemObject) {
+            getHydrogenCount : function(chemObject, reportCarbonH) {
                 let cnt = 0;
 
                 // evaluate bond order
@@ -184,6 +184,8 @@ var molPaintJS = (function (molpaintjs) {
                 }
 
                 switch(type.getIsotope().getSymbol()) {
+                    case "C" : if (reportCarbonH) { cnt += 4 + charge; }
+                        break;
                     case "N" : cnt += 3 + charge;
                         break;
                     case "O" : cnt += 2 + charge;

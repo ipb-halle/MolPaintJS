@@ -360,13 +360,13 @@ var molPaintJS = (function (molpaintjs) {
                 let otherCollections = chemObj.getCollections();
 
                 for (let atomId in otherAtoms) {
-                    let atom = otherAtoms[atomId];
+                    let atom = otherAtoms[atomId].copy();
                     atom.setChemObjectId(this.getId());
                     atoms[atomId] = atom;
 
                 }
                 for (let bondId in otherBonds) {
-                    let bond = otherBonds[bondId];
+                    let bond = otherBonds[bondId].copy();
                     bond.setChemObjectId(this.getId());
                     bonds[bondId] = bond;
                 }

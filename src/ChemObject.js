@@ -134,23 +134,14 @@ var molPaintJS = (function (molpaintjs) {
              * @param val All selections with bit val will be cleared.
              */
             clearSelection : function (val) {
-                for (let id in atoms) {
-                    let sel = atoms[id].getSelected();
-                    if(sel & val) {
-                        atoms[id].setSelected(sel & ~val);
-                    }
+                for (let atom of Object.values(atoms)) {
+                    atom.setSelected(atom.getSelected() & ~val);
                 }
-                for (let id in bonds) {
-                    let sel = bonds[id].getSelected();
-                    if(sel & val) {
-                        bonds[id].setSelected(sel & ~val);
-                    }
+                for (let bond of Object.values(bonds)) {
+                    bond.setSelected(bond.getSelected() & ~val);
                 }
-                for (let id in sgroups) {
-                    let sel = sgroups[id].getSelected();
-                    if (sel & val) {
-                        sgroups[id].setSelected(sel & ~val);
-                    }
+                for (let sgroup of Object.values(sgroups)) {
+                    sgroup.setSelected(sgroup.getSelected & ~val);
                 }
             },
 
@@ -422,6 +413,7 @@ var molPaintJS = (function (molpaintjs) {
                     i++;
                 }
                 bondCount = i - 1;
+                return this;
             },
 
             /**
@@ -562,6 +554,16 @@ var molPaintJS = (function (molpaintjs) {
 
             setRole : function (r) {
                 role = r;
+            },
+
+            setSelected : function (val) {
+                for (let atom of Object.values(atoms)) {
+                    atom.setSelected(atom.getSelected() | val);
+                }
+
+                for (let bond of Object.values(bonds)) {
+                    bond.setSelected(bond.getSelected() | val);
+                }
             },
 
             /**

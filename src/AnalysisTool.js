@@ -98,7 +98,6 @@ var molPaintJS = (function (molpaintjs) {
 
                 // count['H'] may be 0 from implicit H computation
                 if (counts ['H'] > 0) {     
-                    console.log("H: " + counts['H']);
                     html += "H" + getFormulaSubScript(counts['H']);
                     delete counts['H'];
                 }
@@ -137,17 +136,8 @@ var molPaintJS = (function (molpaintjs) {
                 let context = molPaintJS.getContext(contextId);
                 let chemObject = context
                     .getDrawing()
-                    .getChemObjects()[chemObjectId];
-
-                let atoms = chemObject.getAtoms();
-                for (let atomId in atoms) {
-                    atoms[atomId].setSelected(4);
-                }
-
-                let bonds = chemObject.getBonds();
-                for (let bondId in bonds) {
-                    bonds[bondId].setSelected(4);
-                }
+                    .getChemObjects()[chemObjectId]
+                    .setSelected(4);
                 context.draw();
             },
 

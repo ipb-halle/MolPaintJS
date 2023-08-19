@@ -18,6 +18,9 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
+    /**
+     * Please note: the MDLv3000Writer is not re-entrant!
+     */
     molpaintjs.MDLv3000Writer = function() {
 
         let output = "";
@@ -183,13 +186,12 @@ var molPaintJS = (function (molpaintjs) {
 
         return {
             write : function (drawing) {
-
+                output = "";
                 let chemObject = molPaintJS.ChemObject(drawing);
                 for (let c of Object.values(drawing.getChemObjects())) {
+                    // xxxxx we should not join the RGroups here!
                     chemObject.join(c);
                 }
-
-                chemObject.reIndex();
 
                 output = drawing.getProperty("NAME") + "\n";
                 //         IIPPPPPPPPMMDDYYHHMM
@@ -199,7 +201,61 @@ var molPaintJS = (function (molpaintjs) {
                 //         aaabbblllfffcccsssxxxrrrpppiii999vvvvv
                 //
                 output += "  0  0  0  0  0  0            999 V3000\n";
-                writeCTAB(chemObject);
+                writeCTAB(chemObject.reIndex());
+                output += "M  END\n";
+                return output;
+            },
+
+            writeRXN : function (drawing) {
+                let chemObjectIdsByRole = drawing.getRoles();
+                if (chemObjectIdsByRole['educt'] == null) {
+                    throw new Error("No ChemObject in educt role found");
+                }
+                if (chemObjectIdsByRole['product'] == null) {
+                    throw new Error("No ChemObject in product role found");
+                    return "";
+                }
+                if (chemObjectIdsByRole['default'] != null) {
+                    throw new Error("Reaction must not contain ChemObject in default role");
+                    return "";
+                }
+
+                output = "$RXN V3000\n";
+                output += drawing.getProperty("NAME") + "\n";
+                //         IIIIIIPPPPPPPPPMMDDYYYYHHmmRRRRRRR
+                output += "      MolPaint " + molPaintJS.getMDLDateCode() + "\n";
+                output += drawing.getProperty("COMMENT") + "\n";
+                output += sprintf("M  V30 COUNTS %d %d\n",
+                    Object.keys(chemObjectIdsByRole['educt']).length,
+                    Object.keys(chemObjectIdsByRole['product']).length);
+                output += "M  V30 BEGIN REACTANT\n";
+
+                for (let chemObjectId in chemObjectIdsByRole['educt']) {
+                    writeCTAB(drawing
+                        .getChemObjects()[chemObjectId]
+                        .reIndex());
+                }
+
+                output += "M  V30 END REACTANT\n";
+                output += "M  V30 BEGIN PRODUCT\n";
+
+                for (let chemObjectId in chemObjectIdsByRole['product']) {
+                    writeCTAB(drawing
+                        .getChemObjects()[chemObjectId]
+                        .reIndex());
+                }
+
+                output += "M  V30 END PRODUCT\n";
+
+                if (chemObjectIdsByRole['agent'] != null) {
+                    output += "M  V30 BEGIN AGENT\n";
+                    for (let chemObjectId in chemObjectIdsByRole['agent']) {
+                        writeCTAB(drawing
+                            .getChemObjects()[chemObjectId]
+                            .reIndex());
+                    }
+                    output += "M  V30 END AGENT\n";
+                }
                 output += "M  END\n";
                 return output;
             }

@@ -49,7 +49,6 @@ var molPaintJS = (function (molpaintjs) {
             context : ctx,
 
             abort : function () {
-                console.log("RoleTool abort: " + this.getId());
                 molPaintJS.Tools.abort(this);
                 molPaintJS.Tools.setStyle(this, "advanced", "molPaintJS-inactiveTool");
             },
@@ -76,7 +75,6 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             setup : function () {
-                console.log("RoleTool setup: " + this.getId());
                 molPaintJS.Tools.setStyle(this, "advanced", "molPaintJS-activeTool");
             }
         };

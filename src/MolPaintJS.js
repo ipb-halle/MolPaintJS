@@ -119,6 +119,9 @@ var molPaintJS = (function (molpaintjs) {
                 case 'V3000':
                     moltext = this.getMDLv3000(cid) + "\n";
                     break;
+                case 'V3000RXN':
+                    moltext = this.getMDLv3000RXN(cid) + "\n";
+                    break;
                 case 'V2000':
                     moltext = this.getMDLv2000(cid) + "\n";
                     break;
@@ -174,6 +177,11 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.getMDLv3000 = function (cid) {
         let w = this.MDLv3000Writer();
         return w.write(contextRegistry[cid].getDrawing());
+    }
+
+    molpaintjs.getMDLv3000RXN = function (cid) {
+        let w = this.MDLv3000Writer();
+        return w.writeRXN(contextRegistry[cid].getDrawing());
     }
 
     /**

@@ -180,8 +180,9 @@ var molPaintJS = (function (molpaintjs) {
                 let actionList = molPaintJS.ActionList();
 
                 let pasteChemObjects = pasteDrawing.getChemObjects();
-                for (let chemObjectId in pasteChemObjects) {
-                    drawing.addChemObject(pasteChemObjects[chemObjectId]);
+                for (let chemObject of Object.values(pasteChemObjects)) {
+                    chemObject.setSelected(1);
+                    drawing.addChemObject(chemObject);
                 }
                 console.log("Paste: history not supported!");
                 // xxxxx history of paste operation

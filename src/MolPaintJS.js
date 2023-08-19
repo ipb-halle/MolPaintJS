@@ -117,10 +117,10 @@ var molPaintJS = (function (molpaintjs) {
         try {
             switch(format) {
                 case 'V3000':
-                    moltext = this.getMDLv3000(cid);
+                    moltext = this.getMDLv3000(cid) + "\n";
                     break;
                 case 'V2000':
-                    moltext = this.getMDLv2000(cid);
+                    moltext = this.getMDLv2000(cid) + "\n";
                     break;
                 default :
                     moltext = "Unknown output format: " + format;
@@ -128,7 +128,7 @@ var molPaintJS = (function (molpaintjs) {
         } catch (e) {
             moltext = e.message;
         }
-        o.innerHTML = "<pre>" + moltext + "</pre>";
+        o.innerHTML = "<pre>\n" + moltext + "\n</pre>";
     }
 
     /**

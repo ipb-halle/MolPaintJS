@@ -68,6 +68,10 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            addChemObject : function (c) {
+                chemObjects[c.getId()] = c;
+            },
+
             /**
              * adjust selections
              * @param match match all atoms and bonds where any of the given bits are set
@@ -179,13 +183,20 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             delAtom : function (a) {
-                chemObjects[a.getChemObjectId()].delAtom(a);
-                // xxxxx eventually delete empty ChemObject
+                let chemObjectId = a.getChemObjectId();
+                if (chemObjects[chemObjectId].delAtom(a)) {
+                    delete chemObjects[chemObjectId];
+                }
             },
 
             delBond : function (b) {
-                chemObjects[b.getChemObjectId()].delBond(b);
-                // xxxxx eventually split ChemObject
+                let chemObjectId = b.getChemObjectId();
+                let connectedBondSets = chemObjects[chemObjectId].delBond(b);
+                if (connectedBondSets.length > 1) {
+                    console.log(connectedBondSets);
+
+                    // xxxxx split ChemObject
+                }
             },
 
             /**

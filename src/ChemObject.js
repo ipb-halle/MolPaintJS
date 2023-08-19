@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie 
+ * Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,29 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
+             * check, whether this ChemObject is composed of two
+             * disconnected bond graphs
+             */
+            checkSplit : function () {
+                let connectedBondSets = [];
+                let bondsToWalk = {};
+                for (let b in bonds) {
+                    bondsToWalk[b] = b;
+                }
+                while (Object.keys(bondsToWalk).length > 0) {
+                    let bondsWalked = {};
+                    connectedBondSets.push(bondsWalked);
+                    let bondId = Object.keys(bondsToWalk)[0];
+                    let bond = bonds[bondId];
+                    bondsWalked[bondId] = bondId;
+                    delete bondsToWalk[bondId];
+                    this.walkBonds (bondsToWalk, bondsWalked, bond.getAtomA());
+                    this.walkBonds (bondsToWalk, bondsWalked, bond.getAtomB());
+                }
+                return connectedBondSets;
+            },
+
+            /**
              * clear all selections
              * @param val All selections with bit val will be cleared.
              */
@@ -209,10 +232,12 @@ var molPaintJS = (function (molpaintjs) {
              * CAVEAT: this function does not perform any cross-check,
              * whether this atom is still part of a bond in this
              * drawing
+             * @return true if deleted atom was the last atom in this ChemObject
              */
             delAtom : function (a) {
                 let idx = a.getId();
                 delete atoms[idx];
+                return (Object.keys(atoms).length === 0);
             },
 
             delBond : function (b) {
@@ -221,6 +246,7 @@ var molPaintJS = (function (molpaintjs) {
                 bond.getAtomA().delBond(idx);
                 bond.getAtomB().delBond(idx);
                 delete bonds[idx];
+                return this.checkSplit();
             },
 
             delCollection : function (name) {
@@ -332,8 +358,8 @@ var molPaintJS = (function (molpaintjs) {
 
 
             /**
-             * Join two ChemObjects by adding the atoms, bonds, sgroups etc. from 
-             * the given ChemObjecty to this ChemObject. Joins happen, if two 
+             * Join two ChemObjects by adding the atoms, bonds, sgroups etc. from
+             * the given ChemObjecty to this ChemObject. Joins happen, if two
              * ChemObjects are connected by a common bond.
              * Split is the inverse operation to join.
              */
@@ -553,6 +579,18 @@ var molPaintJS = (function (molpaintjs) {
                         let y = atom.getY();
                         atom.setX(matrix[0][0] * x + matrix[0][1] * y + matrix[0][2]);
                         atom.setY(matrix[1][0] * x + matrix[1][1] * y + matrix[1][2]);
+                    }
+                }
+            },
+
+            walkBonds : function (bondsToWalk, bondsWalked, atom) {
+                for (let bondId in atom.getBonds()) {
+                    if (! bondsWalked[bondId]) {
+                        let bond = bonds[bondId]
+                        bondsWalked[bondId] = bondId;
+                        delete bondsToWalk[bondId];
+                        this.walkBonds(bondsToWalk, bondsWalked, bond.getAtomA());
+                        this.walkBonds(bondsToWalk, bondsWalked, bond.getAtomB());
                     }
                 }
             },

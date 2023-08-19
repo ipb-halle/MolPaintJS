@@ -170,52 +170,22 @@ var molPaintJS = (function (molpaintjs) {
              * @return the already appended (!) actionList
              */
             pasteDrawing: function (st, sel) {
-                let mol;
+                let pasteDrawing;
                 try {
-                    mol = molPaintJS.MDLParser.parse(st, {'context': this, 'logLevel': 5});
-                    if (Object.keys(mol.getCollectionNames()).length > 0) {
-                        console.log("collections not supported during paste");
-                    }
+                    pasteDrawing = molPaintJS.MDLParser.parse(st, {'context': this, 'logLevel': 5});
                 } catch(e) {
                     console.log("Parse error in Context.pasteDrawing(): " + e.message);
                     return;
                 }
                 let actionList = molPaintJS.ActionList();
 
-                // add atoms
-                let atoms = mol.getAtoms();
-                for (let i in atoms) {
-                    let a = atoms[i];
-                    a.setBonds({});
-                    a.setSelected(sel);
-                    a.setChemObjectId(null);
-                    drawing.addAtom(a);
-                    actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
+                let pasteChemObjects = pasteDrawing.getChemObjects();
+                for (let chemObjectId in pasteChemObjects) {
+                    drawing.addChemObject(pasteChemObjects[chemObjectId]);
                 }
-
-                // add bonds
-                let bonds = mol.getBonds();
-                for (let i in bonds) {
-                    let b = bonds[i];
-                    b.setSelected(sel);
-                    b.setChemObjectId(null);
-                    drawing.addBond(b);
-                    actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
-                }
-
-                // add sgroups
-                let sgroups = mol.getSGroups();
-                for (let i in sgroups) {
-                    let g = sgroups[i];
-                    g.setSelected(sel);
-                    // xxxxx g.setChemObjectId(null);
-                    drawing.addSGroup(g, null);
-                    // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
-                }
-
-                // ToDo: Collections NOT IMPLEMENTED
-
-                history.appendAction(actionList);
+                console.log("Paste: history not supported!");
+                // xxxxx history of paste operation
+                // history.appendAction(actionList);
 
                 view.initRaster(drawing);
                 this.draw();

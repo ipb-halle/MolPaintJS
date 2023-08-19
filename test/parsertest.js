@@ -38,16 +38,21 @@ function readFile(name) {
     return fs.readFileSync(path.join(path.dirname(__filename), 'molecules', name), {'encoding':'UTF-8'});
 }
 
+function getChemObject(entry) {
+    let drawing = molpaintjs.MDLParser.parse(readFile(entry.name), { "counter": molpaintjs.Counter(), "logLevel":5 } );
+    let chemObject = Object.values(drawing.getChemObjects())[0];
+    return chemObject.reIndex();
+}
+
 describe('Parser', function() {
     it('should parse the list of molecules', function() {
         for(var entry of testMolecules) {
             console.log("PARSE: " + entry.name);
-            var mol = molpaintjs.MDLParser.parse(readFile(entry.name), { "logLevel":5 } );
+            let chemObject = getChemObject(entry);
 //          console.log(util.inspect(mol, {showHidden: false, depth: null}));
-            assert(mol, 'Parse error for ' + entry.name);
-            mol.reIndex();
-            atomCounts[entry.name] = mol.getAtomCount();
-            bondCounts[entry.name] = mol.getBondCount();
+            assert(chemObject, 'Parse error for ' + entry.name);
+            atomCounts[entry.name] = chemObject.getAtomCount();
+            bondCounts[entry.name] = chemObject.getBondCount();
         }
     });
     it('should match the number of atoms', function() {

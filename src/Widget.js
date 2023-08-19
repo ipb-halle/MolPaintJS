@@ -111,7 +111,7 @@ var molPaintJS = (function (molpaintjs) {
             }
 
             ctx.getHistory().appendAction(actionList);
-            ctx.setDrawingObject(molPaintJS.Drawing(ctx));
+            ctx.setDrawingObject(molPaintJS.Drawing(ctx.getCounter()));
             ctx.draw();
         }
 

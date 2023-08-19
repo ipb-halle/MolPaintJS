@@ -41,7 +41,7 @@ var molPaintJS = (function (molpaintjs) {
         let registeredIds = [];
         let view = molPaintJS.View(cid, properties);
         let widget = molPaintJS.Widget(cid, properties, mp);
-        let counter = 0;                // context unique counter 
+        let counter = molPaintJS.Counter();                // context unique counter 
 
         /**
          * depending on the value of properties.viewer, set up
@@ -101,6 +101,10 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            getCounter : function () {
+                return counter
+            },
+
             getCurrentBondTool : function () {
                 return currentBondTool;
             },
@@ -143,7 +147,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             init : function () {
                 let ctx = this;
-                drawing = molPaintJS.Drawing(ctx);
+                drawing = molPaintJS.Drawing(counter);
                 setupTools(ctx, properties);
                 let p = new Promise(function (resolve, reject) {
                     window.setTimeout(function () {
@@ -172,7 +176,7 @@ var molPaintJS = (function (molpaintjs) {
             pasteDrawing: function (st, sel) {
                 let pasteDrawing;
                 try {
-                    pasteDrawing = molPaintJS.MDLParser.parse(st, {'context': this, 'logLevel': 5});
+                    pasteDrawing = molPaintJS.MDLParser.parse(st, {'counter': counter, 'logLevel': 5});
                 } catch(e) {
                     console.log("Parse error in Context.pasteDrawing(): " + e.message);
                     return;
@@ -241,7 +245,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             setDrawing : function (st) {
                 try {
-                    drawing = molPaintJS.MDLParser.parse(st, {'context': this});
+                    drawing = molPaintJS.MDLParser.parse(st, {'counter': counter});
                 } catch(e) {
                     console.log("Parse error in Context.setDrawing(): " + e.message);
                     return;
@@ -269,10 +273,6 @@ var molPaintJS = (function (molpaintjs) {
             setMolecule : function(st) {
                 console.log("Encountered deprecated method setMolecule(), use setDrawing() instead!");
                 return this.setDrawing(st);
-            },
-
-            uniqueCounter : function () {
-                return counter++;
             },
 
         };  // return

@@ -22,11 +22,11 @@ var molPaintJS = (function (molpaintjs) {
      * ToDo: history for collections, removal and replacement of
      * atoms and bonds in collections
      */
-    molpaintjs.Drawing = function(ctx) {
+    molpaintjs.Drawing = function(uniqueCounter) {
 
         let chemObjects = {};
         let properties = {};
-        let context = ctx;
+        let counter = uniqueCounter;
         let currentChemObjectId;
 
         return {
@@ -168,11 +168,11 @@ var molPaintJS = (function (molpaintjs) {
 
 
             createAtomId : function() {
-                return "Atom" + context.uniqueCounter();
+                return "Atom" + counter.uniqueCounter();
             },
 
             createBondId : function() {
-                return "Bond" + context.uniqueCounter();
+                return "Bond" + counter.uniqueCounter();
             },
 
             createChemObject : function () {
@@ -284,8 +284,8 @@ var molPaintJS = (function (molpaintjs) {
                 return collectionNames;
             },
 
-            getContext : function () {
-                return context;
+            getCounter : function () {
+                return counter;
             },
 
             getCurrentChemObject : function () {

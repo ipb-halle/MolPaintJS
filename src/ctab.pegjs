@@ -268,7 +268,7 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.drawing = molPaintJS.Drawing(options.context);
+            mdlParserData.drawing = molPaintJS.Drawing(options.counter);
             mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
@@ -442,7 +442,7 @@ v2propIsis
 v2propAtomValuePairs
     = propType:v2propAtomValuePairsHeader props:v2propAtomValuePair+ {
             for(let prop of props) {
-                let atomIndex = mdlParserData.atomIndexMap('a' + prop.atom);
+                let atomIndex = mdlParserData.atomIndexMap['a' + prop.atom];
                 let atom = mdlParserData.drawing.getAtom(atomIndex);
                 switch(propType) {
                     case 'CHG' :
@@ -604,7 +604,7 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.drawing = molPaintJS.Drawing(options.context);
+            mdlParserData.drawing = molPaintJS.Drawing(options.counter);
             mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);

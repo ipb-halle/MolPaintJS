@@ -20,6 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.AnalysisTool = function (ctx) {
 
+        const electronMass = 5.48579909065e-4;
         let contextId = ctx;
         let analysisTotal = {role: 'Total', counts: {}, formula: "", mass: 0.0, massExact: 0.0 };
 
@@ -48,9 +49,10 @@ var molPaintJS = (function (molpaintjs) {
                     // xxxxx mass computations and hydrogen count are NOT exact!
                     let implicitHs = atom.getHydrogenCount(chemObject, true);
                     data.mass += isotope.getMass();
-                    data.massExact += isotope.getMassExact();
                     data.mass += implicitHs * 1.008;
+                    data.massExact += isotope.getMassExact();
                     data.massExact += implicitHs * 1.00782503223;
+                    data.massExact -= atom.getCharge() * electronMass;
 
                     countElement (data.counts, symbol, 1);
                     countElement (data.counts, "H", implicitHs);
@@ -93,13 +95,19 @@ var molPaintJS = (function (molpaintjs) {
             if (counts['C'] != null) {
                 html += "C" + getFormulaSubScript(counts['C']);
                 delete counts['C'];
-                if (counts ['H'] != null) {
+
+                // count['H'] may be 0 from implicit H computation
+                if (counts ['H'] > 0) {     
+                    console.log("H: " + counts['H']);
                     html += "H" + getFormulaSubScript(counts['H']);
                     delete counts['H'];
                 }
             }
             for (let sym of Object.keys(counts).sort()) {
-                html += sym + getFormulaSubScript(counts[sym]);
+                // may contain 'H' = 0 from implicit H count computation
+                if (counts[sym] > 0) {
+                    html += sym + getFormulaSubScript(counts[sym]);
+                }
             }
             return html;
         }

@@ -154,6 +154,13 @@ var molPaintJS = (function (molpaintjs) {
                 this.updateIcons();
             },
 
+            /**
+             * function to support integration testing
+             */
+            spy : function () {
+                return actions[actionPtr].getActions();
+            },
+
             undo : function (ctx) {
                 if (actionPtr < 0) {
                     return;

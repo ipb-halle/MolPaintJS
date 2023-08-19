@@ -237,7 +237,6 @@ var molPaintJS = (function (molpaintjs) {
         function actionRadical (evt) {
             let ctx = molPaintJS.getContext(evt.target.id);
             let tool = ctx.getTools().radicalTool;
-            ctx.setCurrentTool(tool);
             let toolType = evt.target.id.replace(ctx.contextId + "_", "");
             if (toolType != "radical") {
                 tool.setType(toolType);

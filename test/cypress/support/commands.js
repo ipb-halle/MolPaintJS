@@ -23,3 +23,20 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("getAtomFromHistory", () => { 
+    cy.window().then(win => {
+        let context = win.molPaintJS.getContext("mol");
+        let lastActions = context.getHistory().spy();
+        for (let action of lastActions) {
+            if ((action.actionType === "ADD")
+                && (action.objectType === "ATOM")) {
+                let atom = action.newObject;
+                return atom;
+            }
+        }
+        throw Error ("getAtomFromHistory(): no atom found");
+        return null;
+    });
+});
+

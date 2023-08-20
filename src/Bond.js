@@ -62,7 +62,7 @@ var molPaintJS = (function (molpaintjs) {
                 b.setTemp(temp);
                 b.setType(type);
                 b.setStereo(stereo);
-                b.setSGroups(copySGroups());
+                b.setSGroups(this.copySGroups());
                 return b;
             },
 

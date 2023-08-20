@@ -28,6 +28,7 @@ var molPaintJS = (function (molpaintjs) {
         let properties = {};
         let counter = uniqueCounter;
         let currentChemObjectId;
+        let role = 'default';
 
         return {
 
@@ -39,7 +40,7 @@ var molPaintJS = (function (molpaintjs) {
             addAtom : function (a) {
                 let cid = a.getChemObjectId();
                 if (cid == null) {
-                    cid = this.createChemObject();
+                    cid = this.createChemObject().getId();
                 }
                 chemObjects[cid].addAtom(a);
             },
@@ -176,10 +177,11 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             createChemObject : function () {
-                let c = molpaintjs.ChemObject(this);
-                let cid = c.getId();
-                chemObjects[cid] = c;
-                return cid;
+                let obj = molpaintjs.ChemObject(this);
+                let cid = obj.getId();
+                obj.setRole(role);
+                chemObjects[cid] = obj;
+                return obj;
             },
 
             delAtom : function (a) {
@@ -197,6 +199,10 @@ var molPaintJS = (function (molpaintjs) {
 
                     // xxxxx split ChemObject
                 }
+            },
+
+            delChemObject : function (c) {
+                delete chemObjects[c.getId()];
             },
 
             /**
@@ -286,13 +292,6 @@ var molPaintJS = (function (molpaintjs) {
 
             getCounter : function () {
                 return counter;
-            },
-
-            getCurrentChemObject : function () {
-                if (currentChemObjectId === undefined) {
-                    currentChemObjectId = this.createChemObject();
-                }
-                return chemObjects[currentChemObjectId];
             },
 
             getProperties : function () {
@@ -407,12 +406,15 @@ var molPaintJS = (function (molpaintjs) {
                 return matches;
             },
 
-            setCurrentChemObjectId : function (cid) {
-                currentChemObjectId = cid;
-            },
-
             setProperty : function (propname, propval) {
                 properties[propname] = propval;
+            },
+
+            /**
+             * determine the role for the next ChemObject to be created
+             */
+            setRole : function (r) {
+                role = r;
             },
 
             /**

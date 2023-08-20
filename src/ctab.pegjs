@@ -32,9 +32,12 @@
         'currentAtom':0,
         'currentAtomList':0,
         'currentBond':0,
-        'currentChemObject':null,
+        'currentChemObjectV2':null,
+        'currentChemObjectV3':null,
         'currentProperty':0,
+        'currentRole':'default',
         'currentStext':0,
+        'drawing':molPaintJS.Drawing(options.counter),
         'propertyCount':0,
         'resetCharges':true,
         'resetIsotopes':true,
@@ -174,8 +177,8 @@
      */
     function resetCharges () {
         if (mdlParserData.resetCharges) {
-            for (let a in mdlParserData.currentChemObject.getAtoms()) {
-                let atom = mdlParserData.currentChemObject.getAtom(a);
+            for (let a in mdlParserData.currentChemObjectV2.getAtoms()) {
+                let atom = mdlParserData.currentChemObjectV2.getAtom(a);
                 atom.setCharge(0);
                 atom.setRadical(0);
             }
@@ -189,8 +192,8 @@
      */
     function resetIsotopes () {
         if (mdlParserData.resetIsotopes) {
-            for (let a in mdlParserData.currentChemObject.getAtoms()) {
-                let atom = mdlParserData.currentChemObject.getAtom(a);
+            for (let a in mdlParserData.currentChemObjectV2.getAtoms()) {
+                let atom = mdlParserData.currentChemObjectV2.getAtom(a);
                 if (atom.getType().getIsotope().getIsotope() > 0) {
 
                     // does not reset Deuterium and Tritium!
@@ -240,14 +243,18 @@
 }
 
 mdlFile
-    = header v2Counts v2ctab endOfFile { logMessage(1, 'parsed V2000 File'); return mdlParserData.drawing; }
-    / header v3Counts v3ctab endOfFile { logMessage(1, 'parsed V3000 File'); return mdlParserData.drawing; }
+    = v3RxnHeader header v3RxnCounts v3RxnComponents* endOfFile { logMessage(1, 'parsed V3000 RXN file'); return mdlParserData.drawing; }
+    / header v2Counts v2ctab endOfFile { logMessage(1, 'parsed V2000 MOL File'); return mdlParserData.drawing; }
+    / header v3Counts v3ctab endOfFile { logMessage(1, 'parsed V3000 MOL File'); return mdlParserData.drawing; }
+
+v3RxnHeader
+    = '$RXN V3000' newline
 
 header
     = header1 header2 header3 { logMessage(1, 'parsed Header'); }
 
 endOfFile
-    = newline 'M  END' whitespaceNL*
+    = 'M  END' whitespaceNL*
 
 header1
     = line:(noNL*) { mdlParserData.header1 = line.join(''); }
@@ -261,6 +268,14 @@ header3
 /*
  * Global Counts Line
  */
+v3RxnCounts
+    = newline 'M  V30 COUNTS ' nEducts:uint nProducts:uint whitespaceNL {
+            logMessage(1, 'parsed rxnV3counts');
+            mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
+            mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
+            mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
+        }
+
 v2Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V2000'? {
             logMessage(1, 'parsed v2Counts');
@@ -268,15 +283,16 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.drawing = molPaintJS.Drawing(options.counter);
-            mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
+            mdlParserData.drawing.setRole(mdlParserData.currentRole);
+            mdlParserData.currentChemObjectV2 = mdlParserData.drawing.createChemObject();
+            logMessage(2, 'v2Counts created new ChemObject');
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
         }
 
 v3Counts
-    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' {
+    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' whitespaceNL {
             logMessage(1, 'parsed v3Counts');
             // nAtoms & nBonds ignored
         }
@@ -310,11 +326,11 @@ v3Counts
  */
 
 v2ctab
-    = v2atom* v2bond* v2atomlist* v2stext* v2props* { logMessage(1, 'parsed V2000 CTAB'); }
+    = v2atom* v2bond* v2atomlist* v2stext* v2props* newline { logMessage(1, 'parsed V2000 CTAB'); }
 
 v2atom
     = newline atom:v2atomLine {
-            mdlParserData.currentChemObject.addAtom(atom);
+            mdlParserData.currentChemObjectV2.addAtom(atom);
         }
 
 v2atomLine
@@ -359,7 +375,7 @@ v2atomLine
 
 v2bond
     = newline bond:v2bondLine {
-            mdlParserData.currentChemObject.addBond(bond);
+            mdlParserData.currentChemObjectV2.addBond(bond);
         }
 
 v2bondLine
@@ -584,6 +600,29 @@ v2propOTHER
 
 
 
+/*
+ *======================================================================
+ *
+ * V3000 RXN File
+ * 
+ *======================================================================
+ */
+
+v3RxnComponents
+    = v3RxnType whitespaceNL v3RxnComponent* v3RxnTypeEnd whitespaceNL
+
+v3RxnType
+    = 'M  V30 BEGIN REACTANT' { mdlParserData.currentRole = 'educt'; }
+    / 'M  V30 BEGIN PRODUCT' { mdlParserData.currentRole = 'product'; }
+    / 'M  V30 BEGIN AGENT' { mdlParserData.currentRole = 'agent'; }
+
+v3RxnTypeEnd
+    = 'M  V30 END REACTANT' { logMessage(1, 'parsed V3000 reactants'); }
+    / 'M  V30 END PRODUCT' { logMessage(1, 'parsed V3000 products'); }
+    / 'M  V30 END AGENT' { logMessage(1, 'parsed V3000 agents'); }
+
+v3RxnComponent
+    = v3ctab+
 
 /*
  *======================================================================
@@ -593,7 +632,7 @@ v2propOTHER
  *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+  { logMessage(1, 'parsed V3000 CTAB'); }
+    = 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+ 'M  V30 END CTAB' whitespaceNL  { logMessage(1, 'parsed V3000 CTAB'); }
 
 /*
  *
@@ -604,8 +643,12 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.drawing = molPaintJS.Drawing(options.counter);
-            mdlParserData.currentChemObject = mdlParserData.drawing.getCurrentChemObject();
+            mdlParserData.drawing.setRole(mdlParserData.currentRole);
+            mdlParserData.currentChemObjectV3 = mdlParserData.drawing.createChemObject();
+            if (mdlParserData.currentChemObjectV2 != null) {
+                mdlParserData.drawing.delChemObject(mdlParserData.currentChemObjectV2);
+            }
+            logMessage(2, 'v3countsLine created new ChemObject');
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
@@ -636,8 +679,10 @@ countRegNo
 
 v3atomBlock
     = newline 'M  V30 BEGIN ATOM' newline atoms:atomEntry* 'M  V30 END ATOM' {
-            atoms.forEach(atom => { mdlParserData.currentChemObject.addAtom(atom); });
+            let nAtoms = 0;
+            atoms.forEach(atom => { mdlParserData.currentChemObjectV3.addAtom(atom); nAtoms++ });
             logMessage(1, 'parsed ATOM BLOCK');
+            logMessage(2, "atoms: " + nAtoms);
         }
 
 atomEntry
@@ -766,7 +811,7 @@ atomTypeList
 
 v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bonds:bondEntry* 'M  V30 END BOND' {
-            bonds.forEach(bond => { mdlParserData.currentChemObject.addBond(bond); });
+            bonds.forEach(bond => { mdlParserData.currentChemObjectV3.addBond(bond); });
             logMessage(1, 'parsed BOND BLOCK');
         }
 
@@ -829,7 +874,7 @@ v3propertyBlocks
     / v3obj3dBlock
     / v3LinkAtomLine
     / v3collectionBlock
-    / newline 'M  V30 END CTAB'
+    / whitespaceNL
 
 /*
  * V3000 SGroup Block
@@ -863,7 +908,7 @@ v3SGroupBlock
     = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
             sgroups.forEach(sgroup => {
                 sgroup.parseJsonData(mdlParserData.drawing);
-                mdlParserData.currentChemObject.addSGroup(sgroup);
+                mdlParserData.currentChemObjectV3.addSGroup(sgroup);
             });
             logMessage(1, 'parsed SGROUP BLOCK');
         }
@@ -988,7 +1033,7 @@ v3collectionBlock
                 let collection = molPaintJS.Collection(entry.name);
                 collection.setAtoms(arrayJoin(entry.data, 'ATOMS'));
                 collection.setBonds(arrayJoin(entry.data, 'BONDS'));
-                mdlParserData.currentChemObject.addCollection(collection);
+                mdlParserData.currentChemObjectV3.addCollection(collection);
             });
             logMessage(1, 'parsed COLLECTION BLOCK');
 }
@@ -1085,8 +1130,7 @@ nonWhitespace
     = [^ \t\r\n]
 
 whitespaceNL
-    = whitespace
-    / newline
+    = whitespace* newline
 
 whitespace
     = [ \t]

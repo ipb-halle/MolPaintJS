@@ -245,7 +245,8 @@ var molPaintJS = (function (molpaintjs) {
              */
             setDrawing : function (st) {
                 try {
-                    drawing = molPaintJS.MDLParser.parse(st, {'counter': counter});
+                    drawing = molPaintJS.MDLParser.parse(st, {'logLevel': 0, 'counter': counter});
+                    drawing.setRole('default');
                 } catch(e) {
                     console.log("Parse error in Context.setDrawing(): " + e.message);
                     return;

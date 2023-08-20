@@ -25,7 +25,7 @@ var molPaintJS = (function (molpaintjs) {
         let bondType = bt;
         let stereoType = st;
 
-        let atomA = null;
+        let atomIdA = null;
         let actionList;
 
 
@@ -39,15 +39,15 @@ var molPaintJS = (function (molpaintjs) {
                 let iconId = this.context.contextId + "_currentBond";
                 document.getElementById(iconId).className = "molPaintJS-inactiveTool";
 
-                atomA = null;
+                atomIdA = null;
             },
 
             /**
              * this finally creates the new bond
              */
             onClick : function (x, y, evt) {
-                if(atomA == null) return;
-                atomA = null;
+                if(atomIdA == null) return;
+                atomIdA = null;
                 actionList.addActionList(this.context.getDrawing().clearTemp());
                 this.context.getHistory().appendAction(actionList); 
                 this.context.draw();
@@ -85,8 +85,9 @@ var molPaintJS = (function (molpaintjs) {
                             this.context.draw();
                         }
                     } else {
-                        atomA = molPaintJS.Atom();
-                        atomA.setId(this.context.getDrawing().createAtomId());
+                        atomIdA = this.context.getDrawing().createAtomId();
+                        let atomA = molPaintJS.Atom();
+                        atomA.setId(atomIdA);
 
                         atomA.setX(coord.x);
                         atomA.setY(coord.y);
@@ -96,13 +97,12 @@ var molPaintJS = (function (molpaintjs) {
                         at.setColor(this.context.getCurrentElement().getColor());
                         atomA.setType(at);
                         this.context.getDrawing().addAtom(atomA);
-                        atomId = atomA.getId();
                         
                         actionList.addAction(molPaintJS.Action("ADD", "ATOM", atomA, null));
 
                     }
                 } else {
-                    atomA = this.context.getDrawing().getAtom(atomId);
+                    atomIdA = atomId;
                 } 
                 this.onMouseMove(x, y, evt);
             },
@@ -111,8 +111,9 @@ var molPaintJS = (function (molpaintjs) {
              * handle mouse move events
              */
             onMouseMove : function (x, y, evt) {
-                if (atomA == null) { return; }
+                if (atomIdA == null) { return; }
 
+                let atomA = this.context.getDrawing().getAtom(atomIdA);
                 let view = this.context.getView();
                 let coord = view.getCoordReverse(x, y);
 
@@ -121,8 +122,8 @@ var molPaintJS = (function (molpaintjs) {
                 let atomB;
 
                 // no atom found in proximity?
-                if((atomId == null) || (atomId == atomA.getId())) {
-
+                if((atomId == null) || (atomId == atomIdA)) {
+                    console.log("no atom in proximity");
                     let dx = coord.x - atomA.getX();
                     let dy = coord.y - atomA.getY();
                     let len = Math.sqrt((dx * dx) + (dy * dy));

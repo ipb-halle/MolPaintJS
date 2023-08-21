@@ -490,6 +490,28 @@ var molPaintJS = (function (molpaintjs) {
                 + renderAdvancedMenu();
         }
 
+        function renderPlacementMenu () {
+            return "<td><div class='molPaintJS-leftDropdown'>"
+                + "  <a href='javascript:void(0);' class='molPaintJS-dropbtn'>"
+                + item("placement", "placement", "Placement functions", "molPaintJS-inactiveTool")
+                + "</a><div id='" + widgetId + "_placementMenu' class='molPaintJS-leftDropdown-content'>"
+                + "<table><tr>"
+                + itemH("align_horizontal", "Align horizontally", "molPaintJS-inactiveTool")
+                + itemH("align_top", "Align top", "molPaintJS-inactiveTool")
+                + itemH("align_vertical", "Align vertically", "molPaintJS-inactiveTool")
+                + "</tr><tr>"
+                + itemH("align_left", "Align left", "molPaintJS-inactiveTool")
+                + itemH("center", "Center drawing", "molPaintJS-inactiveTool")
+                + itemH("align_right", "Align right", "molPaintJS-inactiveTool")
+                + "</tr><tr>"
+                + itemH("distribute_horizontal", "Distribute horizontally", "molPaintJS-inactiveTool")
+                + itemH("align_bottom", "Align bottom", "molPaintJS-inactiveTool")
+                + itemH("distribute_vertical", "Distribute vertically", "molPaintJS-inactiveTool")
+                + "</tr></table>"
+                + "</div></div>"
+                + "</td>";
+        }
+
         function renderRGroupSymbols (isotopes) {
             let tbl = "<td colspan='6'></td>";
             let trailingColspan = 18 - 6;
@@ -634,7 +656,7 @@ var molPaintJS = (function (molpaintjs) {
             return itemH("clear", "Clear", "molPaintJS-inactiveTool")
                 + itemH("undo", "Undo", "molPaintJS-inactiveTool")
                 + itemH("redo", "Redo", "molPaintJS-inactiveTool")
-                + itemH("center", "Center", "molPaintJS-inactiveTool")
+                + renderPlacementMenu()
                 + itemH("slide", "Slide", "molPaintJS-inactiveTool")
                 + itemH("copy", "Copy", "molPaintJS-inactiveTool")
                 + itemH("paste", "Paste", "molPaintJS-inactiveTool")

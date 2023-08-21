@@ -51,8 +51,8 @@ var molPaintJS = (function (molpaintjs) {
              * form a single ChemObject.
              */
             addBond : function (b) {
-                let coA = b.getAtomA().getChemObjectId();
-                let coB = b.getAtomB().getChemObjectId();
+                let coA = this.getAtom(b.getAtomA()).getChemObjectId();
+                let coB = this.getAtom(b.getAtomB()).getChemObjectId();
 
                 if (coA === coB) {
                     chemObjects[coA].addBond(b);

@@ -50,6 +50,16 @@
         }
     }
 
+    function createChemObject() {
+            mdlParserData.currentAtom = 0;
+            mdlParserData.currentAtomList = 0;
+            mdlParserData.currentBond = 0;
+            mdlParserData.currentProperty = 0;
+            mdlParserData.currentStext = 0;
+            mdlParserData.drawing.setRole(mdlParserData.currentRole);
+            return mdlParserData.drawing.createChemObject();
+    }
+
     /**
      * obtain an atomType from a given elemental symbol and optionally
      * a mass difference (V2000) or an absolute mass (V2000 'M  ISO' or V3000)
@@ -283,8 +293,7 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.drawing.setRole(mdlParserData.currentRole);
-            mdlParserData.currentChemObjectV2 = mdlParserData.drawing.createChemObject();
+            mdlParserData.currentChemObjectV2 = createChemObject();
             logMessage(2, 'v2Counts created new ChemObject');
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
@@ -388,12 +397,10 @@ v2bondLine
             return false;
         } {
             let b = molPaintJS.Bond();
-            b.setId(mdlParserData.drawing.createBondId()); 
+            b.setId(mdlParserData.drawing.createBondId());
 
-            let atomIndex = mdlParserData.atomIndexMap['a' + atom1];
-            b.setAtomA(mdlParserData.drawing.getAtom(atomIndex));
-            atomIndex = mdlParserData.atomIndexMap['a' + atom2];
-            b.setAtomB(mdlParserData.drawing.getAtom(atomIndex));
+            b.setAtomA(mdlParserData.atomIndexMap['a' + atom1]);
+            b.setAtomB(mdlParserData.atomIndexMap['a' + atom2]);
 
             b.setType(bondType);
             b.setStereo(sss, 'v2');
@@ -604,7 +611,7 @@ v2propOTHER
  *======================================================================
  *
  * V3000 RXN File
- * 
+ *
  *======================================================================
  */
 
@@ -643,8 +650,7 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.drawing.setRole(mdlParserData.currentRole);
-            mdlParserData.currentChemObjectV3 = mdlParserData.drawing.createChemObject();
+            mdlParserData.currentChemObjectV3 = createChemObject();
             if (mdlParserData.currentChemObjectV2 != null) {
                 mdlParserData.drawing.delChemObject(mdlParserData.currentChemObjectV2);
             }
@@ -682,7 +688,7 @@ v3atomBlock
             let nAtoms = 0;
             atoms.forEach(atom => { mdlParserData.currentChemObjectV3.addAtom(atom); nAtoms++ });
             logMessage(1, 'parsed ATOM BLOCK');
-            logMessage(2, "atoms: " + nAtoms);
+            logMessage(3, "atoms: " + nAtoms);
         }
 
 atomEntry
@@ -811,8 +817,10 @@ atomTypeList
 
 v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bonds:bondEntry* 'M  V30 END BOND' {
-            bonds.forEach(bond => { mdlParserData.currentChemObjectV3.addBond(bond); });
+            let nBonds = 0;
+            bonds.forEach(bond => { mdlParserData.currentChemObjectV3.addBond(bond); nBonds++; });
             logMessage(1, 'parsed BOND BLOCK');
+            logMessage(3, 'nbonds: ' + nBonds);
         }
 
 bondEntry
@@ -821,10 +829,9 @@ bondEntry
             let b = molPaintJS.Bond();
             b.setId(mdlParserData.drawing.createBondId());
 
-            let atomIndex = mdlParserData.atomIndexMap['a' + atom1];
-            b.setAtomA(mdlParserData.drawing.getAtom(atomIndex));
-            atomIndex = mdlParserData.atomIndexMap['a' + atom2];
-            b.setAtomB(mdlParserData.drawing.getAtom(atomIndex));
+            b.setAtomA(mdlParserData.atomIndexMap['a' + atom1]);
+            b.setAtomB(mdlParserData.atomIndexMap['a' + atom2]);
+
             b.setType(bondType);
 
             if (bondCont == null) {

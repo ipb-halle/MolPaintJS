@@ -47,8 +47,8 @@ var molPaintJS = (function (molpaintjs) {
         function eraseBond (context, id) {
             let actionList = molPaintJS.ActionList();
             let bond = context.getDrawing().getBond(id);
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = context.getDrawing().getAtom(bond.getAtomA());
+            let atomB = context.getDrawing().getAtom(bond.getAtomB());
             actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
             context.getDrawing().delBond(bond);
             if (Object.keys(atomA.getBonds()).length == 0) {

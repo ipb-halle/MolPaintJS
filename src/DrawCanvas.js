@@ -262,8 +262,8 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawDoubleBond (ctx, bond) {
 
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -298,8 +298,8 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawSingleBond (ctx, bond) {
 
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -394,8 +394,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawTripleBond (ctx, bond) {
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -478,9 +478,9 @@ var molPaintJS = (function (molpaintjs) {
             let leftFree = true;
             for(let id in atom.getBonds()) {
                 let bond = currentChemObject.getBond(id);
-                let neighbourAtom = bond.getAtomA();
+                let neighbourAtom = drawing.getAtom(bond.getAtomA());
                 if (neighbourAtom.getId() == atom.getId()) {
-                    neighbourAtom = bond.getAtomB();
+                    neighbourAtom = drawing.getAtom(bond.getAtomB());
                 }
                 let dx = atom.getX() - neighbourAtom.getX();
                 let dy = atom.getY() - neighbourAtom.getY();

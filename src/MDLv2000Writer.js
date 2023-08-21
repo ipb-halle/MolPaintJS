@@ -64,13 +64,15 @@ var molPaintJS = (function (molpaintjs) {
             return st;
         }
 
-        function writeBondTable (mol) {
+        function writeBondTable (chemObject) {
             let st = "";
-            for (let i in mol.getBonds()) {
-                let b = mol.getBond(i);
+            let atoms = chemObject.getAtoms();
+            let bonds = chemObject.getBonds();
+            for (let i in bonds) {
+                let b = bonds[i];
                 st += sprintf("%3d%3d%3d%3d\n",
-                    b.getAtomA().getIndex(),
-                    b.getAtomB().getIndex(),
+                    atoms[b.getAtomA()].getIndex(),
+                    atoms[b.getAtomB()].getIndex(),
                     b.getType(),
                     b.getStereo('v2'));
             }

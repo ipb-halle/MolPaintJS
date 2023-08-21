@@ -153,8 +153,8 @@ var molPaintJS = (function (molpaintjs) {
                 let bond = molPaintJS.Bond();
                 bond.setId(this.context.getDrawing().createBondId());
 
-                bond.setAtomA(atomA);
-                bond.setAtomB(atomB);
+                bond.setAtomA(atomIdA);
+                bond.setAtomB(atomB.getId());
                 bond.setType(bondType);
                 bond.setStereo(stereoType);
                 bond.setTemp(1);

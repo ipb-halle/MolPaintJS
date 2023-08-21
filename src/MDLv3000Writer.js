@@ -131,16 +131,18 @@ var molPaintJS = (function (molpaintjs) {
             return st;
         }
 
-        function writeBondBlock (mol) {
+        function writeBondBlock (chemObject) {
             output += "M  V30 BEGIN BOND\n";
-            for (let i in mol.getBonds()) {
+            let atoms = chemObject.getAtoms();
+            let bonds = chemObject.getBonds();
+            for (let i in bonds) {
                 let st = "";
-                let b = mol.getBond(i);
+                let b = bonds[i];
                 st += sprintf("M  V30 %d %d %d %d",
                     b.getIndex(),
                     b.getType(),
-                    b.getAtomA().getIndex(),
-                    b.getAtomB().getIndex());
+                    atoms[b.getAtomA()].getIndex(),
+                    atoms[b.getAtomB()].getIndex());
 
                 st = extendLine(st, writeBondStereo(b));
                 output += st + '\n';

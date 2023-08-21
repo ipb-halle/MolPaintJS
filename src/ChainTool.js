@@ -136,8 +136,9 @@ var molPaintJS = (function (molpaintjs) {
                     let bond = molPaintJS.Bond();
                     bond.setId(this.context.getDrawing().createBondId());
 
-                    bond.setAtomA(atomB);
-                    bond.setAtomB(atom);
+                    // xxxxx refactor getAtomA / setAtomA / getAtomB / setAtomB
+                    bond.setAtomA(atomB.getId());
+                    bond.setAtomB(atom.getId());
                     bond.setType(1);
                     bond.setTemp(1);
                     this.context.getDrawing().addBond(bond);

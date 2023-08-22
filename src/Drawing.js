@@ -169,11 +169,11 @@ var molPaintJS = (function (molpaintjs) {
 
 
             createAtomId : function() {
-                return "Atom" + counter.uniqueCounter();
+                return "Atom" + counter.atomCounter();
             },
 
             createBondId : function() {
-                return "Bond" + counter.uniqueCounter();
+                return "Bond" + counter.bondCounter();
             },
 
             createChemObject : function () {

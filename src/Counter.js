@@ -20,13 +20,38 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.Counter = function() {
 
-        let counter = 0;                // context unique counter 
+        /*
+         * context unique counters for objects (atoms, bonds, ...)
+         */
+        let atomCounter = 0;
+        let bondCounter = 0;
+        let chemObjectCounter = 0;
+        let sGroupCounter = 0;
 
         return {
-            uniqueCounter : function () {
-                return counter++;
+            atomCounter : function () {
+                return atomCounter++;
+            },
+            bondCounter : function() {
+                return bondCounter++;
+            },
+            chemObjectCounter : function () {
+                return chemObjectCounter++;
+            },
+            sGroupCounter : function () {
+                return sGroupCounter++;
             },
 
+            /**
+             * reset all counters for testing purposes
+             * to make identifiers predictable to the test code
+             */
+            reset : function () {
+                atomCounter = 0;
+                bondCounter = 0;
+                chemObjectCounter = 0;
+                sGroupCounter = 0;
+            },
         };  // return
     }   // Counter
     return molpaintjs;

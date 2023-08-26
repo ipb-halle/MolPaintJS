@@ -70,11 +70,13 @@ var molPaintJS = (function (molpaintjs) {
                 e = document.createElement("link");
                 e.id = "MolPaintJS_FontAwesome";
                 e.rel = "stylesheet";
+                e.type = "text/css";
                 e.href = fontAwesomePath + "fontawesome.min.css";
                 document.head.appendChild(e);
                 e = document.createElement("link");
-                e.id = "MolPaintJS_FontAwesome";
+                e.id = "MolPaintJS_FontAwesomeSolid";
                 e.rel = "stylesheet";
+                e.type = "text/css";
                 e.href = fontAwesomePath + "solid.min.css";
                 document.head.appendChild(e);
 
@@ -143,6 +145,11 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.getDialog = function (cid) {
         return contextRegistry[cid].getDialog();
+    }
+
+    molpaintjs.getImage = function (cid) {
+        let e = document.getElementById(cid + "_canvas");
+        return e.toDataURL("image/png").slice(22);
     }
 
     /**

@@ -5,3 +5,4 @@ package-lock.json
 nbproject
 test/cypress/videos
 test/cypress/screenshots
+MS_Office/Word/dist

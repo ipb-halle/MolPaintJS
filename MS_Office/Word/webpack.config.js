@@ -3,6 +3,8 @@
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const HtmlWebpackTagsPlugin = require("html-webpack-tags-plugin");
+const path = require("path");
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://ipb-halle.github.io/MolPaintJS/Word/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
@@ -54,6 +56,10 @@ module.exports = async (env, options) => {
       ],
     },
     plugins: [
+      new HtmlWebpackTagsPlugin({
+        files: ["**/taskpane.html"],
+        tags: ["molpaintjs/js/molpaint.js"]
+      }),
       new HtmlWebpackPlugin({
         filename: "taskpane.html",
         template: "./src/taskpane/taskpane.html",
@@ -66,8 +72,11 @@ module.exports = async (env, options) => {
             to: "assets/[name][ext][query]",
           }, 
           {
-            from: "ext/**/*",
-            to: "molpaintjs"
+            from: path.join(__dirname, '../../molpaintjs/'),
+            globOptions: {
+                ignore: ['**/examples/**', 'index.html', 'large.html', ],
+            },
+            to: "molpaintjs",
           },
           {
             from: "manifest*.xml",

@@ -41,7 +41,7 @@
          */
         function changeMolecule(name) {
             fetch('examples/' + name)
-                .then(obj => obj.text())
+                .then(obj => obj.arrayBuffer())
                 .then(mol => { 
                     var ctx = molPaintJS.getContext("mol");
                     ctx.setDrawing(mol); 

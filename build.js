@@ -37,6 +37,9 @@ var pkgcfg = require("./package.json");
 const GITHUB_RELEASE_URL = 'https://github.com/ipb-halle/MolPaintJS/releases/latest/download';
 const BUILD_DIR = 'molpaintjs';
 const DIST_FILE = 'molpaintjs.tar.gz';
+
+const LIBRARIES = [ {'src': 'node_modules/meta-png/dist/meta-png.umd.js', 'dest': 'js/meta-png.umd.js'}, ];
+
 var entryPoint = "MolPaintJS.js";
 
 
@@ -138,6 +141,13 @@ async function compile(src, dest, compress) {
     });
 }
 
+function copyLibraries(target) {
+    for (let asset of LIBRARIES) {
+        fs.copyFileSync(pathInfo.join(__dirname, asset.src),
+            pathInfo.join(__dirname, target, asset.dest));
+    }
+}
+
 function copyTemplate(src, dest, replacements) {
     fs.mkdirSync(dest, {'recursive':true, });
     fs.readdirSync(src, {'withFileTypes': true})
@@ -183,6 +193,7 @@ function build(release, compress) {
         replacements);
 
     copyToplevelFiles(pathInfo.join(__dirname , BUILD_DIR));
+    copyLibraries(BUILD_DIR);
 
     if (release) {
         replacements['index.html'] = [ {'key':'%MOLPAINTJS%', 'replacement':GITHUB_RELEASE_URL }, ];
@@ -192,6 +203,7 @@ function build(release, compress) {
             replacements);
 
         copyToplevelFiles(pathInfo.join(__dirname , 'docs'));
+        copyLibraries('docs');
     }
         
     fs.mkdirSync(pathInfo.join(__dirname, BUILD_DIR, 'js'), {'recursive':true, });

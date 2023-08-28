@@ -241,11 +241,28 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
+             * @param data PNG with embedded chemical data or MDL file; should
+             * be either of type ArrayBuffer or String
              * @return this Context instance (useful for method chaining)
              */
-            setDrawing : function (st) {
+            setDrawing : function (data) {
                 try {
-                    drawing = molPaintJS.MDLParser.parse(st, {'logLevel': 0, 'counter': counter});
+                    return this.setDrawingPNG(data);
+                } catch (e) {
+                    if (typeof data === "object") {
+                        return this.setDrawingMDL(new TextDecoder().decode(data));
+                    } else {
+                        return this.setDrawingMDL(data);
+                    }
+                }
+            },
+
+            setDrawingMDL : function (mdl) {
+                if (typeof mdl !== "string") {
+                    throw new Error("setDrawingMDL(): string expected");
+                }
+                try {
+                    drawing = molPaintJS.MDLParser.parse(mdl, {'logLevel': 0, 'counter': counter});
                     drawing.setRole('default');
                 } catch(e) {
                     console.log("Parse error in Context.setDrawing(): " + e.message);
@@ -259,6 +276,17 @@ var molPaintJS = (function (molpaintjs) {
                 return this;
             },
 
+            setDrawingPNG : function (picture) {
+                try {
+                    let chemicalData = MetaPNG.getMetadata(new Uint8Array(picture), "ChemicalData");
+                    chemicalData = JSON.parse(chemicalData);
+                    return this.setDrawingMDL(chemicalData.data);
+                } catch (e) {
+                    console.log(e);
+                    throw new Error("loading of embedded chemical data (PNG) failed");
+                }
+            },
+
             setDrawingObject : function (m) {
                 drawing = m;
             },
@@ -269,11 +297,11 @@ var molPaintJS = (function (molpaintjs) {
              * implementations are planned to include support for 
              * chemical reactions etc., therefore the method name 
              * seemed inappropriate.
-             * @see setDrawing(st)
+             * @see setDrawing(data)
              */
-            setMolecule : function(st) {
+            setMolecule : function(data) {
                 console.log("Encountered deprecated method setMolecule(), use setDrawing() instead!");
-                return this.setDrawing(st);
+                return this.setDrawing(data);
             },
 
         };  // return

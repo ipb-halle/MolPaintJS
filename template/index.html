@@ -41,7 +41,7 @@
          */
         function changeMolecule(name) {
             fetch('examples/' + name)
-                .then(obj => obj.text())
+                .then(obj => obj.arrayBuffer())
                 .then(mol => { 
                     var ctx = molPaintJS.getContext("mol");
                     ctx.setDrawing(mol); 
@@ -90,6 +90,7 @@ onmouseout='molPaintJS.CollectionHandler("viewer").highlight("");'>Ring D</span>
     <option value="cholecalciferol.mol">Cholecalciferol</option>
     <option value="v2000_(-)-nicotine.mol">(-)-Nicotine</option>
     <option value="v3000_PET.mol">V3000 PET</option>
+    <option value="S-2-chlorodecane.png">(S)-2-chlorodecane (PNG)</option>
   </select>
 </div>
 

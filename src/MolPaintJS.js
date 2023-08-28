@@ -15,6 +15,9 @@
  * limitations under the License.
  *  
  */
+
+import("./meta-png.umd.js");
+
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
@@ -148,8 +151,16 @@ var molPaintJS = (function (molpaintjs) {
     }
 
     molpaintjs.getImage = function (cid) {
+        //
+        // xxxxx make the format of embedded molecular data more complex (i.e. to host multiple reaction schemes)
+        //
+        let chemData = {"creator":"MolPaintJS"};
+        chemData["data"] = molpaintjs.getMDLv3000(cid);
         let e = document.getElementById(cid + "_canvas");
-        return e.toDataURL("image/png").slice(22);
+        return MetaPNG.addMetadataFromBase64DataURI(
+            e.toDataURL("image/png"),
+            "ChemicalData",
+            JSON.stringify(chemData)).slice(22);
     }
 
     /**

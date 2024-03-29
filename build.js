@@ -188,6 +188,7 @@ function build(release, compress) {
         'large.html': [ { 'key':'%MOLPAINTJS%', 'replacement':'js' }, ],
         };
 
+    fs.mkdirSync(pathInfo.join(__dirname, BUILD_DIR, 'js'), {'recursive':true, });
     copyTemplate(pathInfo.join(__dirname , 'template'),
         pathInfo.join(__dirname, BUILD_DIR),
         replacements);
@@ -206,7 +207,6 @@ function build(release, compress) {
         copyLibraries('docs');
     }
         
-    fs.mkdirSync(pathInfo.join(__dirname, BUILD_DIR, 'js'), {'recursive':true, });
     // always compress on release
     compile(pathInfo.join(__dirname , 'src'),
         pathInfo.join(__dirname, BUILD_DIR, 'js', 'molpaint.js'),

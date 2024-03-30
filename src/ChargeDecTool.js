@@ -36,8 +36,8 @@ var molPaintJS = (function (molpaintjs) {
                 let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
                     let actionList = molPaintJS.ActionList();
-                    let atom = this.context.getDrawing().getAtom(atomId);
-                    let oldAtom = atom.copy();
+                    let oldAtom = this.context.getDrawing().getAtom(atomId);
+                    let atom = oldAtom.copy();
                     atom.chargeDecrement();
                     actionList.addAction(molPaintJS.Action("UPD","ATOM",atom,oldAtom));
                     this.context.getDrawing().replaceAtom(atom);

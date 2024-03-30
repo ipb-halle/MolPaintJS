@@ -426,26 +426,16 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * replace an atom in the atom list and all
-             * bonds. The IDs of the atoms must be identical.
-             * @param a atom
+             * replace an atom in the atom list
              */
-            replaceAtom : function (a) {
-                let id = a.getId();
-                let o = atoms[id];
-                if (o == null) {
+            replaceAtom : function (atom) {
+                let id = atom.getId();
+                let oldAtom = atoms[id];
+                if (oldAtom == null) {
                     alert("ChemObject.replaceAtom() called for non-existing atom.");
                     return;
                 }
-                for (let i in a.getBonds()) {
-                    let b = bonds[i];
-                    if (b.getAtomA() == id) {
-                        b.setAtomA(id);
-                    } else {
-                        b.setAtomB(id);
-                    }
-                }
-                atoms[id] = a;
+                atoms[id] = atom;
             },
 
             /**
@@ -454,14 +444,14 @@ var molPaintJS = (function (molpaintjs) {
              * of the atoms are not affected, because they contain
              * only bond IDs.
              */
-            replaceBond : function (b) {
-                let id = b.getId();
-                let o = bonds[id];
-                if (o == null) {
+            replaceBond : function (bond) {
+                let id = bond.getId();
+                let oldBond = bonds[id];
+                if (oldBond == null) {
                     alert("ChemObject.replaceBond() called for non-existing bond.");
                     return;
                 }
-                bonds[id] = b;
+                bonds[id] = bond;
             },
 
             /**

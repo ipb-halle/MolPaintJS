@@ -36,8 +36,8 @@ var molPaintJS = (function (molpaintjs) {
                 let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
                     let actionList = molPaintJS.ActionList();
-                    let atom = this.context.getDrawing().getAtom(atomId);
-                    let oldAtom = atom.copy();
+                    let oldAtom = this.context.getDrawing().getAtom(atomId);
+                    let atom = oldAtom.copy();
                     let dir = (type == "isotope_up") ? 1 : -1;
 
                     atom.changeIsotope(dir);

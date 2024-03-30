@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
  * Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -41,7 +41,6 @@ var molPaintJS = (function (molpaintjs) {
                 let atomId = a.getId();
                 atomCount++;
                 atoms[atomId] = a;
-                a.setChemObjectId(this.getId());
                 return atomId;
             },
 
@@ -49,7 +48,6 @@ var molPaintJS = (function (molpaintjs) {
                 let id = b.getId();
                 bondCount++;
                 bonds[id] = b;
-                b.setChemObjectId(this.getId());
                 atoms[b.getAtomA()].addBond(id);
                 atoms[b.getAtomB()].addBond(id);
                 return id;
@@ -229,18 +227,17 @@ var molPaintJS = (function (molpaintjs) {
              * drawing
              * @return true if deleted atom was the last atom in this ChemObject
              */
-            delAtom : function (a) {
-                let idx = a.getId();
+            delAtom : function (atom) {
+                let idx = atom.getId();
                 delete atoms[idx];
                 return (Object.keys(atoms).length === 0);
             },
 
-            delBond : function (b) {
-                let idx = b.getId();
-                let bond = bonds[idx];
-                atoms[bond.getAtomA()].delBond(idx);
-                atoms[bond.getAtomB()].delBond(idx);
-                delete bonds[idx];
+            delBond : function (bond) {
+                let bondId = bond.getId();
+                atoms[bond.getAtomA()].delBond(bondId);
+                atoms[bond.getAtomB()].delBond(bondId);
+                delete bonds[bondId];
                 return this.checkSplit();
             },
 
@@ -263,17 +260,17 @@ var molPaintJS = (function (molpaintjs) {
              * delete all temporary bonds and atoms from the drawing
              */
             delTemp : function() {
-                for(let b in bonds) {
-                    let bond = bonds[b];
+                for(let bondId in bonds) {
+                    let bond = bonds[bondId];
                     if(bond.getTemp() != 0) {
-                        atoms[bond.getAtomA()].delBond(b);
-                        atoms[bond.getAtomB()].delBond(b);
-                        delete bonds[b];
+                        atoms[bond.getAtomA()].delBond(bondId);
+                        atoms[bond.getAtomB()].delBond(bondId);
+                        delete bonds[bondId];
                     }
                 }
-                for(let a in atoms) {
-                    if(atoms[a].getTemp() != 0) {
-                        delete atoms[a];
+                for(let atomId in atoms) {
+                    if(atoms[atomId].getTemp() != 0) {
+                        delete atoms[atomId];
                     }
                 }
             },
@@ -352,6 +349,13 @@ var molPaintJS = (function (molpaintjs) {
                 return sgroups;
             },
 
+            hasAtom : function (atomId) {
+                return Object.hasOwn(atoms, atomId);
+            },
+
+            hasBond : function (bondId) {
+                return Object.hasOwn(bonds, bondId);
+            },
 
             /**
              * Join two ChemObjects by adding the atoms, bonds, sgroups etc. from
@@ -366,14 +370,12 @@ var molPaintJS = (function (molpaintjs) {
 
                 for (let atomId in otherAtoms) {
                     let atom = otherAtoms[atomId].copy();
-                    atom.setChemObjectId(this.getId());
                     atomCount++;
                     atoms[atomId] = atom;
 
                 }
                 for (let bondId in otherBonds) {
                     let bond = otherBonds[bondId].copy();
-                    bond.setChemObjectId(this.getId());
                     bondCount++;
                     bonds[bondId] = bond;
                 }

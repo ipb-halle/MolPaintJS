@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().addBond(action.newObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().addChemObject(action.newObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
             }
@@ -44,6 +47,9 @@ var molPaintJS = (function (molpaintjs) {
                     break;
                 case "BOND" :
                     ctx.getDrawing().delBond(action.oldObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().delChemObject(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
@@ -58,6 +64,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().replaceBond(action.newObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().replaceChemObject(action.newObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
             }
@@ -70,6 +79,9 @@ var molPaintJS = (function (molpaintjs) {
                     break;
                 case "BOND" :
                     ctx.getDrawing().delBond(action.newObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().delChemObject(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
@@ -84,6 +96,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().addBond(action.oldObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().addChemObject(action.oldObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
             }
@@ -96,6 +111,9 @@ var molPaintJS = (function (molpaintjs) {
                     break;
                 case "BOND" :
                     ctx.getDrawing().replaceBond(action.oldObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().replaceChemObject(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
@@ -135,8 +153,7 @@ var molPaintJS = (function (molpaintjs) {
                 historyPtr++;
                 let actionList = history[historyPtr];	// ActionList
 
-                for (let i = actionList.getActions().length; i-- > 0;) {	// loop actionList backwards in redo
-                    let action = actionList.getActions()[i];
+                for (let action of actionList.getActions()) {
                     switch (action.actionType) {
                         case "ADD" :
                             redoAdd(ctx, action);
@@ -167,7 +184,9 @@ var molPaintJS = (function (molpaintjs) {
                 }
                 let actionList = history[historyPtr];
 
-                for (let action of actionList.getActions()) {
+                // loop actionList backwards in undo
+                for (let i = actionList.getActions().length; i-- > 0;) {
+                    let action = actionList.getActions()[i];
                     switch (action.actionType) {
                         case "ADD" :
                             undoAdd(ctx, action);

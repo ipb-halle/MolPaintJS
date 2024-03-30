@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -32,7 +32,6 @@ var molPaintJS = (function (molpaintjs) {
         let radical = 0;            // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
 
         let id = null;              // unique id (i.e. for undo / redo)
-        let chemObjectId = null;    // id of the containing object
         let index = null;           // numeric index in list of atoms
         let selected = 0;           // non zero, if the atom is currently selected
         let stereo = 0;
@@ -70,11 +69,11 @@ var molPaintJS = (function (molpaintjs) {
                         newIsotope = iso;
                     }
                 }
-                    
+
                 if (newIsotope != null) {
                     let at = molPaintJS.AtomType();
-                    at.setIsotope(newIsotope); 
-                    at.setColor(newIsotope.getColor()); 
+                    at.setIsotope(newIsotope);
+                    at.setColor(newIsotope.getColor());
                     type = at;
                     return true;
                 }
@@ -108,7 +107,6 @@ var molPaintJS = (function (molpaintjs) {
                 a.setY(coordY);
                 a.setZ(coordZ);
                 a.setCharge(charge);
-                a.setChemObjectId(chemObjectId);
                 a.setRadical(radical);
                 a.setId(id);
                 a.setIndex(index);
@@ -160,13 +158,9 @@ var molPaintJS = (function (molpaintjs) {
                 return charge;
             },
 
-            getChemObjectId : function () {
-                return chemObjectId;
-            },
-
             /**
              * compute the hydrogen count (implicit hydrogens)
-             * for this atom. Currently does not account for 
+             * for this atom. Currently does not account for
              * explicit hydrogens!
              */
             getHydrogenCount : function(chemObject, reportCarbonH) {
@@ -177,7 +171,7 @@ var molPaintJS = (function (molpaintjs) {
                     switch(chemObject.getBond(b).getType()) {
                         case 1 : cnt -= 1;
                                 break;
-                        case 2 : cnt -= 2; 
+                        case 2 : cnt -= 2;
                                 break;
                         case 3 : cnt -= 3;
                     }
@@ -250,10 +244,6 @@ var molPaintJS = (function (molpaintjs) {
 
             setCharge : function (c) {
                 charge = c;
-            },
-
-            setChemObjectId : function (co) {
-                chemObjectId = co;
             },
 
             setId : function (i) {

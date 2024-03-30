@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * Add and Atom to this drawing. If the atom has a chemObjectId set,
-             * it is added to that chemObject. Otherwise a new ChemObject is 
+             * it is added to that chemObject. Otherwise a new ChemObject is
              * created and the atom is assigned to that new ChemObject.
              */
             addAtom : function (a) {
-                let cid = a.getChemObjectId();
+                let cid = this.getAtomChemObjectId(a.getId());
                 if (cid == null) {
                     cid = this.createChemObject().getId();
                 }
@@ -46,13 +46,13 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * Add a Bond to this drawing. If both atoms of the bond belong 
-             * to different ChemObjects, the two ChemObjects are joined to 
+             * Add a Bond to this drawing. If both atoms of the bond belong
+             * to different ChemObjects, the two ChemObjects are joined to
              * form a single ChemObject.
              */
             addBond : function (b) {
-                let coA = this.getAtom(b.getAtomA()).getChemObjectId();
-                let coB = this.getAtom(b.getAtomB()).getChemObjectId();
+                let coA = this.getAtomChemObjectId(b.getAtomA());
+                let coB = this.getAtomChemObjectId(b.getAtomB());
 
                 if (coA === coB) {
                     chemObjects[coA].addBond(b);
@@ -86,7 +86,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * loop over all ChemObjects and center the drawing 
+             * loop over all ChemObjects and center the drawing
              * according to its bounding box
              * i.e. move the center of the drawing to the point 0,0
              * @return the updated bounding box
@@ -131,7 +131,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * loop over all ChemObjects and compute the bounding box 
+             * loop over all ChemObjects and compute the bounding box
              * coordinates of the current drawing
              * @param sel select bits which must be set when computing the
              * bounding box; if sel = 0, everything is selected
@@ -184,20 +184,24 @@ var molPaintJS = (function (molpaintjs) {
                 return obj;
             },
 
-            delAtom : function (a) {
-                let chemObjectId = a.getChemObjectId();
-                if (chemObjects[chemObjectId].delAtom(a)) {
-                    delete chemObjects[chemObjectId];
+            delAtom : function (atom) {
+                let cid = this.getAtomChemObjectId(atom.getId());
+                if (chemObjects[cid].getAtomCount() === 1) {
+                    delete chemObjects[cid];
+                } else {
+                    chemObjects[cid].delAtom(atom);
                 }
             },
 
-            delBond : function (b) {
-                let chemObjectId = b.getChemObjectId();
-                let connectedBondSets = chemObjects[chemObjectId].delBond(b);
+            delBond : function (bond) {
+                let cid = this.getBondChemObjectId(bond.getId());
+                let connectedBondSets = chemObjects[cid].delBond(bond);
                 if (connectedBondSets.length > 1) {
                     console.log(connectedBondSets);
 
                     // xxxxx split ChemObject
+                    // xxxxx delete ChemObject if deletion of a bond
+                    // xxxxx         also removes the the last atoms
                 }
             },
 
@@ -234,6 +238,15 @@ var molPaintJS = (function (molpaintjs) {
                 return undefined;
             },
 
+            getAtomChemObjectId : function(atomId) {
+                for (let cid in chemObjects) {
+                    if (chemObjects[cid].hasAtom(atomId)) {
+                        return cid;
+                    }
+                }
+                return null;
+            },
+
             getAtomCount : function () {
                 let atomCount = 0;
                 for (let cid in chemObjects) {
@@ -243,6 +256,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getAtoms : function () {
+                alert("Drawing.getAtoms()");
                 let atoms = {};
                 for (let cid in chemObjects) {
                     atoms = Object.assign(atoms, chemObjects[cid].getAtoms());
@@ -260,6 +274,15 @@ var molPaintJS = (function (molpaintjs) {
                 return undefined;
             },
 
+            getBondChemObjectId : function(bondId) {
+                for (let cid in chemObjects) {
+                    if (chemObjects[cid].hasBond(bondId)) {
+                        return cid;
+                    }
+                }
+                return null;
+            },
+
             getBondCount : function () {
                 let bondCount = 0;
                 for (let cid in chemObjects) {
@@ -269,6 +292,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             getBonds : function () {
+                alert("Drawing.getBonds()");
                 let bonds = {};
                 for (let cid in chemObjects) {
                     bonds = Object.assign(bonds, chemObjects[cid].getBonds());
@@ -348,17 +372,22 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             replaceAtom : function (atom) {
-                let cid = atom.getChemObjectId();
+                let cid = this.getAtomChemObjectId(atom.getId());
                 chemObjects[cid].replaceAtom(atom);
             },
 
             replaceBond : function (bond) {
-                let cid = bond.getChemObjectId();
+                let cid = this.getBondChemObjectId(bond.getId());
                 chemObjects[cid].replaceBond(bond);
             },
 
+            replaceChemObject : function (chemObject) {
+                let cid = chemObject.getId();
+                chemObjects[cid] = chemObject;
+            },
+
             /**
-             * loop over all ChemObjects and select the first matching atom 
+             * loop over all ChemObjects and select the first matching atom
              * @param coords the coordinates
              * @param distmax maximum squared euclidian distance
              * @return atomId
@@ -374,8 +403,8 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * loop over all ChemObjects and return a list of 
-             * atom id's and a list of bond id's, which are enclosed 
+             * loop over all ChemObjects and return a list of
+             * atom id's and a list of bond id's, which are enclosed
              * by the given bounding box.
              * Enclosed atoms and bonds are marked as selected.
              * @param bbox bounding box in drawing coordinates
@@ -392,7 +421,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * loop over all ChemObjects and return a list of bonds matching 
+             * loop over all ChemObjects and return a list of bonds matching
              * the distance criterium.
              * @param coords coordinates of action
              * @param distmax maximum squared euclidian distance
@@ -418,7 +447,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * loop over all ChemObjects and 2d-transform the coordinates 
+             * loop over all ChemObjects and 2d-transform the coordinates
              * of this drawing.
              * The z-coordinate is not affected!
              * @param matrix a 2x3 transformation matrix

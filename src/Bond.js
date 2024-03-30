@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,15 +24,14 @@ var molPaintJS = (function (molpaintjs) {
             'iv2': { '0':0, '1':1, '4':2, '6':3 },
             'iv3': { '0':0, '1':1, '2':2, '3':3 },
             'ov2': [ 0, 1, 4, 6 ],
-            'ov3': [ 0, 1, 2, 3 ] 
+            'ov3': [ 0, 1, 2, 3 ]
         };
-  
+ 
         let atomA;
         let atomB;
         let sgroups = {};
         let color;
         let id;                     // unique id (i.e. for undo / redo)
-        let chemObjectId = null;    // id of the containing object
         let index;                  // numeric index
         let selected = 0;           // non zero if bond is selected
         let stereo = "0";           // 0 no stereo, 1 up, 6 down; also for Query!
@@ -54,7 +53,6 @@ var molPaintJS = (function (molpaintjs) {
                 let b = molPaintJS.Bond();
                 b.setAtomA(atomA);
                 b.setAtomB(atomB);
-                b.setChemObjectId(chemObjectId);
                 b.setColor(color);
                 b.setId(id);
                 b.setIndex(index);
@@ -90,10 +88,6 @@ var molPaintJS = (function (molpaintjs) {
                 return color;
             },
 
-
-            getChemObjectId : function () {
-                return chemObjectId;
-            },
 
             getId : function () {
                 return id;
@@ -138,10 +132,6 @@ var molPaintJS = (function (molpaintjs) {
                 color = c;
             },
 
-            setChemObjectId : function (co) {
-                chemObjectId = co;
-            },
-
             setId : function (i) {
                 id = i;
             },
@@ -177,7 +167,7 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /*
-             * swap order of atoms (i.e. to flip the direction of 
+             * swap order of atoms (i.e. to flip the direction of
              * stereo indicators)
              */
             swap : function () {

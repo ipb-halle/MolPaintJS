@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -91,7 +91,7 @@ var molPaintJS = (function (molpaintjs) {
             let tempObj = document.createElement("textarea");
             document.body.appendChild(tempObj);
             tempObj.setAttribute("id", evt.target.id + "tempObjId");
-            document.getElementById(evt.target.id + "tempObjId").value = w.write(ctx.getDrawing()); 
+            document.getElementById(evt.target.id + "tempObjId").value = w.write(ctx.getDrawing());
             tempObj.select();
             document.execCommand("copy");
             document.body.removeChild(tempObj);
@@ -103,15 +103,14 @@ var molPaintJS = (function (molpaintjs) {
             let actionList = molPaintJS.ActionList();
 
             let drawing = ctx.getDrawing();
-            for (let a in drawing.getAtoms()) {
-                actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, drawing.getAtom(a)));
-            }
-            for (let b in drawing.getBonds()) {
-                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, drawing.getBond(b)));
+            let chemObjects = drawing.getChemObjects();
+            for (let cid in chemObjects) {
+                let c = chemObjects[cid];
+                actionList.addAction(molPaintJS.Action("DEL", "CHEMOBJECT", null, c));
+                drawing.delChemObject(c);
             }
 
             ctx.getHistory().appendAction(actionList);
-            ctx.setDrawingObject(molPaintJS.Drawing(ctx.getCounter()));
             ctx.draw();
         }
 
@@ -163,7 +162,7 @@ var molPaintJS = (function (molpaintjs) {
                 .replace('data:text/html;charset=UTF-8,','');
             e.innerHTML = content
                 .replaceAll('%HELP_URL%', helpURL)
-                .replaceAll('%VERSION%', molPaintJS.Resources['version']); 
+                .replaceAll('%VERSION%', molPaintJS.Resources['version']);
             e.style.display = 'block';
         }
 
@@ -220,7 +219,7 @@ var molPaintJS = (function (molpaintjs) {
                 let clp = AllowClipboard.Client.ClipboardClient();
                 clp.read(function (x, pastedData) {
                     ctx.pasteDrawing(pastedData);
-                    // alert(pastedData); 
+                    // alert(pastedData);
                 });
             } catch (e) {
                 console.log(e.message);
@@ -241,7 +240,7 @@ var molPaintJS = (function (molpaintjs) {
             if (toolType != "radical") {
                 tool.setType(toolType);
             }
-            // ignore clicks to the radical icon if no radical type has been 
+            // ignore clicks to the radical icon if no radical type has been
             // selected previously
             if (tool.getType() != "radical") {
                 ctx.setCurrentTool(tool);
@@ -259,9 +258,9 @@ var molPaintJS = (function (molpaintjs) {
             let tool = ctx.getTools().roleTool;
             let toolType = evt.target.id.replace(ctx.contextId + "_", "");
 
-            // abort() is called to deactivate the old icon before 
+            // abort() is called to deactivate the old icon before
             // toolType is set. It gets called again when setCurrentTool()
-            // is called. Otherwise icons would stay activated when switching 
+            // is called. Otherwise icons would stay activated when switching
             // among role types.
             tool.abort();
             tool.setType(toolType);
@@ -294,7 +293,7 @@ var molPaintJS = (function (molpaintjs) {
                 ctx.setCurrentTemplate(tp);
             }
             tool.setTemplate(tp, molPaintJS.getTemplate(tp));
-            ctx.setCurrentTool(tool); 
+            ctx.setCurrentTool(tool);
         }
 
         function actionTripleBond (evt) {
@@ -401,7 +400,7 @@ var molPaintJS = (function (molpaintjs) {
         function registerEvent (ctx, evt, w, a) {
             let id = ctx.contextId + w;
             let e = document.getElementById(id);
-            molPaintJS.registerContext(id, ctx); 
+            molPaintJS.registerContext(id, ctx);
             e.addEventListener(evt, a, false);
         }
 
@@ -458,7 +457,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function renderCanvas () {
-            return "<canvas id='" + widgetId + "_canvas' width='" + width 
+            return "<canvas id='" + widgetId + "_canvas' width='" + width
                 + "' height='" + height + "' class='molPaintJS-canvas' contenteditable='true' >"
                 + "Sorry, your browser does not support the canvas element."
                 + "</canvas>";

@@ -22,7 +22,7 @@ var molPaintJS = (function (molpaintjs) {
 
         let drawing = d;
 
-        const id = "chemObj" + drawing.getCounter().chemObjectCounter();
+        let id = "chemObj" + drawing.getCounter().chemObjectCounter();
         let atoms = {};
         let bonds = {};
         let collections = {};
@@ -218,6 +218,28 @@ var molPaintJS = (function (molpaintjs) {
                     return Math.sqrt(bondLength[Math.floor(bondLength.length / 2)]);
                 }
                 return 1.5;     // default bond length
+            },
+
+            copy : function () {
+                let c = molPaintJS.ChemObject(drawing);
+                c.setId(id);
+                c.setAtoms(this.copyMap(atoms));
+                c.setBonds(this.copyMap(bonds));
+                c.setCollections(this.copyMap(collections));
+                c.setProperties(this.copyMap(properties));
+                c.setRole(role);
+                c.setSGroups(this.copyMap(sgroups));
+                c.setAtomCount(atomCount);
+                c.setBondCount(bondCount);
+                return c;
+            },
+
+            copyMap : function (sourceObject) {
+                let targetObject = {};
+                for (let key in sourceObject) {
+                    targetObject[key] = sourceObject[key];
+                }
+                return targetObject;
             },
 
             /**
@@ -549,6 +571,34 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            setAtoms : function (a) {
+                atoms = a;
+            },
+
+            setAtomCount : function (a) {
+                atomCount = a;
+            },
+
+            setBonds : function (b) {
+                bonds = b;
+            },
+
+            setBondCount : function (b) {
+                bondCount = b;
+            },
+
+            setCollections : function (c) {
+                collections = c;
+            },
+
+            setId : function (i) {
+                id = i;
+            },
+
+            setProperties : function (p) {
+                properties = p;
+            },
+
             setProperty : function (propname, propval) {
                 properties[propname] = propval;
             },
@@ -565,6 +615,10 @@ var molPaintJS = (function (molpaintjs) {
                 for (let bond of Object.values(bonds)) {
                     bond.setSelected(bond.getSelected() | val);
                 }
+            },
+
+            setSGroups : function (sg) {
+                sgroups = sg;
             },
 
             /**

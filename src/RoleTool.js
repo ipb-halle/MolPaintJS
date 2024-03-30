@@ -23,8 +23,6 @@ var molPaintJS = (function (molpaintjs) {
         let distMax = prop.distMax;
         let type = "default";
 
-        let actionList;
-
         function click (context, x, y, evt) {
             let coord = context.getView().getCoordReverse(x, y);
             let drawing = context.getDrawing();
@@ -32,9 +30,13 @@ var molPaintJS = (function (molpaintjs) {
             if (atomId != null) {
                 let atom = drawing.getAtom(atomId);
                 let chemObjectId = drawing.getAtomChemObjectId(atom.getId());
-                drawing.getChemObjects()[chemObjectId].setRole(type);
-
-                // xxxxx history missing
+                let oldChemObject = drawing.getChemObjects()[chemObjectId];
+                let chemObject = oldChemObject.copy();
+                let actionList = molPaintJS.ActionList();
+                chemObject.setRole(type);
+                drawing.replaceChemObject(chemObject);
+                actionList.addAction(molPaintJS.Action("UPD", "CHEMOBJECT", chemObject, oldChemObject));
+                context.getHistory().appendAction(actionList);
                 context.draw();
             }
         }

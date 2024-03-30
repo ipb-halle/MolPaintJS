@@ -206,7 +206,7 @@ var molPaintJS = (function (molpaintjs) {
                     + "You might want to try the paste icon");
             }
             let pastedData = clipboardData.getData("text");
-            ctx.pasteDrawing(pastedData, 2);
+            ctx.getHistory().appendAction(ctx.pasteDrawing(pastedData, 2));
         }
 
         /**
@@ -218,7 +218,7 @@ var molPaintJS = (function (molpaintjs) {
                 let ctx = molPaintJS.getContext(evt.target.id);
                 let clp = AllowClipboard.Client.ClipboardClient();
                 clp.read(function (x, pastedData) {
-                    ctx.pasteDrawing(pastedData);
+                    ctx.getHistory().appendAction(ctx.pasteDrawing(pastedData));
                     // alert(pastedData);
                 });
             } catch (e) {

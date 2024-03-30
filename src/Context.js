@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ var molPaintJS = (function (molpaintjs) {
         let registeredIds = [];
         let view = molPaintJS.View(cid, properties);
         let widget = molPaintJS.Widget(cid, properties, mp);
-        let counter = molPaintJS.Counter();                // context unique counter 
+        let counter = molPaintJS.Counter();                // context unique counter
 
         /**
          * depending on the value of properties.viewer, set up
@@ -171,7 +171,7 @@ var molPaintJS = (function (molpaintjs) {
              * current drawing. Update the history accordingly.
              * @param st the chemical drawing string (MDL mol, ...)
              * @param sel the selection bits to set for the pasted drawing
-             * @return the already appended (!) actionList
+             * @return an actionList containing the new ChemObjects
              */
             pasteDrawing: function (st, sel) {
                 let pasteDrawing;
@@ -182,16 +182,12 @@ var molPaintJS = (function (molpaintjs) {
                     return;
                 }
                 let actionList = molPaintJS.ActionList();
-
                 let pasteChemObjects = pasteDrawing.getChemObjects();
                 for (let chemObject of Object.values(pasteChemObjects)) {
                     chemObject.setSelected(1);
                     drawing.addChemObject(chemObject);
+                    actionList.addAction(molPaintJS.Action("ADD", "CHEMOBJECT", chemObject, null));
                 }
-                console.log("Paste: history not supported!");
-                // xxxxx history of paste operation
-                // history.appendAction(actionList);
-
                 view.initRaster(drawing);
                 this.draw();
                 return actionList;
@@ -293,9 +289,9 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * @deprecated
-             * Compatibility function; will be removed. Future  
-             * implementations are planned to include support for 
-             * chemical reactions etc., therefore the method name 
+             * Compatibility function; will be removed. Future
+             * implementations are planned to include support for
+             * chemical reactions etc., therefore the method name
              * seemed inappropriate.
              * @see setDrawing(data)
              */

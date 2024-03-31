@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -349,6 +349,20 @@ var molPaintJS = (function (molpaintjs) {
                 let result = {atoms: [], bonds: []};
                 for (let id in chemObjects) {
                     chemObjects[id].getSelected(result, sel);
+                }
+                return result;
+            },
+
+            /**
+             * @param sel selection bits
+             * @return all chemobjects, which contain selected atoms or bonds
+             */
+            getSelectedChemObjects : function (sel) {
+                let result = {};
+                for (let cid in chemObjects) {
+                    if (chemObjects[cid].hasSelected(sel)) {
+                        result[cid] = chemObjects[cid];
+                    }
                 }
                 return result;
             },

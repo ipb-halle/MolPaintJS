@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,12 +234,34 @@ var molPaintJS = (function (molpaintjs) {
                 return c;
             },
 
-            copyMap : function (sourceObject) {
-                let targetObject = {};
-                for (let key in sourceObject) {
-                    targetObject[key] = sourceObject[key];
+            copyMap : function (sourceMap) {
+                let targetMap = {};
+                for (let key in sourceMap) {
+                    targetMap[key] = sourceMap[key];
                 }
-                return targetObject;
+                return targetMap;
+            },
+
+            deepCopy : function () {
+                let c = molPaintJS.ChemObject(drawing);
+                c.setId(id);
+                c.setAtoms(this.deepCopyMap(atoms));
+                c.setBonds(this.deepCopyMap(bonds));
+                c.setCollections(this.deepCopyMap(collections));
+                c.setProperties(this.copyMap(properties));
+                c.setRole(role);
+                c.setSGroups(this.deepCopyMap(sgroups));
+                c.setAtomCount(atomCount);
+                c.setBondCount(bondCount);
+                return c;
+            },
+
+            deepCopyMap : function (sourceMap) {
+                let targetMap = {};
+                for (let key in sourceMap) {
+                    targetMap[key] = sourceMap[key].copy();
+                }
+                return targetMap;
             },
 
             /**
@@ -377,6 +399,24 @@ var molPaintJS = (function (molpaintjs) {
 
             hasBond : function (bondId) {
                 return Object.hasOwn(bonds, bondId);
+            },
+
+            /**
+             * @param sel selection bits
+             * @return true if this ChemObject contains selected entities
+             */
+            hasSelected : function (sel) {
+                for (let id in atoms) {
+                    if ((atoms[id].getSelected() & sel) != 0) {
+                        return true;
+                    }
+                }
+                for (let id in bonds) {
+                    if ((bonds[id].getSelected() & sel) != 0) {
+                        return true;
+                    }
+                }
+                return false;
             },
 
             /**

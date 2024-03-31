@@ -32,11 +32,18 @@ var molPaintJS = (function (molpaintjs) {
 
             alignBottom : function (cid) {
                 let box = boundingBoxes[cid];
-                let dy = commonBoundingBox.getMinY() - box.getMinY();
+                let dy = commonBoundingBox.getMaxY() - box.getMaxY();
                 return [[1, 0, 0], [0, 1, dy]];
             },
 
             alignHorizontal : function (cid) {
+                let box = boundingBoxes[cid];
+                let horizontY = commonBoundingBox.getMinY()
+                    + (commonBoundingBox.getMaxY() - commonBoundingBox.getMinY()) / 2;
+                let dy = box.getMinY()
+                    + (box.getMaxY() - box.getMinY()) / 2;
+                dy = horizontY - dy;
+                return [[1, 0, 0], [0, 1, dy]];
             },
 
             alignLeft : function (cid) {
@@ -53,11 +60,18 @@ var molPaintJS = (function (molpaintjs) {
 
             alignTop : function (cid) {
                 let box = boundingBoxes[cid];
-                let dy = commonBoundingBox.getMaxY() - box.getMaxY();
+                let dy = commonBoundingBox.getMinY() - box.getMinY();
                 return [[1, 0, 0], [0, 1, dy]];
             },
 
             alignVertical : function (cid) {
+                let box = boundingBoxes[cid];
+                let verticalX = commonBoundingBox.getMinX()
+                    + (commonBoundingBox.getMaxX() - commonBoundingBox.getMinX()) / 2;
+                let dx = box.getMinX()
+                    + (box.getMaxX() - box.getMinX()) / 2;
+                dx = verticalX - dx;
+                return [[1, 0, dx], [0, 1, 0]];
             },
 
             distributeHorizontal : function (cid) {
@@ -74,7 +88,7 @@ var molPaintJS = (function (molpaintjs) {
                     if (selectedChemObjectCount > 1) {
                         commonBoundingBox.join(box);
                     } else {
-                        commonBoundingBox = box;
+                        commonBoundingBox = box.copy();
                     }
                     boundingBoxes[cid] = box;
                 }

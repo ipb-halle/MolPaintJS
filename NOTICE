@@ -1,5 +1,5 @@
 MolPaintJS
-Copyright 2017-2019 Leibniz-Institut f. Pflanzenbiochemie
+Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
                     Weinberg 3
                     06120 Halle (Saale)
                     Deutschland
@@ -45,3 +45,11 @@ FontAwesome
 -----------
 This project includes a subset of files from FontAwesome Free. 
 See template/assets/fontawesome/LICENSE.txt for licensing information.
+
+Meta-PNG
+--------
+This project includes Meta-PNG to extract meta-data from png images.
+See:
+* https://www.npmjs.com/package/meta-png
+* https://github.com/lucach/meta-png
+

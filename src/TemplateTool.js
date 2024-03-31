@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,12 @@ var molPaintJS = (function (molpaintjs) {
         let template = "";
         let templateId = "";
         let origin = null;
+
+        function transformActionList (matrix) {
+            for (let action of actionList.getActions()) {
+                action.newObject.transform(matrix, 0);
+            }
+        }
 
         return {
             id : i,
@@ -69,8 +75,8 @@ var molPaintJS = (function (molpaintjs) {
                         this.context.getDrawing().addBond(bond, null);
                     }
                     bond = allBonds[b];
-                    actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond)); 
-                    this.context.getDrawing().delBond(bond); 
+                    actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
+                    this.context.getDrawing().delBond(bond);
                 }
                 actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atom1));
                 this.context.getDrawing().delAtom(atom1);
@@ -90,21 +96,23 @@ var molPaintJS = (function (molpaintjs) {
                         let atom2 = this.context.getDrawing().getAtom(a2);
                         let dx = atom1.getX() - atom2.getX();
                         let dy = atom1.getY() - atom2.getY();
-                        if (prop.distMax > ((dx * dx) + (dy * dy))) {
+                        if (properties.distMax > ((dx * dx) + (dy * dy))) {
                             this.joinAtoms(atom1, atom2);
                             break;
                         }
                     }
                 }
-            
+
                 this.context.getDrawing().clearSelection(3);
+                this.context.getHistory().appendAction(actionList);
                 this.context.draw();
             },
 
             onMouseDown : function (x, y, evt) {
                 origin = this.context.getView().getCoordReverse(x, y);
                 actionList = this.context.pasteDrawing(template, 1);
-                this.context.getDrawing().transform([[1, 0, origin.x], [0, 1, origin.y]], true);
+                let matrix = [[1, 0, origin.x], [0, 1, origin.y]];
+                this.context.getDrawing().transform(matrix, true);
                 this.context.draw();
             },
 
@@ -115,7 +123,9 @@ var molPaintJS = (function (molpaintjs) {
                     let dx = coord.x - origin.x;
                     let dy = coord.y - origin.y;
                     origin = coord;
-                    this.context.getDrawing().transform([[1, 0, dx], [0, 1, dy]], 1)
+                    let matrix = [[1, 0, dx], [0, 1, dy]];
+                    transformActionList(matrix);
+                    this.context.getDrawing().transform(matrix, 1)
 
                     this.context.getDrawing().adjustSelection(2,2,0);
                     let box = this.context.getDrawing().computeBBox(1);

@@ -47,8 +47,8 @@ var molPaintJS = (function (molpaintjs) {
         function eraseBond (context, id) {
             let actionList = molPaintJS.ActionList();
             let bond = context.getDrawing().getBond(id);
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = context.getDrawing().getAtom(bond.getAtomA());
+            let atomB = context.getDrawing().getAtom(bond.getAtomB());
             actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
             context.getDrawing().delBond(bond);
             if (Object.keys(atomA.getBonds()).length == 0) {
@@ -73,7 +73,7 @@ var molPaintJS = (function (molpaintjs) {
 
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let bonds = this.context.getDrawing().selectBond(coord, distMax);
+                let bonds = this.context.getDrawing().selectBonds(coord, distMax);
                 if (bonds.length == 1) {
                     eraseBond(this.context, bonds[0]);
                     // alert("Erase bond: id=" + bonds[0]);

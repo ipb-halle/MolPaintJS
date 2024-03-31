@@ -1,6 +1,6 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Context = function(cid, prop, mp) {
 
         let molpaint = mp;
-        molpaint.createCSS();
+        let properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
+
+        molpaint.createCSS(properties);
         molpaint.createHelpWidget();
 
-        let properties = molPaintJS.DefaultProperties(mp.getProperties()).setProperties(prop).getProperties();
         let changeListener = null;
         let currentElement = molPaintJS.Elements.getElement("C");
         let currentTemplate = mp.getTemplates()[0];
@@ -33,11 +34,14 @@ var molPaintJS = (function (molpaintjs) {
         let currentTool = null;
         let currentBondTool = null;
 
+        let dialog = molPaintJS.Dialog(cid);
+        let drawing = null;             // initialized by init()
         let history = molPaintJS.History(cid);
-        let drawing = molPaintJS.Drawing();
 
+        let registeredIds = [];
         let view = molPaintJS.View(cid, properties);
         let widget = molPaintJS.Widget(cid, properties, mp);
+        let counter = molPaintJS.Counter();                // context unique counter
 
         /**
          * depending on the value of properties.viewer, set up
@@ -56,6 +60,7 @@ var molPaintJS = (function (molpaintjs) {
                   hashedWedgeTool: molPaintJS.BondTool(ctx, properties, 1, 3, "hashed_wedge"),
                   isotopeTool: molPaintJS.IsotopeTool(ctx, properties),
                   radicalTool: molPaintJS.RadicalTool(ctx, properties),
+                  roleTool: molPaintJS.RoleTool(ctx, properties),
                   chainTool: molPaintJS.ChainTool(ctx, properties),
                   chargeIncTool: molPaintJS.ChargeIncTool(ctx, properties),
                   chargeDecTool: molPaintJS.ChargeDecTool(ctx, properties),
@@ -96,6 +101,10 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
+            getCounter : function () {
+                return counter
+            },
+
             getCurrentBondTool : function () {
                 return currentBondTool;
             },
@@ -108,14 +117,20 @@ var molPaintJS = (function (molpaintjs) {
             getCurrentTool : function () {
                 return currentTool;
             },
-            getHistory : function () {
-                return history;
+            getDialog: function () {
+                return dialog;
             },
             getDrawing : function () {
                 return drawing;
             },
+            getHistory : function () {
+                return history;
+            },
             getProperties : function () {
                 return properties;
+            },
+            getRegisteredIds : function () {
+                return registeredIds;
             },
             getTools : function () {
                 return tools;
@@ -132,6 +147,7 @@ var molPaintJS = (function (molpaintjs) {
              */
             init : function () {
                 let ctx = this;
+                drawing = molPaintJS.Drawing(counter);
                 setupTools(ctx, properties);
                 let p = new Promise(function (resolve, reject) {
                     window.setTimeout(function () {
@@ -155,58 +171,30 @@ var molPaintJS = (function (molpaintjs) {
              * current drawing. Update the history accordingly.
              * @param st the chemical drawing string (MDL mol, ...)
              * @param sel the selection bits to set for the pasted drawing
-             * @return the already appended (!) actionList
+             * @return an actionList containing the new ChemObjects
              */
             pasteDrawing: function (st, sel) {
-                let mol;
+                let pasteDrawing;
                 try {
-                    mol = molPaintJS.MDLParser.parse(st, {'logLevel': 5});
-                    if (mol.getCollections().length > 0) {
-                        console.log("collections not supported during paste");
-                    }
+                    pasteDrawing = molPaintJS.MDLParser.parse(st, {'counter': counter, 'logLevel': 5});
                 } catch(e) {
                     console.log("Parse error in Context.pasteDrawing(): " + e.message);
-                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
-                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
                 let actionList = molPaintJS.ActionList();
-
-                // add atoms
-                let atoms = mol.getAtoms();
-                for (let i in atoms) {
-                    let a = atoms[i];
-                    a.setBonds({});
-                    a.setSelected(sel);
-                    a.setId(drawing.addAtom(a, null));
-                    actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
+                let pasteChemObjects = pasteDrawing.getChemObjects();
+                for (let chemObject of Object.values(pasteChemObjects)) {
+                    chemObject.setSelected(1);
+                    drawing.addChemObject(chemObject);
+                    actionList.addAction(molPaintJS.Action("ADD", "CHEMOBJECT", chemObject, null));
                 }
-
-                // add bonds
-                let bonds = mol.getBonds();
-                for (let i in bonds) {
-                    let b = bonds[i];
-                    b.setSelected(sel);
-                    drawing.addBond(b, null);
-                    actionList.addAction(molPaintJS.Action("ADD", "BOND", b, null));
-                }
-
-                // add sgroups
-                let sgroups = mol.getSGroups();
-                for (let i in sgroups) {
-                    let g = sgroups[i];
-                    g.setSelected(sel);
-                    drawing.addSGroup(g, null);
-                    // actionList.addAction(molPaintJS.Action("ADD", "SGROUP", g, null));
-                }
-
-                // ToDo: Collections NOT IMPLEMENTED
-
-                history.appendAction(actionList);
-
                 view.initRaster(drawing);
                 this.draw();
                 return actionList;
+            },
+
+            registerId : function(id) {
+                registeredIds.push(id);
             },
 
             render : function() {
@@ -249,15 +237,31 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
+             * @param data PNG with embedded chemical data or MDL file; should
+             * be either of type ArrayBuffer or String
              * @return this Context instance (useful for method chaining)
              */
-            setDrawing : function (st) {
+            setDrawing : function (data) {
                 try {
-                    drawing = molPaintJS.MDLParser.parse(st);
+                    return this.setDrawingPNG(data);
+                } catch (e) {
+                    if (typeof data === "object") {
+                        return this.setDrawingMDL(new TextDecoder().decode(data));
+                    } else {
+                        return this.setDrawingMDL(data);
+                    }
+                }
+            },
+
+            setDrawingMDL : function (mdl) {
+                if (typeof mdl !== "string") {
+                    throw new Error("setDrawingMDL(): string expected");
+                }
+                try {
+                    drawing = molPaintJS.MDLParser.parse(mdl, {'logLevel': 0, 'counter': counter});
+                    drawing.setRole('default');
                 } catch(e) {
                     console.log("Parse error in Context.setDrawing(): " + e.message);
-                    console.log("start: line "  + e.location.start.line + ", column " + e.location.start.column);
-                    console.log("end: line " + e.location.end.line + ", column " + e.location.end.column);
                     return;
                 }
 
@@ -268,22 +272,33 @@ var molPaintJS = (function (molpaintjs) {
                 return this;
             },
 
+            setDrawingPNG : function (picture) {
+                try {
+                    let chemicalData = MetaPNG.getMetadata(new Uint8Array(picture), "ChemicalData");
+                    chemicalData = JSON.parse(chemicalData);
+                    return this.setDrawingMDL(chemicalData.data);
+                } catch (e) {
+                    console.log(e);
+                    throw new Error("loading of embedded chemical data (PNG) failed");
+                }
+            },
+
             setDrawingObject : function (m) {
                 drawing = m;
             },
 
             /**
              * @deprecated
-             * Compatibility function; will be removed. Future  
-             * implementations are planned to include support for 
-             * chemical reactions etc., therefore the method name 
+             * Compatibility function; will be removed. Future
+             * implementations are planned to include support for
+             * chemical reactions etc., therefore the method name
              * seemed inappropriate.
-             * @see setDrawing(st)
+             * @see setDrawing(data)
              */
-            setMolecule : function(st) {
+            setMolecule : function(data) {
                 console.log("Encountered deprecated method setMolecule(), use setDrawing() instead!");
-                return this.setDrawing(st);
-            }
+                return this.setDrawing(data);
+            },
 
         };  // return
     }   // Context

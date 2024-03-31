@@ -22,6 +22,13 @@ var molPaintJS = (function (molpaintjs) {
 
         let view = v;
         let drawing = d;
+        let currentChemObject;
+
+        function drawChemObject (ctx) {
+            drawAtoms(ctx);
+            drawBonds(ctx);
+            drawSGroups(ctx);
+        }
 
         /**
          * draw all atoms which
@@ -29,7 +36,7 @@ var molPaintJS = (function (molpaintjs) {
          * - have no bonds to other atoms
          */
         function drawAtoms (ctx) {
-            let atoms = drawing.getAtoms();
+            let atoms = currentChemObject.getAtoms();
             for (let i in atoms) {
                 let a = atoms[i];
                 if (a.getSelected()) {
@@ -64,7 +71,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawBonds (ctx) {
-            let bonds = drawing.getBonds();
+            let bonds = currentChemObject.getBonds();
             for (let i in bonds) {
                 let b = bonds[i];
                 switch (b.getType()) {
@@ -130,7 +137,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawSGroups (ctx) {
-            let sgroups = drawing.getSGroups();
+            let sgroups = currentChemObject.getSGroups();
             for (let idx in sgroups) {
                 let sgroup = sgroups[idx];
                 if (sgroup.getType() === 'DAT') {
@@ -209,7 +216,7 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawHydrogen (ctx, atom, symbolHeight) {
-            let hCount = atom.getHydrogenCount(drawing);
+            let hCount = atom.getHydrogenCount(currentChemObject, false);
             if (hCount > 0) {
                 let hWidth = ctx.measureText("H").width;
                 let hx = atom.getBBox().getMaxX();
@@ -255,8 +262,8 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawDoubleBond (ctx, bond) {
 
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -291,8 +298,8 @@ var molPaintJS = (function (molpaintjs) {
 
         function drawSingleBond (ctx, bond) {
 
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -387,8 +394,8 @@ var molPaintJS = (function (molpaintjs) {
         }
 
         function drawTripleBond (ctx, bond) {
-            let atomA = bond.getAtomA();
-            let atomB = bond.getAtomB();
+            let atomA = drawing.getAtom(bond.getAtomA());
+            let atomB = drawing.getAtom(bond.getAtomB());
             let coord1 = view.getCoord(atomA);
             let coord2 = view.getCoord(atomB);
             let dx = coord1.x - coord2.x;
@@ -470,10 +477,10 @@ var molPaintJS = (function (molpaintjs) {
             let rightFree = true;
             let leftFree = true;
             for(let id in atom.getBonds()) {
-                let bond = drawing.getBond(id);
-                let neighbourAtom = bond.getAtomA();
+                let bond = currentChemObject.getBond(id);
+                let neighbourAtom = drawing.getAtom(bond.getAtomA());
                 if (neighbourAtom.getId() == atom.getId()) {
-                    neighbourAtom = bond.getAtomB();
+                    neighbourAtom = drawing.getAtom(bond.getAtomB());
                 }
                 let dx = atom.getX() - neighbourAtom.getX();
                 let dy = atom.getY() - neighbourAtom.getY();
@@ -544,6 +551,52 @@ var molPaintJS = (function (molpaintjs) {
             return path;
         }
 
+
+        function drawReactionArrow (ctx, roleBoundingBoxes) {
+            let eductBox = roleBoundingBoxes['educt'];
+            let productBox = roleBoundingBoxes['product'];
+
+            if (eductBox && productBox) {
+                ctx.fillStyle = "#000000";
+                ctx.strokeStyle = "#000000";
+
+                eductBox = view.getBBox(eductBox);
+                productBox = view.getBBox(productBox);
+
+                let startX = eductBox.getCenterX();
+                let startY = eductBox.getCenterY();
+                let endX = productBox.getCenterX();
+                let endY = productBox.getCenterY();
+                let dx = endX - startX;
+                let dy = endY - startY;
+                let start = eductBox.clip({x: startX, y: startY}, -dx, -dy);
+                let end = productBox.clip({x: endX, y: endY}, dx, dy);
+                startX = start.x;
+                startY = start.y
+                endX = end.x;
+                endY = end.y;
+                dx = endX - startX;
+                dy = endY - startY;
+                let l = Math.sqrt((dx * dx) + (dy * dy));
+                startX += 0.1 * dx;
+                endX -= 0.1 * dx;
+                startY += 0.1 * dy;
+                endY -= 0.1 * dy;
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                dx /= l;
+                dy /= l;
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - 4*dy - 10*dx, endY + 4*dx - 10*dy);
+                ctx.lineTo(endX + 4*dy - 10*dx, endY - 4*dx - 10*dy);
+                ctx.lineTo(endX, endY);
+                ctx.fill();
+                ctx.stroke();
+            }
+        }
+
         return {
 
             /**
@@ -553,15 +606,26 @@ var molPaintJS = (function (molpaintjs) {
                 view.init();
                 let ctx = view.getViewContext();
                 ctx.clearRect(0, 0, view.getSizeX(), view.getSizeY());
-                ctx.beginPath();
-                ctx.fillStyle = "#000000";
-                ctx.strokeStyle = "#000000";
-                ctx.lineWidth = 1;
-                drawAtoms(ctx);
-                drawBonds(ctx);
-                drawSGroups(ctx);
+                let roleBoundingBoxes = {};
 
-                // begin a new path for subsequent drawing operations
+                let chemObjectsByRole = drawing.getRoles();
+                for (let role in chemObjectsByRole) {
+                    for (let cid in chemObjectsByRole[role]) {
+                        ctx.beginPath();
+                        ctx.fillStyle = "#000000";
+                        ctx.strokeStyle = "#000000";
+                        ctx.lineWidth = 1;
+                        currentChemObject = drawing.getChemObjects()[cid];
+                        drawChemObject(ctx);
+                        let bbox = currentChemObject.computeBBox(0);
+                        roleBoundingBoxes[role] = (roleBoundingBoxes[role] !== undefined) ? roleBoundingBoxes[role].join(bbox) : bbox;
+                    }
+                }
+
+                drawReactionArrow(ctx, roleBoundingBoxes);
+
+                // begin a new path for subsequent drawing operationsi,
+                // e.g. bounding boxes from PointerTool
                 ctx.beginPath();
             }
         };

@@ -32,8 +32,11 @@ var molPaintJS = (function (molpaintjs) {
         function init() {
             // atomicNumber, period, group, symbol, mass, iso, massExact, color
             elements = [
-                [molPaintJS.Isotope(0, 0, 0, "R", 0, 0, 0.000, "#666666"),
-                    molPaintJS.Isotope(0, 0, 0, "*", 0, 0, 0.000, "#666666")],
+                [molPaintJS.Isotope(0, 0, 7, "R1", 0, 0, 0.000, "#666666"),
+                    molPaintJS.Isotope(0, 0, 8, "R2", 0, 0, 0.000, "#666666"),
+                    molPaintJS.Isotope(0, 0, 9, "R3", 0, 0, 0.000, "#666666"),
+                    molPaintJS.Isotope(0, 0, 10, "R4", 0, 0, 0.000, "#666666"),
+                    molPaintJS.Isotope(0, 0, 11, "*", 0, 0, 0.000, "#666666")],
                 [molPaintJS.Isotope(1, 1, 1, "H", 1, 0, 1.008, "#666666"),
                     molPaintJS.Isotope(1, 1, 1, "H", 1, 1, 1.00782503223, "#666666"),
                     molPaintJS.Isotope(1, 1, 1, "D", 2, 1, 2.01410177812, "#666666"),
@@ -222,8 +225,12 @@ var molPaintJS = (function (molpaintjs) {
                 [molPaintJS.Isotope(103, 9, 17, "Lr", 266, 0, 266.0, "#000000")]
             ];
 
-            elementsByName["D"] = elements[0][2];
-            elementsByName["T"] = elements[0][3];
+            for (let iso of elements[0]) {
+                elementsByName[iso.getSymbol()] = iso;
+            }
+
+            elementsByName["D"] = elements[1][2];
+            elementsByName["T"] = elements[1][3];
 
             for (let i = 1; i < elements.length; i++) {
                 let iso = elements[i][0];

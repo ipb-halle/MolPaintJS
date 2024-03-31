@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2017 - 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,8 +41,8 @@ var molPaintJS = (function (molpaintjs) {
                 if (atomId != null) {
 
                     let actionList = molPaintJS.ActionList();
-                    let atom = this.context.getDrawing().getAtom(atomId);
-                    let oldAtom = atom.copy();
+                    let oldAtom = this.context.getDrawing().getAtom(atomId);
+                    let atom = oldAtom.copy();
 
                     switch (type) {
                         case "singlet" :
@@ -61,9 +61,8 @@ var molPaintJS = (function (molpaintjs) {
                     this.context.getDrawing().replaceAtom(atom);
                     actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
                     this.context.getHistory().appendAction(actionList);
-
+                    this.context.draw();
                 }
-                this.context.draw();
             },
 
             onMouseDown : function (x, y, evt) {
@@ -79,7 +78,7 @@ var molPaintJS = (function (molpaintjs) {
             setup : function () {
                 let destIconId = this.context.contextId + "_radical";
                 let icon = document.getElementById(destIconId);
-                icon.src = molPaintJS.Resources[type + ".png"]; 
+                icon.src = molPaintJS.Resources[type + ".png"];
             }
         };
     }

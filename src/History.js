@@ -1,13 +1,13 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,20 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.History = function (cid) {
 
-        let actions = [];
-        let actionPtr = -1;
+        let history = [];
+        let historyPtr = -1;
         let contextId = cid;
 
         function redoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addAtom(action.newObject);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.newObject, action.newObject.id);
+                    ctx.getDrawing().addBond(action.newObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().addChemObject(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
@@ -45,6 +48,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().delBond(action.oldObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().delChemObject(action.oldObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
             }
@@ -57,6 +63,9 @@ var molPaintJS = (function (molpaintjs) {
                     break;
                 case "BOND" :
                     ctx.getDrawing().replaceBond(action.newObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().replaceChemObject(action.newObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
@@ -71,6 +80,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().delBond(action.newObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().delChemObject(action.newObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
             }
@@ -79,10 +91,13 @@ var molPaintJS = (function (molpaintjs) {
         function undoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addAtom(action.oldObject);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.oldObject, action.oldObject.id);
+                    ctx.getDrawing().addBond(action.oldObject);
+                    break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().addChemObject(action.oldObject);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
@@ -97,6 +112,9 @@ var molPaintJS = (function (molpaintjs) {
                 case "BOND" :
                     ctx.getDrawing().replaceBond(action.oldObject);
                     break;
+                case "CHEMOBJECT" :
+                    ctx.getDrawing().replaceChemObject(action.oldObject);
+                    break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
             }
@@ -105,23 +123,23 @@ var molPaintJS = (function (molpaintjs) {
         return {
 
             appendAction : function (a) {
-                actionPtr++;
-                actions[actionPtr] = a;
-                actions.splice(actionPtr + 1,
-                    actions.length - actionPtr - 1);
+                historyPtr++;
+                history[historyPtr] = a;
+                history.splice(historyPtr + 1,
+                    history.length - historyPtr - 1);
                 this.updateIcons();
             },
 
             updateIcons : function () {
                 let e = document.getElementById(contextId + "_redo");
-                if (actionPtr < (actions.length - 1)) {
+                if (historyPtr < (history.length - 1)) {
                     e.src = molPaintJS.Resources['redo.png'];
                 } else {
                     e.src = molPaintJS.Resources['redo_inactive.png'];
                 }
 
                 e = document.getElementById(contextId + "_undo");
-                if (actionPtr > -1) {
+                if (historyPtr > -1) {
                     e.src = molPaintJS.Resources['undo.png'];
                 } else {
                     e.src = molPaintJS.Resources['undo_inactive.png'];
@@ -129,14 +147,13 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             redo : function (ctx) {
-                if (actionPtr > (actions.length - 2)) {
+                if (historyPtr > (history.length - 2)) {
                     return;
                 }
-                actionPtr++;
-                let al = actions[actionPtr];	// ActionList
+                historyPtr++;
+                let actionList = history[historyPtr];	// ActionList
 
-                for (let i = al.getActions().length; i-- > 0;) {	// loop actionList backwards in redo
-                    let action = al.getActions()[i];
+                for (let action of actionList.getActions()) {
                     switch (action.actionType) {
                         case "ADD" :
                             redoAdd(ctx, action);
@@ -154,13 +171,22 @@ var molPaintJS = (function (molpaintjs) {
                 this.updateIcons();
             },
 
+            /**
+             * function to support integration testing
+             */
+            spy : function () {
+                return history[historyPtr].getActions();
+            },
+
             undo : function (ctx) {
-                if (actionPtr < 0) {
+                if (historyPtr < 0) {
                     return;
                 }
-                let al = actions[actionPtr];    // ActionList
+                let actionList = history[historyPtr];
 
-                for (let action of al.getActions()) {
+                // loop actionList backwards in undo
+                for (let i = actionList.getActions().length; i-- > 0;) {
+                    let action = actionList.getActions()[i];
                     switch (action.actionType) {
                         case "ADD" :
                             undoAdd(ctx, action);
@@ -176,7 +202,7 @@ var molPaintJS = (function (molpaintjs) {
                     }
                 }
 
-                actionPtr--;
+                historyPtr--;
                 this.updateIcons();
             }
         };

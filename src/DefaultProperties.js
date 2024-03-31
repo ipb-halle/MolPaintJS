@@ -25,6 +25,7 @@ var molPaintJS = (function (molpaintjs) {
             distMax: 0.08,
             fontFamily: "SansSerif",
             fontSize: 16,
+            FontAwesomePath: "assets/fontawesome/css/",
             helpURL: "https://ipb-halle.github.io/MolPaintJS/help",
             iconSize: 32,
             molScaleDefault: 33,  // pixel per Angstrom
@@ -64,6 +65,10 @@ var molPaintJS = (function (molpaintjs) {
             setProperties : function (p) {
                 setProp(p);
                 return this;
+            },
+
+            setProperty : function (prop, value) {
+                properties[prop] = value;
             }
         };
     }

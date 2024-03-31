@@ -1,19 +1,19 @@
 /*
  * MolPaintJS
- * Copyright 2017 Leibniz-Institut f. Pflanzenbiochemie 
- *  
+ * Copyright 2024 Leibniz-Institut f. Pflanzenbiochemie
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *  
+ *
  */
 var molPaintJS = (function (molpaintjs) {
     "use strict";
@@ -21,22 +21,22 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Atom = function () {
 
 
-        let bbox = null;        // bounding box for the atom label
+        let bbox = null;            // bounding box for the atom label
         let bonds = {};
         let sgroups = {};
         let coordX = 0.0;
         let coordY = 0.0;
         let coordZ = 0.0;
 
-        let charge = 0;         // formal charge of the atom
-        let radical = 0;        // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
+        let charge = 0;             // formal charge of the atom
+        let radical = 0;            // 0 = no radical, 1=singlet, 2=doublet, 3=triplet
 
-        let id = null;          // unique id (i.e. for undo / redo)
-        let index = null;       // numeric index in list of atoms
-        let selected = 0;       // non zero, if the atom is currently selected
+        let id = null;              // unique id (i.e. for undo / redo)
+        let index = null;           // numeric index in list of atoms
+        let selected = 0;           // non zero, if the atom is currently selected
         let stereo = 0;
-        let temp = 0;           // non zero if the atom is transient (temporary)
-        let type = null;        // atom type / element / isotope
+        let temp = 0;               // non zero if the atom is transient (temporary)
+        let type = null;            // atom type / element / isotope
 
 
         return {
@@ -69,11 +69,11 @@ var molPaintJS = (function (molpaintjs) {
                         newIsotope = iso;
                     }
                 }
-                    
+
                 if (newIsotope != null) {
                     let at = molPaintJS.AtomType();
-                    at.setIsotope(newIsotope); 
-                    at.setColor(newIsotope.getColor()); 
+                    at.setIsotope(newIsotope);
+                    at.setColor(newIsotope.getColor());
                     type = at;
                     return true;
                 }
@@ -160,24 +160,26 @@ var molPaintJS = (function (molpaintjs) {
 
             /**
              * compute the hydrogen count (implicit hydrogens)
-             * for this atom. Currently does not account for 
+             * for this atom. Currently does not account for
              * explicit hydrogens!
              */
-            getHydrogenCount : function(drawing) {
+            getHydrogenCount : function(chemObject, reportCarbonH) {
                 let cnt = 0;
 
                 // evaluate bond order
                 for(let b in bonds) {
-                    switch(drawing.getBond(b).getType()) {
+                    switch(chemObject.getBond(b).getType()) {
                         case 1 : cnt -= 1;
                                 break;
-                        case 2 : cnt -= 2; 
+                        case 2 : cnt -= 2;
                                 break;
                         case 3 : cnt -= 3;
                     }
                 }
 
                 switch(type.getIsotope().getSymbol()) {
+                    case "C" : if (reportCarbonH) { cnt += 4 + charge; }
+                        break;
                     case "N" : cnt += 3 + charge;
                         break;
                     case "O" : cnt += 2 + charge;

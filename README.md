@@ -59,14 +59,15 @@ To provide a different set of template molecules, you need to provide URLs to te
 ### Change Listener
 A change listener can be registered to an instance of MolPaintJS. The method will be invoked each time, the content of the plugin is rendered.
 
-### Options
-All options can be specified either on the global level (`new MolPaintJS({...options...})`) or on the instance level (`newContext(...)`). Instance level options override global options. However, some options make little sense on the instance level (e.g. **installPath**).
+### Properties
+All properties can be specified either on the global level (`molPaintJS.setProperty(prop, val);`) or on the instance level (`newContext(...)`). Instance level properties override global properties. However, some properties make little sense on the instance level (e.g. **FontAwesomePath**).
 
 * **bondLength** standard bond length (default 1.5)
 * **distMax** selection radius for atom or bond selection (default 0.1)
 * **debugId** id of a DOM element (preferably `<div>`) to receive debug messages
 * **fontFamily** font family for atom labels etc. (default "SansSerif")
 * **fontSize** font size (default 16)
+* **FontAwesomePath** path to FontAwesome (default "assets/fontawesome"), set to `null` if your project already provides FontAwesome
 * **iconSize** the size of the icons (default 32)
 * **molScaleDefault** scaling factor (default 33); unit is pixels per Angstrom
 * **sizeX** the width of the display area (default 400)
@@ -75,7 +76,7 @@ All options can be specified either on the global level (`new MolPaintJS({...opt
 
 
 ## Licensing
-    Copyright 2017-2021 Leibniz-Institut f. Pflanzenbiochemie
+    Copyright 2017-2023 Leibniz-Institut f. Pflanzenbiochemie
      
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

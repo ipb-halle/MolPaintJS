@@ -18,62 +18,55 @@
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
-    molpaintjs.CollectionHandler = function (cid) {
+    molpaintjs.CollectionHandler = function (ctx) {
 
-        let contextId = cid;
+        let contextId = ctx;
 
-        function applySelection(collection, selection) {
-            let atoms = {};
-            let bonds = {};
-            for (let atom of selection.atoms) {
-                atoms[atom] = atom;
-            }
-            for (let bond of selection.bonds) {
-                bonds[bond] = bond;
-            }
-            collection.setAtoms(atoms);
-            collection.setBonds(bonds);
-        }
-
-        function getCollection(mol, name) {
-            for (let collection of mol.getCollections()) {
-                if (collection.getName() == name) {
-                    return collection;
+        function applySelection(drawing, name) {
+            let chemObjects = drawing.getChemObjects();
+            let nonEmpty = false;
+            for (const cid in chemObjects) {
+                let selection = {atoms: [], bonds: []};
+                chemObjects[cid].getSelected(selection, 2);
+                let collection = molPaintJS.Collection(name);
+                if (selection.atoms.length > 0) {
+                    collection.setAtoms(selection.atoms)
+                    nonEmpty = true;
+                }
+                if (selection.bonds.length > 0) {
+                    collection.setBonds(selection.bonds);
+                    nonEmpty = true;
+                }
+                if (nonEmpty) {
+                    chemObjects[cid].replaceCollection(collection);
                 }
             }
-            return molPaintJS.Collection("");
+            return nonEmpty;
         }
 
-        function highlightAtoms(mol, atoms) {
-            for (let a in mol.getAtoms()) {
-                let atom = mol.getAtom(a);
+        function highlightAtoms(chemObject, atoms) {
+            for (let atomId of atoms) {
+                let atom = chemObject.getAtom(atomId);
                 let sel = atom.getSelected();
-                if (atoms[atom.getId()] != null) {
-                    atom.setSelected(sel | 4);
-                } else {
-                    atom.setSelected(sel & ~4);
-                }
+                atom.setSelected(sel | 4);
             }
         }
 
-        function highlightBonds(mol, bonds) {
-            for (let b in mol.getBonds()) {
-                let bond = mol.getBond(b);
+        function highlightBonds(chemObject, bonds) {
+            for (let bondId of bonds) {
+                let bond = chemObject.getBond(bondId);
                 let sel = bond.getSelected();
-                if (bonds[bond.getId()] != null) {
-                    bond.setSelected(sel | 4);
-                } else {
-                    bond.setSelected(sel & ~4);
-                }
+                bond.setSelected(sel | 4);
             }
         }
 
-        function renderInput (dlgId) {
+        function renderInput () {
             let html = "";
             let selection = molPaintJS.getContext(contextId).getDrawing().getSelected(2);
+            let inputId = molPaintJS.getDialog(contextId).getName() + "_input";
             if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
                 html = "Collection name:<br/><center style='margin:10px;'>"
-                    + "<input id='" + dlgId + "_input' type='text'/>"
+                    + "<input id='" + inputId + "' type='text'/> "
                     + "<input type='button' value='Update / Add' onclick=\"molPaintJS.CollectionHandler('"
                     + contextId
                     + "').setCollection();\" /></center>";
@@ -81,81 +74,76 @@ var molPaintJS = (function (molpaintjs) {
             return html;
         }
 
-        function renderList () {
+        function renderTable () {
             let html = "Currently known collections:<br/>";
-            let collections = molPaintJS.getContext(contextId).getDrawing().getCollections();
-            if (collections.length === 0) {
-                return html;
+            let collectionNames = molPaintJS.getContext(contextId).getDrawing().getCollectionNames();
+            if (Object.keys(collectionNames).length > 0) {
+                html += "<table>";
+                for (let name in collectionNames) {
+                    html += "<tr><td>"
+                        + "<span onmouseover=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\" "
+                        + "onmouseout=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('');\">"
+                        + name + "</span></td><td>"
+                        + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name
+                        + "');\"> <i class='fa-solid fa-trash-can'></i></span>"
+                        + "</td></tr>";
+                }
+                html += "</table>";
             }
-
-            html += "<ul>";
-            for (let c of collections) {
-                const name = c.getName();
-                html += "<li>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight('" + name + "');\">"
-                    + name + "</span>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').deleteCollection('" + name + "');\"> &#x1f5d1;</span>"
-                    + "</li>";
-            }
-
-            html += "</ul>";
             return html;
         }
 
         return {
 
+            clearHighlights: function () {
+                this.highlight('');
+            },
+
             highlight: function (name) {
-                let dlgId = contextId + "_modalDlg";
                 let context = molPaintJS.getContext(contextId);
-                let mol = context.getDrawing();
-                let collection = getCollection(mol, name);
-                highlightAtoms(mol, collection.getAtoms());
-                highlightBonds(mol, collection.getBonds());
-                document.getElementById(dlgId).style.display = 'none';
+                let chemObjects = context.getDrawing().getChemObjects();
+                for (let cid in chemObjects) {
+                    let chemObject = chemObjects[cid];
+                    chemObject.clearSelection(4);
+
+                    let collection = chemObject.getCollection(name);
+                    if (collection != null) {
+                        highlightAtoms(chemObject, collection.getAtoms());
+                        highlightBonds(chemObject, collection.getBonds());
+                    }
+                }
                 context.draw();
             },
 
             deleteCollection : function (name) {
-                let dlgId = contextId + "_modalDlg";
                 molPaintJS.getContext(contextId).getDrawing().delCollection(name);
-                this.highlight('');
-                if (molPaintJS.getContext(contextId).getDrawing().getCollections().length > 0) {
+                this.clearHighlights();
+                if (Object.keys(molPaintJS.getContext(contextId).getDrawing().getCollectionNames()).length > 0) {
                     this.render();
                 } else {
-                    document.getElementById(dlgId).style.display = 'none';
+                    molPaintJS.getDialog(contextId).close();
                 }
             },
 
             render: function() {
-                let dlgId = contextId + "_modalDlg";
-                let e = document.getElementById(dlgId);
-                e.innerHTML = "<div class='molPaintJS-modalDlgContent'>"
-                    + "<span onclick=\"molPaintJS.CollectionHandler('" + contextId + "').highlight(''); "
-                    + "document.getElementById('" + dlgId
-                    + "').style.display='none'\" class=\"molPaintJS-modalCloseButton\">&times;</span>"
-                    + renderInput(dlgId)
-                    + renderList()
-                    + "</div>";
-                e.style.display = "block";
+                let dialog = molPaintJS.getDialog(contextId);
+                dialog.setOnClose(this.clearHighlights());
+                dialog.setTitle("Collections");
+                dialog.setError("");
+                dialog.setContent(renderInput() + renderTable());
+                dialog.render();
             },
 
             setCollection: function() {
-                let dlgId = contextId + "_modalDlg";
+                let inputId = molPaintJS.getDialog(contextId).getName() + "_input";
                 let context = molPaintJS.getContext(contextId);
-                let name = document.getElementById(dlgId + "_input").value;
+                let name = document.getElementById(inputId).value;
 
                 // check for invalid name
                 if (name.match("[A-Za-z][A-Za-z #$+-;@]*")) {
-                    let collection = molPaintJS.Collection(name);
                     let drawing = context.getDrawing();
-                    let selection = drawing.getSelected(2);
-
-                    // only create non-empty collections
-                    if ((selection.atoms.length > 0) || (selection.bonds.length > 0)) {
-                        applySelection(collection, selection);
-                        drawing.setCollection(collection);
-                        document.getElementById(dlgId).style.display = 'none';
-                    }
+                    applySelection(drawing, name);
+                    molPaintJS.getDialog(contextId).close();
                 } else {
                     alert('Invalid collection name');
                 }

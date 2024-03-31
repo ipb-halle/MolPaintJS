@@ -32,22 +32,30 @@ var molPaintJS = (function (molpaintjs) {
             if (tool == null) {
                 return;
             }
-            let iconId = tool.context.contextId + "_" + tool.id;
-            let icon = document.getElementById(iconId);
-            if (icon != null) {
-                // ToDo: use promises
-                icon.className = "molPaintJS-inactiveTool";
+            this.setStyle(tool, this.getId(tool), "molPaintJS-inactiveTool");
+        },
+
+        getId : function (tool) {
+            try {
+                return tool.getId();
+            } catch (err) {
+                // ignore
             }
+            return tool.id;
+        },
+
+        setStyle : function (tool, id, style) {
+            let iconId = tool.context.contextId + "_" + id; 
+            let icon = document.getElementById(iconId);
+            if (icon == null) {
+                return;
+            }
+            // use promise instead?
+            icon.className = style;
         },
 
         setup : function (tool) {
-            let iconId = tool.context.contextId + "_" + tool.id;
-            let icon = document.getElementById(iconId);
-            if (icon == null) {
-                // ToDo: use promises
-                return;
-            }
-            icon.className = "molPaintJS-activeTool";
+            this.setStyle(tool, this.getId(tool), "molPaintJS-activeTool");
 
             try {
                 tool.setup();

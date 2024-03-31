@@ -130,8 +130,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonAtoms : function(drawing) {
                 if (jsonData['ATOMS'] != null) {
-                    for (let idx of jsonData['ATOMS'].data) {
-                        let atom = drawing.getAtom('Atom' + idx);
+                    for (let idx of jsonData['ATOMS']) {
+                        let atom = drawing.getAtom(idx);
                         atoms.push(atom); 
                         atom.addSGroup(this);
                     }
@@ -151,8 +151,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonCBonds : function(drawing) {
                 if (jsonData['CBONDS'] != null) {
-                    for (let idx of jsonData['CBONDS'].data) {
-                        let cbond = drawing.getBond('Bond' + idx);
+                    for (let idx of jsonData['CBONDS']) {
+                        let cbond = drawing.getBond(idx);
                         cbonds.push(cbond);
                         cbond.addSGroup(this);
                     }
@@ -180,8 +180,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonPAtoms : function(drawing) {
                 if (jsonData['PATOMS'] != null) {
-                    for (let idx of jsonData['PATOMS'].data) {
-                        let atom = drawing.getAtom('Atom' + idx);
+                    for (let idx of jsonData['PATOMS']) {
+                        let atom = drawing.getAtom(idx);
                         patoms.push(atom);
                         atom.addSGroup(this);
                     }
@@ -190,8 +190,8 @@ var molPaintJS = (function (molpaintjs) {
 
             parseJsonXBonds : function(drawing) {
                 if (jsonData['XBONDS'] != null) {
-                    for (let idx of jsonData['XBONDS'].data) {
-                        let xbond = drawing.getBond('Bond' + idx);
+                    for (let idx of jsonData['XBONDS']) {
+                        let xbond = drawing.getBond(idx);
                         xbonds.push(xbond);
                         xbond.addSGroup(this);
                     }
@@ -216,7 +216,6 @@ var molPaintJS = (function (molpaintjs) {
 
             /* set complex parsed sgroup data */
             setJsonData : function(data) {
-                console.log("SGroup implementation incomplete; must resolve atom and bond references");
                 jsonData = data;
             },
 

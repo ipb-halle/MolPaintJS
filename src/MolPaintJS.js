@@ -15,6 +15,9 @@
  * limitations under the License.
  *  
  */
+
+import("./meta-png.umd.js");
+
 var molPaintJS = (function (molpaintjs) {
     "use strict";
 
@@ -24,7 +27,6 @@ var molPaintJS = (function (molpaintjs) {
     let contextRegistry = {};
     let properties = molpaintjs.DefaultProperties();
     let templates = [ 'benzene', 'cyclohexane', 'cyclopentane' ];
-
 
     /**
      * load a template 
@@ -57,7 +59,7 @@ var molPaintJS = (function (molpaintjs) {
         }
     }
 
-    molpaintjs.createCSS = function() {
+    molpaintjs.createCSS = function(prop) {
         let e = document.getElementById("MolPaintJS_CSS");
         if (e == null) {
             e = document.createElement("link");
@@ -65,8 +67,25 @@ var molPaintJS = (function (molpaintjs) {
             e.rel = "stylesheet";
             e.href = molPaintJS.Resources['styles.css'];
             document.head.appendChild(e);
+            // optionally add FontAwesome Icons
+            let fontAwesomePath = properties.getProperty("FontAwesomePath");
+            if (fontAwesomePath != null) {
+                e = document.createElement("link");
+                e.id = "MolPaintJS_FontAwesome";
+                e.rel = "stylesheet";
+                e.type = "text/css";
+                e.href = fontAwesomePath + "fontawesome.min.css";
+                document.head.appendChild(e);
+                e = document.createElement("link");
+                e.id = "MolPaintJS_FontAwesomeSolid";
+                e.rel = "stylesheet";
+                e.type = "text/css";
+                e.href = fontAwesomePath + "solid.min.css";
+                document.head.appendChild(e);
+
+            }
         }
-    },
+    }
 
     molpaintjs.createHelpWidget = function() {
         let e = document.getElementById("MolPaintJS_Help_Widget");
@@ -76,7 +95,19 @@ var molPaintJS = (function (molpaintjs) {
             e.classList.add("molPaintJS-modalHelp");
             document.body.appendChild(e);
         }
-    },
+    }
+
+    /**
+     * destroy the context and do clean up
+     */
+    molpaintjs.destroy = function (cid) {
+        let context = contextRegistry[cid];
+        for (let id of context.getRegisteredIds()) {
+            delete contextRegistry[id];
+        }
+        let o = document.getElementById(context.contextId);
+        o.innerHTML = "";
+    }
 
     /**
      * replace the content of a HTML element with id "dumpId"
@@ -88,25 +119,49 @@ var molPaintJS = (function (molpaintjs) {
         let format = arguments[2] || 'V2000';
         let moltext = '';
 
-        switch(format) {
-            case 'V3000':
-                moltext = this.getMDLv3000(cid);
-                break;
-            case 'V2000':
-                moltext = this.getMDLv2000(cid);
-                break;
-            default :
-                moltext = "Unknown output format: " + format;
+        try {
+            switch(format) {
+                case 'V3000':
+                    moltext = this.getMDLv3000(cid) + "\n";
+                    break;
+                case 'V3000RXN':
+                    moltext = this.getMDLv3000RXN(cid) + "\n";
+                    break;
+                case 'V2000':
+                    moltext = this.getMDLv2000(cid) + "\n";
+                    break;
+                default :
+                    moltext = "Unknown output format: " + format;
+            }
+        } catch (e) {
+            moltext = e.message;
         }
-        o.innerHTML = "<pre>" + moltext + "</pre>";
-    },
+        o.innerHTML = "<pre>\n" + moltext + "\n</pre>";
+    }
 
     /**
      * return the context for a given context id
      */
     molpaintjs.getContext = function (cid) {
         return contextRegistry[cid];
-    },
+    }
+
+    molpaintjs.getDialog = function (cid) {
+        return contextRegistry[cid].getDialog();
+    }
+
+    molpaintjs.getImage = function (cid) {
+        //
+        // xxxxx make the format of embedded molecular data more complex (i.e. to host multiple reaction schemes)
+        //
+        let chemData = {"creator":"MolPaintJS"};
+        chemData["data"] = molpaintjs.getMDLv3000(cid);
+        let e = document.getElementById(cid + "_canvas");
+        return MetaPNG.addMetadataFromBase64DataURI(
+            e.toDataURL("image/png"),
+            "ChemicalData",
+            JSON.stringify(chemData)).slice(22);
+    }
 
     /**
      * return the current date in MMDDYYhhmm format as specified for MDL header line
@@ -124,7 +179,7 @@ var molPaintJS = (function (molpaintjs) {
         part = date.getMinutes();
         st += ((part < 10) ? "0" + part : "" + part);
         return st;
-    },
+    }
 
     /**
      * @return the drawing from context cid in MDLv2000 format
@@ -132,7 +187,7 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.getMDLv2000 = function (cid) { 
         let w = this.MDLv2000Writer();
         return w.write(contextRegistry[cid].getDrawing());
-    },
+    }
 
     /**
      * @return the drawing from context cid in MDLv3000 format
@@ -140,14 +195,19 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.getMDLv3000 = function (cid) {
         let w = this.MDLv3000Writer();
         return w.write(contextRegistry[cid].getDrawing());
-    },
+    }
+
+    molpaintjs.getMDLv3000RXN = function (cid) {
+        let w = this.MDLv3000Writer();
+        return w.writeRXN(contextRegistry[cid].getDrawing());
+    }
 
     /**
      * @return global properties
      */
     molpaintjs.getProperties = function () {
         return properties.getProperties();
-    },
+    }
 
     /**
      * @param t the name of the template
@@ -155,21 +215,21 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.getTemplate = function (t) {
         return atob(molPaintJS.Resources[t + '.mol']);
-    },
+    }
 
     /**
      * @return the list of template keys
      */
     molpaintjs.getTemplates = function () {
         return templates;
-    },
+    }
 
     /**
      * @return version information
      */
     molpaintjs.getVersion = function () {
         return molPaintJS.Resources['version'];
-    },
+    }
 
     /**
      * create a new context
@@ -178,15 +238,22 @@ var molPaintJS = (function (molpaintjs) {
         let ctx = molPaintJS.Context(cid, prop, this);
         ctx.render();
         return ctx;
-    },
+    }
 
     /**
      * register a new context (i.e. for events)
      */
     molpaintjs.registerContext = function (id, ctx) {
         contextRegistry[id] = ctx;
-    },
+        ctx.registerId(id);
+    }
 
+    /**
+     * set a global (default) property
+     */
+    molpaintjs.setProperty = function (prop, value) {
+        properties.setProperty(prop, value);
+    }
 
     /**
      * allows to configure the order of templates

@@ -25,13 +25,19 @@
 
     let mdlParserData = {
         'atomCount':0,
+        'atomIndexMap':{},
         'atomListCount':0,
         'bondCount':0,
+        'bondIndexMap':{},
         'currentAtom':0,
         'currentAtomList':0,
         'currentBond':0,
+        'currentChemObjectV2':null,
+        'currentChemObjectV3':null,
         'currentProperty':0,
+        'currentRole':'default',
         'currentStext':0,
+        'drawing':molPaintJS.Drawing(options.counter),
         'propertyCount':0,
         'resetCharges':true,
         'resetIsotopes':true,
@@ -42,6 +48,16 @@
         if ((options.logLevel != null) && (options.logLevel > level)) {
             console.log(message);
         }
+    }
+
+    function createChemObject() {
+            mdlParserData.currentAtom = 0;
+            mdlParserData.currentAtomList = 0;
+            mdlParserData.currentBond = 0;
+            mdlParserData.currentProperty = 0;
+            mdlParserData.currentStext = 0;
+            mdlParserData.drawing.setRole(mdlParserData.currentRole);
+            return mdlParserData.drawing.createChemObject();
     }
 
     /**
@@ -124,13 +140,55 @@
     }
 
     /**
+     * map atoms from collection table indexes to atom identifiers
+     */
+    function mapAtomList (list) {
+        let atoms = [];
+        for (let idx of list) {
+            if (idx != null) {
+                let atomIndex = mdlParserData.atomIndexMap['a' + idx];
+                atoms.push(atomIndex);
+            }
+        }
+        return atoms;
+    }
+
+    /**
+     * map bonds from collection table indexes to bond identifiers
+     */
+    function mapBondList (list) {
+        let bonds = [];
+        for (let idx of list) {
+            if (idx != null) {
+                let bondIndex = mdlParserData.bondIndexMap['b' + idx];
+                bonds.push(bondIndex);
+            }
+        }
+        return bonds;
+    }
+
+    /**
+     * join multiple maps (objects) in an array to a single array
+     * [ {key:{x:x, y:y, z:z}}, {key:{a:a, b:b}} ] --> [x, y, z, a, b]
+     */
+    function arrayJoin(array, key) {
+        let join = [];
+        for (let element of array) {
+            if ((element != null) && (element[key] != null)) {
+                join = join.concat(Object.values(element[key]));
+            }
+        }
+        return join;
+    }
+
+    /**
      * reset the charge and radical properties for V2000 connection tables
      * in case a 'M  CHG' or 'M  RAD' block is found. Executes only once.
      */
     function resetCharges () {
         if (mdlParserData.resetCharges) {
-            for (let a in mdlParserData.drawing.getAtoms()) {
-                let atom = mdlParserData.drawing.getAtom(a);
+            for (let a in mdlParserData.currentChemObjectV2.getAtoms()) {
+                let atom = mdlParserData.currentChemObjectV2.getAtom(a);
                 atom.setCharge(0);
                 atom.setRadical(0);
             }
@@ -144,8 +202,8 @@
      */
     function resetIsotopes () {
         if (mdlParserData.resetIsotopes) {
-            for (let a in mdlParserData.drawing.getAtoms()) {
-                let atom = mdlParserData.drawing.getAtom(a);
+            for (let a in mdlParserData.currentChemObjectV2.getAtoms()) {
+                let atom = mdlParserData.currentChemObjectV2.getAtom(a);
                 if (atom.getType().getIsotope().getIsotope() > 0) {
 
                     // does not reset Deuterium and Tritium!
@@ -195,14 +253,18 @@
 }
 
 mdlFile
-    = header v2Counts v2ctab endOfFile { logMessage(1, 'parsed V2000 File'); return mdlParserData.drawing; }
-    / header v3Counts v3ctab endOfFile { logMessage(1, 'parsed V3000 File'); return mdlParserData.drawing; }
+    = v3RxnHeader header v3RxnCounts v3RxnComponents* endOfFile { logMessage(1, 'parsed V3000 RXN file'); return mdlParserData.drawing; }
+    / header v2Counts v2ctab endOfFile { logMessage(1, 'parsed V2000 MOL File'); return mdlParserData.drawing; }
+    / header v3Counts v3ctab endOfFile { logMessage(1, 'parsed V3000 MOL File'); return mdlParserData.drawing; }
+
+v3RxnHeader
+    = '$RXN V3000' newline
 
 header
     = header1 header2 header3 { logMessage(1, 'parsed Header'); }
 
 endOfFile
-    = newline 'M  END' whitespaceNL*
+    = 'M  END' whitespaceNL*
 
 header1
     = line:(noNL*) { mdlParserData.header1 = line.join(''); }
@@ -216,6 +278,14 @@ header3
 /*
  * Global Counts Line
  */
+v3RxnCounts
+    = newline 'M  V30 COUNTS ' nEducts:uint nProducts:uint whitespaceNL {
+            logMessage(1, 'parsed rxnV3counts');
+            mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
+            mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
+            mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
+        }
+
 v2Counts
     = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V2000'? {
             logMessage(1, 'parsed v2Counts');
@@ -223,14 +293,15 @@ v2Counts
             mdlParserData.bondCount = nBonds;
             mdlParserData.atomListCount = nAtomList;
             mdlParserData.stextCount = nSTEXT;
-            mdlParserData.drawing = molPaintJS.Drawing();
+            mdlParserData.currentChemObjectV2 = createChemObject();
+            logMessage(2, 'v2Counts created new ChemObject');
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
         }
 
 v3Counts
-    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' {
+    = newline nAtoms:uint3 nBonds:uint3 nAtomList:uint3 string3 chiral:uint3 nSTEXT:uint3 string3 string3 string3 string3 uint3 ' V3000' whitespaceNL {
             logMessage(1, 'parsed v3Counts');
             // nAtoms & nBonds ignored
         }
@@ -264,11 +335,11 @@ v3Counts
  */
 
 v2ctab
-    = v2atom* v2bond* v2atomlist* v2stext* v2props* { logMessage(1, 'parsed V2000 CTAB'); }
+    = v2atom* v2bond* v2atomlist* v2stext* v2props* newline { logMessage(1, 'parsed V2000 CTAB'); }
 
 v2atom
     = newline atom:v2atomLine {
-            mdlParserData.drawing.addAtom(atom, null);
+            mdlParserData.currentChemObjectV2.addAtom(atom);
         }
 
 v2atomLine
@@ -282,6 +353,7 @@ v2atomLine
             return false;
         } {
             let a = molPaintJS.Atom();
+            a.setId(mdlParserData.drawing.createAtomId());
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -291,6 +363,8 @@ v2atomLine
 
             // query features etc.
 
+            // indexing
+            mdlParserData.atomIndexMap['a' + mdlParserData.currentAtom] = a.getId();
             return a;
         }
 
@@ -310,7 +384,7 @@ v2atomLine
 
 v2bond
     = newline bond:v2bondLine {
-            mdlParserData.drawing.addBond(bond, null);
+            mdlParserData.currentChemObjectV2.addBond(bond);
         }
 
 v2bondLine
@@ -323,13 +397,18 @@ v2bondLine
             return false;
         } {
             let b = molPaintJS.Bond();
-            b.setAtomA(mdlParserData.drawing.getAtom("Atom" + atom1));
-            b.setAtomB(mdlParserData.drawing.getAtom("Atom" + atom2));
+            b.setId(mdlParserData.drawing.createBondId());
+
+            b.setAtomA(mdlParserData.atomIndexMap['a' + atom1]);
+            b.setAtomB(mdlParserData.atomIndexMap['a' + atom2]);
+
             b.setType(bondType);
             b.setStereo(sss, 'v2');
 
             // optprop
 
+            // indexing
+            mdlParserData['b' + mdlParserData.currentBond] = b.getId();
             return b;
         }
 
@@ -386,7 +465,8 @@ v2propIsis
 v2propAtomValuePairs
     = propType:v2propAtomValuePairsHeader props:v2propAtomValuePair+ {
             for(let prop of props) {
-                let atom = mdlParserData.drawing.getAtom("Atom" + prop.atom);
+                let atomIndex = mdlParserData.atomIndexMap['a' + prop.atom];
+                let atom = mdlParserData.drawing.getAtom(atomIndex);
                 switch(propType) {
                     case 'CHG' :
                         atom.setCharge(prop.value);
@@ -527,6 +607,29 @@ v2propOTHER
 
 
 
+/*
+ *======================================================================
+ *
+ * V3000 RXN File
+ *
+ *======================================================================
+ */
+
+v3RxnComponents
+    = v3RxnType whitespaceNL v3RxnComponent* v3RxnTypeEnd whitespaceNL
+
+v3RxnType
+    = 'M  V30 BEGIN REACTANT' { mdlParserData.currentRole = 'educt'; }
+    / 'M  V30 BEGIN PRODUCT' { mdlParserData.currentRole = 'product'; }
+    / 'M  V30 BEGIN AGENT' { mdlParserData.currentRole = 'agent'; }
+
+v3RxnTypeEnd
+    = 'M  V30 END REACTANT' { logMessage(1, 'parsed V3000 reactants'); }
+    / 'M  V30 END PRODUCT' { logMessage(1, 'parsed V3000 products'); }
+    / 'M  V30 END AGENT' { logMessage(1, 'parsed V3000 agents'); }
+
+v3RxnComponent
+    = v3ctab+
 
 /*
  *======================================================================
@@ -536,7 +639,7 @@ v2propOTHER
  *======================================================================
  */
 v3ctab
-    = newline 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+  { logMessage(1, 'parsed V3000 CTAB'); }
+    = 'M  V30 BEGIN CTAB' v3countsLine v3atomBlock v3bondBlock? v3propertyBlocks+ 'M  V30 END CTAB' whitespaceNL  { logMessage(1, 'parsed V3000 CTAB'); }
 
 /*
  *
@@ -547,7 +650,11 @@ v3ctab
  */
 v3countsLine
     = newline 'M  V30 COUNTS' nAtoms:uint nBonds:uint nSgroups:uint n3d:uint ' ' chiral:[01] countRegNo? {
-            mdlParserData.drawing = molPaintJS.Drawing();
+            mdlParserData.currentChemObjectV3 = createChemObject();
+            if (mdlParserData.currentChemObjectV2 != null) {
+                mdlParserData.drawing.delChemObject(mdlParserData.currentChemObjectV2);
+            }
+            logMessage(2, 'v3countsLine created new ChemObject');
             mdlParserData.drawing.setProperty('NAME', mdlParserData.header1);
             mdlParserData.drawing.setProperty('HEADER2', mdlParserData.header2);
             mdlParserData.drawing.setProperty('COMMENT', mdlParserData.header3);
@@ -578,8 +685,10 @@ countRegNo
 
 v3atomBlock
     = newline 'M  V30 BEGIN ATOM' newline atoms:atomEntry* 'M  V30 END ATOM' {
-            atoms.forEach(atom => { mdlParserData.drawing.addAtom(atom, null); });
+            let nAtoms = 0;
+            atoms.forEach(atom => { mdlParserData.currentChemObjectV3.addAtom(atom); nAtoms++ });
             logMessage(1, 'parsed ATOM BLOCK');
+            logMessage(3, "atoms: " + nAtoms);
         }
 
 atomEntry
@@ -588,6 +697,8 @@ atomEntry
 
 
             let a = molPaintJS.Atom();
+            a.setId(mdlParserData.drawing.createAtomId());
+
             a.setX(atomX);
             a.setY(-1.0 * atomY); // flip on X axis
             a.setZ(atomZ);
@@ -605,6 +716,9 @@ atomEntry
 
             // query features etc.
 
+            // indexing
+            mdlParserData.currentAtom++;
+            mdlParserData.atomIndexMap['a' + mdlParserData.currentAtom] = a.getId();
             return a;
         }
 
@@ -703,16 +817,21 @@ atomTypeList
 
 v3bondBlock
     = newline 'M  V30 BEGIN BOND' newline bonds:bondEntry* 'M  V30 END BOND' {
-            bonds.forEach(bond => { mdlParserData.drawing.addBond(bond, null); });
+            let nBonds = 0;
+            bonds.forEach(bond => { mdlParserData.currentChemObjectV3.addBond(bond); nBonds++; });
             logMessage(1, 'parsed BOND BLOCK');
+            logMessage(3, 'nbonds: ' + nBonds);
         }
 
 bondEntry
     = 'M  V30' bondIndex:uint bondType:uint atom1:uint atom2:uint bondCont:bondContinuation {
 
             let b = molPaintJS.Bond();
-            b.setAtomA(mdlParserData.drawing.getAtom("Atom" + atom1));
-            b.setAtomB(mdlParserData.drawing.getAtom("Atom" + atom2));
+            b.setId(mdlParserData.drawing.createBondId());
+
+            b.setAtomA(mdlParserData.atomIndexMap['a' + atom1]);
+            b.setAtomB(mdlParserData.atomIndexMap['a' + atom2]);
+
             b.setType(bondType);
 
             if (bondCont == null) {
@@ -722,6 +841,9 @@ bondEntry
                 b.setStereo(bondCont.configuration, 'v3');
             }
 
+            // indexing
+            mdlParserData.currentBond++;
+            mdlParserData.bondIndexMap['b' + mdlParserData.currentBond] = b.getId();
             return b;
         }
 
@@ -759,7 +881,7 @@ v3propertyBlocks
     / v3obj3dBlock
     / v3LinkAtomLine
     / v3collectionBlock
-    / newline 'M  V30 END CTAB'
+    / whitespaceNL
 
 /*
  * V3000 SGroup Block
@@ -793,7 +915,7 @@ v3SGroupBlock
     = newline 'M  V30 BEGIN SGROUP' newline sgroups:v3SGroup* 'M  V30 END SGROUP' {
             sgroups.forEach(sgroup => {
                 sgroup.parseJsonData(mdlParserData.drawing);
-                mdlParserData.drawing.addSGroup(sgroup, null);
+                mdlParserData.currentChemObjectV3.addSGroup(sgroup);
             });
             logMessage(1, 'parsed SGROUP BLOCK');
         }
@@ -830,17 +952,17 @@ v3SGroupType
 
 v3SGroupContinuation
     = v3LineContinuation cont:v3SGroupContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['ATOMS'] = list; return c; }
-    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBONDS'] = list; return c; }
-    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['CBONDS'] = list; return c; }
-    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['PATOMS'] = list; return c; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['ATOMS'] = mapAtomList(list.data); return c; }
+    / ' '* 'XBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBONDS'] = mapBondList(list.data); return c; }
+    / ' '* 'CBONDS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['CBONDS'] = mapBondList(list.data); return c; }
+    / ' '* 'PATOMS=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['PATOMS'] = mapAtomList(list.data); return c; }
     / ' '* 'SUBTYPE=' subtype:v3SGroupSubtype cont:v3SGroupContinuation { let c=cont || {}; c['SUBTYPE'] = subtype; return c; }
     / ' '* 'MULT=' mult:uint cont:v3SGroupContinuation { let c=cont || {}; c['MULT'] = mult; return c; }
     / ' '* 'CONNECT=' connect:sgroupConnectType cont:v3SGroupContinuation { let c=cont || {}; c['CONNECT'] = connect; return c; }
     / ' '* 'PARENT=' parent:uint cont:v3SGroupContinuation { let c=cont || {}; c['PARENT'] = connect; return c; }
     / ' '* 'COMPNO=' compno:uint cont:v3SGroupContinuation { let c=cont || {}; c['COMPNO'] = connect; return c; }
-    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XHEAD'] = list; return c; }
-    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBCORR'] = list; return c; }
+    / ' '* 'XHEAD=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XHEAD'] = mapBondList(list.data); return c; }
+    / ' '* 'XBCORR=' list:v3CountedUIntList cont:v3SGroupContinuation { let c = cont || {}; c['XBCORR'] = mapBondList(list.data); return c; }
     / ' '* 'LABEL=' label:string cont:v3SGroupContinuation { let c = cont || {}; c['LABEL'] = label; return c; }
     / ' '* 'BRKXYZ=' brkxyz:v3CountedFloatList cont:v3SGroupContinuation { let c = cont || {}; if (c['BRKXYZ'] === undefined) { c['BRKXYZ'] = []; } c['BRKXYZ'].push(brkxyz); return c; }
     / ' '* 'ESTATE=' estate:string cont:v3SGroupContinuation { let c = cont || {}; c['ESTATE'] = estate; return c; }
@@ -916,27 +1038,9 @@ v3collectionBlock
             entries.forEach(entry => {
 //              logMessage(1, util.inspect(entry, {showHidden: false, depth: null}));
                 let collection = molPaintJS.Collection(entry.name);
-                let atoms = {};
-                let bonds = {};
-                for (let data of entry.data) {
-                    if (data['ATOM'] != null) {
-                        for( let a of data['ATOM'].data) {
-                            if (a != null) {
-                                atoms['Atom' + a] = 'Atom' + a;
-                            }
-                        }
-                    }
-                    if (data['BOND'] != null) {
-                        for( let b of data['BOND'].data) {
-                            if (b != null) {
-                                bonds['Bond' + b] = 'Bond' + b;
-                            }
-                        }
-                    }
-                }
-                collection.setAtoms(atoms);
-                collection.setBonds(bonds);
-                mdlParserData.drawing.addCollection(collection);
+                collection.setAtoms(arrayJoin(entry.data, 'ATOMS'));
+                collection.setBonds(arrayJoin(entry.data, 'BONDS'));
+                mdlParserData.currentChemObjectV3.addCollection(collection);
             });
             logMessage(1, 'parsed COLLECTION BLOCK');
 }
@@ -948,8 +1052,8 @@ collectionEntry
 /* ToDo multi line lists */
 collectionContinuation
     = v3LineContinuation cont:collectionContinuation { return cont; }
-    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['ATOM'] = list; return c; }
-    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['BOND'] = list; return c; }
+    / ' '* 'ATOMS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['ATOMS'] = mapAtomList(list.data); return c; }
+    / ' '* 'BONDS=' list:v3CountedUIntList cont:collectionContinuation { let c = cont || {}; c['BONDS'] = mapBondList(list.data); return c; }
     / ' '* 'SGROUPS=(' [^)]* ')' collectionContinuation
     / ' '* 'OBJ3DS=(' [^)]* ')' collectionContinuation
     / ' '* 'MEMBERS=(' [^)]* ')' collectionContinuation
@@ -1033,8 +1137,7 @@ nonWhitespace
     = [^ \t\r\n]
 
 whitespaceNL
-    = whitespace
-    / newline
+    = whitespace* newline
 
 whitespace
     = [ \t]

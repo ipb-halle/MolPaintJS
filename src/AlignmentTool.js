@@ -24,6 +24,7 @@ var molPaintJS = (function (molpaintjs) {
         const drawing = context.getDrawing();
         let actionList = molPaintJS.ActionList();
         let boundingBoxes = {};
+        let chemObjectIds = [];
         let commonBoundingBox = null;
         let selectedChemObjects = {};
         let selectedChemObjectCount = 0;
@@ -74,10 +75,40 @@ var molPaintJS = (function (molpaintjs) {
                 return [[1, 0, dx], [0, 1, 0]];
             },
 
-            distributeHorizontal : function (cid) {
+            distributeHorizontal : function (cid, index) {
+                let last = selectedChemObjectCount - 1;
+                if ((index == 0) || (index == last)) {
+                    return [[1, 0, 0], [0, 1, 0]];
+                }
+                let box = boundingBoxes[cid];
+                let dx = boundingBoxes[chemObjectIds[last]].getCenterX()
+                    - boundingBoxes[chemObjectIds[0]].getCenterX();
+                dx = (dx * index) / last;
+                dx -= box.getCenterX();
+                dx += boundingBoxes[chemObjectIds[0]].getCenterX();
+                return [[1, 0, dx], [0, 1, 0]];
             },
 
-            distributeVertical : function (cid) {
+            distributeVertical : function (cid, index) {
+                let last = selectedChemObjectCount - 1;
+                if ((index == 0) || (index == last)) {
+                    return [[1, 0, 0], [0, 1, 0]];
+                }
+                let box = boundingBoxes[cid];
+                let dy = boundingBoxes[chemObjectIds[last]].getCenterY()
+                    - boundingBoxes[chemObjectIds[0]].getCenterY();
+                dy = (dy * index) / last;
+                dy -= box.getCenterY();
+                dy += boundingBoxes[chemObjectIds[0]].getCenterY();
+                return [[1, 0, 0], [0, 1, dy]];
+            },
+
+            compareCenterX : function (a, b) {
+                return boundingBoxes[a].getCenterX() - boundingBoxes[b].getCenterX();
+            },
+
+            sortByCenterY : function (a, b) {
+                return boundingBoxes[a].getCenterY() - boundingBoxes[b].getCenterY();
             },
 
             prepareChemObjects : function () {
@@ -91,12 +122,23 @@ var molPaintJS = (function (molpaintjs) {
                         commonBoundingBox = box.copy();
                     }
                     boundingBoxes[cid] = box;
+                    chemObjectIds.push(cid);
                 }
                 return (selectedChemObjectCount > 1);
             },
 
-            alignObject : function (type, cid) {
+            prepareDistribution : function (type) {
+                switch (type) {
+                    case "distribute_horizontal" : chemObjectIds.sort(this.compareCenterX);
+                        break;
+                    case "distribute_vertical" : chemObjectIds.sort(this.compareCenterY);
+                        break;
+                }
+            },
+
+            alignObject : function (type, index) {
                 let matrix = null;
+                let cid = chemObjectIds[index];
                 switch (type) {
                     case "align_bottom" :
                         matrix = this.alignBottom(cid);
@@ -117,10 +159,10 @@ var molPaintJS = (function (molpaintjs) {
                         matrix = this.alignVertical(cid);
                         break;
                     case "distribute_horizontal" :
-                        matrix = this.distributeHorizontal(cid);
+                        matrix = this.distributeHorizontal(cid, index);
                         break;
                     case "distribute_vertical" :
-                        matrix = this.distributeVertical(cid);
+                        matrix = this.distributeVertical(cid, index);
                         break;
                 }
                 let chemObject = selectedChemObjects[cid].deepCopy();
@@ -134,8 +176,9 @@ var molPaintJS = (function (molpaintjs) {
                     console.log("no objects");
                     return;
                 }
-                for (let cid in selectedChemObjects) {
-                    this.alignObject(type, cid);
+                this.prepareDistribution();
+                for (let i in chemObjectIds) {
+                    this.alignObject(type, i);
                 }
                 context.getHistory().appendAction(actionList);
                 context.draw();

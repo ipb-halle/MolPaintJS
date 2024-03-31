@@ -46,6 +46,13 @@ var molPaintJS = (function (molpaintjs) {
         /*
          * Actions
          */
+        function actionAlign (evt) {
+            let ctx = molPaintJS.getContext(evt.target.id);
+            let tool = molPaintJS.AlignmentTool(ctx);
+            let type = evt.target.id.replace(ctx.contextId + "_", "");
+            tool.align(type);
+        }
+
         function actionAnalysis (evt) {
             let ctx = molPaintJS.getContext(evt.target.id);
             molPaintJS.AnalysisTool(ctx.contextId).render();
@@ -671,9 +678,17 @@ var molPaintJS = (function (molpaintjs) {
              */
             initEvents : function (ctx) {
                 registerEvent(ctx, "click", "_agent", actionSetRole);
+                registerEvent(ctx, "click", "_align_bottom", actionAlign);
+                registerEvent(ctx, "click", "_align_horizontal", actionAlign);
+                registerEvent(ctx, "click", "_align_left", actionAlign);
+                registerEvent(ctx, "click", "_align_right", actionAlign);
+                registerEvent(ctx, "click", "_align_top", actionAlign);
+                registerEvent(ctx, "click", "_align_vertical", actionAlign);
                 registerEvent(ctx, "click", "_analysis", actionAnalysis);
                 registerEvent(ctx, "click", "_center", actionCenter);
                 registerEvent(ctx, "click", "_chain", actionChain);
+                registerEvent(ctx, "click", "_distribute_horizontal", actionAlign);
+                registerEvent(ctx, "click", "_distribute_vertical", actionAlign);
                 registerEvent(ctx, "click", "_minus", actionChargeDec);
                 registerEvent(ctx, "click", "_plus", actionChargeInc);
                 registerEvent(ctx, "click", "_collection", actionCollection);

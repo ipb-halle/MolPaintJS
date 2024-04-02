@@ -27,13 +27,13 @@ var molPaintJS = (function (molpaintjs) {
         function redoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.newObject);
+                    ctx.getDrawing().addAtom(action.newObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.newObject);
+                    ctx.getDrawing().addBond(action.newObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().addChemObject(action.newObject);
+                    ctx.getDrawing().addChemObject(action.newObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoAdd().");
@@ -43,13 +43,13 @@ var molPaintJS = (function (molpaintjs) {
         function redoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().delAtom(action.oldObject);
+                    ctx.getDrawing().delAtom(action.oldObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().delBond(action.oldObject);
+                    ctx.getDrawing().delBond(action.oldObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().delChemObject(action.oldObject);
+                    ctx.getDrawing().delChemObject(action.oldObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoDelete().");
@@ -59,13 +59,13 @@ var molPaintJS = (function (molpaintjs) {
         function redoUpdate (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().replaceAtom(action.newObject);
+                    ctx.getDrawing().replaceAtom(action.newObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().replaceBond(action.newObject);
+                    ctx.getDrawing().replaceBond(action.newObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().replaceChemObject(action.newObject);
+                    ctx.getDrawing().replaceChemObject(action.newObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.redoUpdate().");
@@ -75,13 +75,13 @@ var molPaintJS = (function (molpaintjs) {
         function undoAdd (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().delAtom(action.newObject);
+                    ctx.getDrawing().delAtom(action.newObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().delBond(action.newObject);
+                    ctx.getDrawing().delBond(action.newObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().delChemObject(action.newObject);
+                    ctx.getDrawing().delChemObject(action.newObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoAdd().");
@@ -91,13 +91,13 @@ var molPaintJS = (function (molpaintjs) {
         function undoDelete (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().addAtom(action.oldObject);
+                    ctx.getDrawing().addAtom(action.oldObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().addBond(action.oldObject);
+                    ctx.getDrawing().addBond(action.oldObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().addChemObject(action.oldObject);
+                    ctx.getDrawing().addChemObject(action.oldObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoDelete().");
@@ -107,13 +107,13 @@ var molPaintJS = (function (molpaintjs) {
         function undoUpdate (ctx, action) {
             switch (action.objectType) {
                 case "ATOM" :
-                    ctx.getDrawing().replaceAtom(action.oldObject);
+                    ctx.getDrawing().replaceAtom(action.oldObject, false);
                     break;
                 case "BOND" :
-                    ctx.getDrawing().replaceBond(action.oldObject);
+                    ctx.getDrawing().replaceBond(action.oldObject, false);
                     break;
                 case "CHEMOBJECT" :
-                    ctx.getDrawing().replaceChemObject(action.oldObject);
+                    ctx.getDrawing().replaceChemObject(action.oldObject, false);
                     break;
                 default :
                     alert("Unknown objectType " + action.objectType + " in History.undoUpdate().");
@@ -178,12 +178,8 @@ var molPaintJS = (function (molpaintjs) {
                 return history[historyPtr].getActions();
             },
 
-            undo : function (ctx) {
-                if (historyPtr < 0) {
-                    return;
-                }
-                let actionList = history[historyPtr];
 
+            undoActionList : function(ctx, actionList) {
                 // loop actionList backwards in undo
                 for (let i = actionList.getActions().length; i-- > 0;) {
                     let action = actionList.getActions()[i];
@@ -201,7 +197,13 @@ var molPaintJS = (function (molpaintjs) {
                             alert("Unknown actionType " + action.actionType + " of action in History.undo().");
                     }
                 }
+            },
 
+            undo : function (ctx) {
+                if (historyPtr < 0) {
+                    return;
+                }
+                undoActionList(ctx, history[historyPtr]);
                 historyPtr--;
                 this.updateIcons();
             }

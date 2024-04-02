@@ -498,6 +498,7 @@ var molPaintJS = (function (molpaintjs) {
                     return;
                 }
                 atoms[id] = atom;
+                return oldAtom;
             },
 
             /**
@@ -514,6 +515,7 @@ var molPaintJS = (function (molpaintjs) {
                     return;
                 }
                 bonds[id] = bond;
+                return oldBond;
             },
 
             /**

@@ -24,6 +24,7 @@ var molPaintJS = (function (molpaintjs) {
      */
     molpaintjs.Drawing = function(uniqueCounter) {
 
+        let actionList = null;
         let chemObjects = {};
         let properties = {};
         let counter = uniqueCounter;
@@ -43,6 +44,7 @@ var molPaintJS = (function (molpaintjs) {
                     cid = this.createChemObject().getId();
                 }
                 chemObjects[cid].addAtom(a);
+                actionList.addAction(molPaintJS.Action("ADD", "ATOM", a, null));
             },
 
             /**
@@ -57,19 +59,18 @@ var molPaintJS = (function (molpaintjs) {
                 if (coA === coB) {
                     chemObjects[coA].addBond(b);
                 } else {
-                    if (Object.keys(chemObjects[coA].getAtoms()).length > Object.keys(chemObjects[coB].getAtoms()).length) {
-                        chemObjects[coA].join(chemObjects[coB]);
-                        chemObjects[coA].addBond(b);
-                        delete chemObjects[coB];
-                    } else {
-                        chemObjects[coB].join(chemObjects[coA]);
-                        chemObjects[coB].addBond(b);
-                        delete chemObjects[coA];
-                    }
+                    let chemObject = this.createChemObject();
+                    chemObject.join(chemObjects[coA]);
+                    chemObject.join(chemObjects[coB]);
+                    actionList.addAction(molPaintJS.Action("DEL", "CHEMOBJECT", null, chemObject[coA]));
+                    actionList.addAction(molPaintJS.Action("DEL", "CHEMOBJECT", null, chemObject[coB]));
+                    delete chemObjects[coA];
+                    delete chemObjects[coB];
                 }
             },
 
             addChemObject : function (c) {
+                actionList.addAction(molPaintJS.Action("ADD", "CHEMOBJECT", c, null));
                 chemObjects[c.getId()] = c;
             },
 
@@ -181,14 +182,17 @@ var molPaintJS = (function (molpaintjs) {
                 let cid = obj.getId();
                 obj.setRole(role);
                 chemObjects[cid] = obj;
+                actionList.addAction(molPaintJS.Action("ADD", "CHEMOBJECT", obj, null));
                 return obj;
             },
 
             delAtom : function (atom) {
                 let cid = this.getAtomChemObjectId(atom.getId());
+                chemObject = chemObjects[cid];
                 if (chemObjects[cid].getAtomCount() === 1) {
-                    delete chemObjects[cid];
+                    delChemObject(c);
                 } else {
+                    actionList.addAction(molPaintJS.Action("DEL", "ATOM", null, atom));
                     chemObjects[cid].delAtom(atom);
                 }
             },
@@ -196,6 +200,7 @@ var molPaintJS = (function (molpaintjs) {
             delBond : function (bond) {
                 let cid = this.getBondChemObjectId(bond.getId());
                 let connectedBondSets = chemObjects[cid].delBond(bond);
+                actionList.addAction(molPaintJS.Action("DEL", "BOND", null, bond));
                 if (connectedBondSets.length > 1) {
                     console.log(connectedBondSets);
 
@@ -205,20 +210,23 @@ var molPaintJS = (function (molpaintjs) {
                 }
             },
 
-            delChemObject : function (c) {
-                delete chemObjects[c.getId()];
+            delChemObject : function (chemObject) {
+                actionList.addAction(molPaintJS.Action("DEL", "CHEMOBJECT", null, chemObject));
+                delete chemObjects[chemObject.getId()];
             },
 
             /**
              * Deletes all collections with given name from all ChemObjects
              */
             delCollection : function (name) {
+                // xxxxx missing history
                 for (let cid in chemObjects) {
                     chemObjects[cid].delCollection(name);
                 }
             },
 
             delSGroup : function (sg) {
+                // xxxxx missing history
                 chemObjects[sg.getChemObject()].delSGroup(sg);
             },
 
@@ -226,6 +234,10 @@ var molPaintJS = (function (molpaintjs) {
                 for (let cid in chemObjects) {
                     chemObjects[cid].delTemp();
                 }
+            },
+
+            getActionList : function () {
+                return actionList;
             },
 
             getAtom : function (idx) {
@@ -385,18 +397,25 @@ var molPaintJS = (function (molpaintjs) {
                 return sgroups;
             },
 
+            newActionList : function () {
+                actionList = molPaintJS.actionList();
+            },
+
             replaceAtom : function (atom) {
                 let cid = this.getAtomChemObjectId(atom.getId());
-                chemObjects[cid].replaceAtom(atom);
+                actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom,
+                        chemObjects[cid].replaceAtom(atom)));
             },
 
             replaceBond : function (bond) {
                 let cid = this.getBondChemObjectId(bond.getId());
-                chemObjects[cid].replaceBond(bond);
+                actionList.addAction(molPaintJS.Action("UPD", "BOND", bond,
+                chemObjects[cid].replaceBond(bond)));
             },
 
             replaceChemObject : function (chemObject) {
                 let cid = chemObject.getId();
+                actionList.addAction(molPaintJS.Action("UPD", "CHEMOBJECT", chemObject, chemObjects[cid]));
                 chemObjects[cid] = chemObject;
             },
 

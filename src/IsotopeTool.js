@@ -35,15 +35,15 @@ var molPaintJS = (function (molpaintjs) {
                 let coord = this.context.getView().getCoordReverse(x, y);
                 let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
-                    let actionList = molPaintJS.ActionList();
-                    let oldAtom = this.context.getDrawing().getAtom(atomId);
+                    let drawing = this.context.getDrawing();
+                    let oldAtom = drawing.getAtom(atomId);
                     let atom = oldAtom.copy();
                     let dir = (type == "isotope_up") ? 1 : -1;
 
+                    drawing.begin();
                     atom.changeIsotope(dir);
-                    this.context.getDrawing().replaceAtom(atom);
-                    actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
-                    this.context.getHistory().appendAction(actionList);
+                    drawing.replaceAtom(atom);
+                    drawing.commit(this.context);
                     this.context.draw();
                 }
             },

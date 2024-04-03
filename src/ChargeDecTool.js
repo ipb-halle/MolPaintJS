@@ -35,13 +35,13 @@ var molPaintJS = (function (molpaintjs) {
                 let coord = this.context.getView().getCoordReverse(x, y);
                 let atomId = this.context.getDrawing().selectAtom(coord, distMax);
                 if (atomId != null) {
-                    let actionList = molPaintJS.ActionList();
+                    let drawing = this.context.getDrawing();
+                    drawing.begin();
                     let oldAtom = this.context.getDrawing().getAtom(atomId);
                     let atom = oldAtom.copy();
                     atom.chargeDecrement();
-                    actionList.addAction(molPaintJS.Action("UPD","ATOM",atom,oldAtom));
-                    this.context.getDrawing().replaceAtom(atom);
-                    this.context.getHistory().appendAction(actionList);
+                    drawing.replaceAtom(atom);
+                    drawing.commit(this.context);
                     this.context.draw();
                 }
             },

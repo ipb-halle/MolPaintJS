@@ -109,15 +109,13 @@ var molPaintJS = (function (molpaintjs) {
             let ctx = molPaintJS.getContext(evt.target.id);
             let actionList = molPaintJS.ActionList();
 
-            let drawing = ctx.getDrawing();
             let chemObjects = drawing.getChemObjects();
+            let drawing = ctx.getDrawing();
+            drawing.begin();
             for (let cid in chemObjects) {
-                let c = chemObjects[cid];
-                actionList.addAction(molPaintJS.Action("DEL", "CHEMOBJECT", null, c));
-                drawing.delChemObject(c);
+                drawing.delChemObject(chemObjects[cid]);
             }
-
-            ctx.getHistory().appendAction(actionList);
+            drawing.commit(ctx);
             ctx.draw();
         }
 
@@ -213,7 +211,7 @@ var molPaintJS = (function (molpaintjs) {
                     + "You might want to try the paste icon");
             }
             let pastedData = clipboardData.getData("text");
-            ctx.getHistory().appendAction(ctx.pasteDrawing(pastedData, 2));
+            ctx.pasteDrawing(pastedData, 2);
         }
 
         /**
@@ -225,7 +223,7 @@ var molPaintJS = (function (molpaintjs) {
                 let ctx = molPaintJS.getContext(evt.target.id);
                 let clp = AllowClipboard.Client.ClipboardClient();
                 clp.read(function (x, pastedData) {
-                    ctx.getHistory().appendAction(ctx.pasteDrawing(pastedData));
+                    ctx.pasteDrawing(pastedData);
                     // alert(pastedData);
                 });
             } catch (e) {

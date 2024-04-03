@@ -20,7 +20,7 @@ var molPaintJS = (function (molpaintjs) {
 
     molpaintjs.BondTool = function(ctx, prop, bt, st, i) {
 
-        let context = ctx;
+        const context = ctx;
         let distMax = prop.distMax;
         let bondType = bt;
         let stereoType = st;
@@ -28,9 +28,55 @@ var molPaintJS = (function (molpaintjs) {
         let atomIdA = null;
         let actionList;
 
+        function addAtomA () {
+            this.drawing.begin();
+            atomIdA = this.drawing.createAtomId();
+            let atomA = molPaintJS.Atom();
+            atomA.setId(atomIdA);
+            atomA.setX(coord.x);
+            atomA.setY(coord.y);
+            atomA.setZ(0.0);
+            let atomType = molPaintJS.AtomType();
+            atomType.setIsotope(this.context.getCurrentElement());
+            atomType.setColor(this.context.getCurrentElement().getColor());
+            atomA.setType(atomType);
+            this.drawing.addAtom(atomA);
+        }
+
+        function modifyBondType (oldBond) {
+            this.drawing.begin();
+            let bond = oldBond.copy();
+            bond.setType(bondType);
+            bond.setStereo(stereoType);
+            this.drawing.replaceBond(bond);
+            this.drawing.commit(this.context);
+            this.context.draw();
+        }
+
+        function modifyBondStereo (oldBond) {
+            this.drawing.begin();
+            let bond = oldBond.copy();
+            bond.swap();
+            this.drawing.replaceBond(bond);
+            this.drawing.commit(this.context);
+            this.context.draw();
+        }
+
+        function modifyBond (bond) {
+            // change existing bond
+            let changed = false;
+            if((bond.getType() != bondType) || (bond.getStereo() != stereoType)) { 
+                modifyBondType(bond);
+            } else {
+                if ((stereoType != "0") || (b.getType() == 2)) {
+                    modifyBondStereo(bond);
+                }
+            }
+        }
 
         return {
             context : ctx,
+            drawing : ctx.getDrawing(),
             id : i,
 
             abort : function () {
@@ -46,10 +92,12 @@ var molPaintJS = (function (molpaintjs) {
              * this finally creates the new bond
              */
             onClick : function (x, y, evt) {
-                if(atomIdA == null) return;
+                if(atomIdA == null) {
+                    this.drawing.rollbackAll(this.context);
+                    return;
+                }
                 atomIdA = null;
-                actionList.addActionList(this.context.getDrawing().clearTemp());
-                this.context.getHistory().appendAction(actionList); 
+                this.drawing.commit(this.context);
                 this.context.draw();
             },
 
@@ -58,48 +106,16 @@ var molPaintJS = (function (molpaintjs) {
              */
             onMouseDown : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-
-                let bonds = this.context.getDrawing().selectBonds(coord, distMax);
-                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
-
-                actionList = molPaintJS.ActionList();
+                let atomId = this.drawing.selectAtom(coord, distMax);
+                atomIdA = null;
 
                 if (atomId == null) {
+                    let bonds = this.drawing.selectBonds(coord, distMax);
                     if (bonds.length > 0) {
-                        let b = this.context.getDrawing().getBonds()[bonds[0]];
-                        let old = b.copy();
-                        let changed = false;
-                        if((b.getType() != bondType) || (b.getStereo() != stereoType)) { 
-                            b.setType(bondType);
-                            b.setStereo(stereoType);
-                            changed = true;
-                        } else {
-                            if ((stereoType != "0") || (b.getType() == 2)) {
-                                b.swap();
-                                changed = true;
-                            }
-                        }
-                        if (changed) {    
-                            actionList.addAction(molPaintJS.Action("UPD", "BOND", b, old));
-                            this.context.getHistory().appendAction(actionList);
-                            this.context.draw();
-                        }
+                        let bond = this.drawing.getBond(bonds[0]);
+                        modifyBond(bond);
                     } else {
-                        atomIdA = this.context.getDrawing().createAtomId();
-                        let atomA = molPaintJS.Atom();
-                        atomA.setId(atomIdA);
-
-                        atomA.setX(coord.x);
-                        atomA.setY(coord.y);
-                        atomA.setZ(0.0);
-                        let at = molPaintJS.AtomType();
-                        at.setIsotope(this.context.getCurrentElement());
-                        at.setColor(this.context.getCurrentElement().getColor());
-                        atomA.setType(at);
-                        this.context.getDrawing().addAtom(atomA);
-                        
-                        actionList.addAction(molPaintJS.Action("ADD", "ATOM", atomA, null));
-
+                        addAtomA();
                     }
                 } else {
                     atomIdA = atomId;
@@ -113,7 +129,9 @@ var molPaintJS = (function (molpaintjs) {
             onMouseMove : function (x, y, evt) {
                 if (atomIdA == null) { return; }
 
-                let atomA = this.context.getDrawing().getAtom(atomIdA);
+                alert("XXXXXXXXXXX WORK IN PROGRESS XXXXXXXXXXXX");
+
+                let atomA = this.drawing().getAtom(atomIdA);
                 let view = this.context.getView();
                 let coord = view.getCoordReverse(x, y);
 

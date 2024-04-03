@@ -171,7 +171,6 @@ var molPaintJS = (function (molpaintjs) {
              * current drawing. Update the history accordingly.
              * @param st the chemical drawing string (MDL mol, ...)
              * @param sel the selection bits to set for the pasted drawing
-             * @return an actionList containing the new ChemObjects
              */
             pasteDrawing: function (st, sel) {
                 let pasteDrawing;
@@ -183,14 +182,14 @@ var molPaintJS = (function (molpaintjs) {
                 }
                 let actionList = molPaintJS.ActionList();
                 let pasteChemObjects = pasteDrawing.getChemObjects();
+                drawing.begin();
                 for (let chemObject of Object.values(pasteChemObjects)) {
                     chemObject.setSelected(1);
                     drawing.addChemObject(chemObject);
-                    actionList.addAction(molPaintJS.Action("ADD", "CHEMOBJECT", chemObject, null));
                 }
+                drawing.commit(this);
                 view.initRaster(drawing);
                 this.draw();
-                return actionList;
             },
 
             registerId : function(id) {

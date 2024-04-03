@@ -38,33 +38,31 @@ var molPaintJS = (function (molpaintjs) {
              */
             onClick : function (x, y, evt) {
                 let coord = this.context.getView().getCoordReverse(x, y);
-                let atomId = this.context.getDrawing().selectAtom(coord, distMax);
-                let at = molPaintJS.AtomType();
-                at.setIsotope(this.context.getCurrentElement());
-                at.setColor(this.context.getCurrentElement().getColor());
-                let actionList = molPaintJS.ActionList();
+                let drawing = this.context.getDrawing();
+                let atomId = drawing.selectAtom(coord, distMax);
+                let atomType = molPaintJS.AtomType();
                 let oldAtom = null;
+                atomType.setIsotope(this.context.getCurrentElement());
+                atomType.setColor(this.context.getCurrentElement().getColor());
+                drawing.begin();
 
                 if (atomId == null) {
                     atom = molPaintJS.Atom();
-                    atom.setId(this.context.getDrawing().createAtomId());
+                    atom.setId(drawing.createAtomId());
                     atom.setX(coord.x);
                     atom.setY(coord.y);
                     atom.setZ(0.0);
-                    atom.setType(at);
-                    this.context.getDrawing().addAtom(atom);
-                    actionList.addAction(molPaintJS.Action("ADD", "ATOM", atom, null));
+                    atom.setType(atomType);
+                    drawing.addAtom(atom);
                 } else {
-                    oldAtom = this.context.getDrawing().getAtom(atomId);
+                    oldAtom = drawing.getAtom(atomId);
                     atom = oldAtom.copy();
-                    atom.setType(at);
-                    this.context.getDrawing().replaceAtom(atom);
-                    actionList.addAction(molPaintJS.Action("UPD", "ATOM", atom, oldAtom));
+                    atom.setType(atomType);
+                    drawing.replaceAtom(atom);
                 }
 
-                this.context.getHistory().appendAction(actionList);
+                drawing.commit(this.context);
                 this.context.draw();
-
                 atom = null;
             },
 

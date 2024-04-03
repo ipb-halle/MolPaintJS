@@ -22,7 +22,6 @@ var molPaintJS = (function (molpaintjs) {
 
         const context = ctx;
         const drawing = context.getDrawing();
-        let actionList = molPaintJS.ActionList();
         let boundingBoxes = {};
         let chemObjectIds = [];
         let commonBoundingBox = null;
@@ -168,7 +167,6 @@ var molPaintJS = (function (molpaintjs) {
                 let chemObject = selectedChemObjects[cid].deepCopy();
                 chemObject.transform(matrix, 0);
                 drawing.replaceChemObject(chemObject);
-                actionList.addAction(molPaintJS.Action("UPD", "CHEMOBJECT", chemObject, selectedChemObjects[cid]));
             },
 
             align : function (type) {
@@ -176,11 +174,12 @@ var molPaintJS = (function (molpaintjs) {
                     console.log("no objects");
                     return;
                 }
+                drawing.begin();
                 this.prepareDistribution();
                 for (let i in chemObjectIds) {
                     this.alignObject(type, i);
                 }
-                context.getHistory().appendAction(actionList);
+                drawing.commit(context);
                 context.draw();
             }
         };

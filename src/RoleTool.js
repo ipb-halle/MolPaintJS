@@ -32,11 +32,10 @@ var molPaintJS = (function (molpaintjs) {
                 let chemObjectId = drawing.getAtomChemObjectId(atom.getId());
                 let oldChemObject = drawing.getChemObjects()[chemObjectId];
                 let chemObject = oldChemObject.copy();
-                let actionList = molPaintJS.ActionList();
+                drawing.begin();
                 chemObject.setRole(type);
                 drawing.replaceChemObject(chemObject);
-                actionList.addAction(molPaintJS.Action("UPD", "CHEMOBJECT", chemObject, oldChemObject));
-                context.getHistory().appendAction(actionList);
+                drawing.commit(context);
                 context.draw();
             }
         }

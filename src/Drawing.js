@@ -25,6 +25,7 @@ var molPaintJS = (function (molpaintjs) {
     molpaintjs.Drawing = function(uniqueCounter) {
 
         let actionLists = [];
+        let actionPhases = [];
         let chemObjects = {};
         let properties = {};
         let counter = uniqueCounter;
@@ -103,7 +104,8 @@ var molPaintJS = (function (molpaintjs) {
             /**
              * create a new transaction phase
              */
-            begin : function () {
+            begin : function (phase="default") {
+                actionPhases.push(phase);
                 actionLists.push(molPaintJS.actionList());
             },
 
@@ -161,6 +163,7 @@ var molPaintJS = (function (molpaintjs) {
                     actionList.addActionList(subAction);
                 }
                 context.getHistory().appendAction(actionList);
+                actionPhases = [];
                 actionLists = [];
             }
 
@@ -371,6 +374,15 @@ var molPaintJS = (function (molpaintjs) {
                 return counter;
             },
 
+            getPhaseIndex : function (phase) {
+                for (let i = 0; i < actionPhases.length; i++) {
+                    if (actionPhases[i] === phase) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+
             getProperties : function () {
                 return properties;
             },
@@ -463,10 +475,20 @@ var molPaintJS = (function (molpaintjs) {
             },
 
             /**
-             * rollback a single phase of a possibly multi-phased transaction
+             * rollback up to a certain phase of a possibly
+             * multi-phased transaction. If the specified phase
+             * is not present in the transaction stack, no action
+             * will be taken.
+             * @param context the current context of the drawing
+             * @param phase a phase label of the transaction phase,
+             * defaulting to "default".
              */
-            rollback : function (context) {
-                context.getHistory().undoActionList(context, actionLists.pop());
+            rollback : function (context, phase="default") {
+                if (getPhaseIndex(phase) > -1) {
+                    do {
+                        context.getHistory().undoActionList(context, actionLists.pop());
+                    } while (actionPhases.pop() != phase);
+                }
             }
 
             /**

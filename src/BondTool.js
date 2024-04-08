@@ -129,7 +129,7 @@ var molPaintJS = (function (molpaintjs) {
             onMouseMove : function (x, y, evt) {
                 if (atomIdA == null) { return; }
 
-                this.drawing.rollback("move");
+                this.drawing.rollback(this.context, "move");
                 this.drawing.begin("move");
 
                 let atomA = this.drawing.getAtom(atomIdA);

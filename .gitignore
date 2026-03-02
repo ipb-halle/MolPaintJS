@@ -1,7 +1,6 @@
 molpaintjs
 molpaintjs.tar.gz
 node_modules
-package-lock.json
 nbproject
 test/cypress/videos
 test/cypress/screenshots
